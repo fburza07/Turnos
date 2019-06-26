@@ -4,18 +4,12 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Calendario de Feriados</h1>
 
 <div>
-    <h4>TrnCalendarioFeriado</h4>
+    
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Empid)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Empid)
-        </dd>
+    <dl class="row">        
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Descripcion)
         </dt>
@@ -25,6 +19,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.IdCalendarioFeriado">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.IdCalendarioFeriado">Editar</a> |
+    <a asp-action="Index">Volver</a>
 </div>

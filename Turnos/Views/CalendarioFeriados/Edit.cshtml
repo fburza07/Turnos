@@ -4,20 +4,14 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Calendario de Feriados</h1>
 
-<h4>TrnCalendarioFeriado</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdCalendarioFeriado" />
-            <div class="form-group">
-                <label asp-for="Empid" class="control-label"></label>
-                <input asp-for="Empid" class="form-control" />
-                <span asp-validation-for="Empid" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="IdCalendarioFeriado" />            
             <div class="form-group">
                 <label asp-for="Descripcion" class="control-label"></label>
                 <input asp-for="Descripcion" class="form-control" />
@@ -31,7 +25,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Volver</a>
 </div>
 
 @section Scripts {

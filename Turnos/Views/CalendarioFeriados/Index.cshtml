@@ -4,17 +4,14 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Administración de Calendario de Feriados</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Crear nuevo calendario</a>
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Empid)
-            </th>
+        <tr>            
             <th>
                 @Html.DisplayNameFor(model => model.Descripcion)
             </th>
@@ -23,17 +20,14 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Empid)
-            </td>
+        <tr>            
             <td>
                 @Html.DisplayFor(modelItem => item.Descripcion)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.IdCalendarioFeriado">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdCalendarioFeriado">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdCalendarioFeriado">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.IdCalendarioFeriado">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.IdCalendarioFeriado">Detalles</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdCalendarioFeriado">Borrar</a>
             </td>
         </tr>
 }

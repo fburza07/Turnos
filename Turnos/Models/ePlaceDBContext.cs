@@ -21,6 +21,7 @@ namespace Turnos.Models
         public virtual DbSet<TrnTurno> TrnTurno { get; set; }
         public virtual DbSet<TrnCalendarioFeriado> TrnCalendarioFeriado { get; set; }
         public virtual DbSet<TrnCalendarioFeriadoDetalle> TrnCalendarioFeriadoDetalle { get; set; }
+        public virtual DbSet<TrnCalendarioPlanta> TrnCalendarioPlanta { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -176,6 +177,81 @@ namespace Turnos.Models
                 entity.Property(e => e.HoraDesde).HasColumnType("datetime");
             });
 
+            modelBuilder.Entity<TrnCalendarioPlanta>(entity =>
+            {
+                entity.HasKey(e => e.IdCalendarioPlanta);
+
+                entity.ToTable("TRN_CalendarioPlanta");
+
+                entity.Property(e => e.CalendarioPlanta)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Empid)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Descripcion)
+                    .HasMaxLength(250)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.LunesActivo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.LunesDesde).HasColumnType("datetime");
+
+                entity.Property(e => e.LunesHasta).HasColumnType("datetime");
+
+                entity.Property(e => e.MartesActivo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.MartesDesde).HasColumnType("datetime");
+
+                entity.Property(e => e.MartesHasta).HasColumnType("datetime");
+
+                entity.Property(e => e.MiercolesActivo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.MiercolesDesde).HasColumnType("datetime");
+
+                entity.Property(e => e.MiercolesHasta).HasColumnType("datetime");
+
+                entity.Property(e => e.JuevesActivo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.JuevesDesde).HasColumnType("datetime");
+
+                entity.Property(e => e.JuevesHasta).HasColumnType("datetime");
+
+                entity.Property(e => e.ViernesActivo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ViernesDesde).HasColumnType("datetime");
+
+                entity.Property(e => e.ViernesHasta).HasColumnType("datetime");
+
+                entity.Property(e => e.SabadoActivo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SabadoDesde).HasColumnType("datetime");
+
+                entity.Property(e => e.SabadoHasta).HasColumnType("datetime");
+
+                entity.Property(e => e.DomingoActivo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DomingoDesde).HasColumnType("datetime");
+
+                entity.Property(e => e.DomingoHasta).HasColumnType("datetime");
+            });
 
         }
 

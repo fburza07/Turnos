@@ -1,0 +1,161 @@
+﻿@model IEnumerable<Turnos.Models.TrnCalendarioPlanta>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Administración de Calendario de Planta</h1>
+
+<p>
+    <a asp-action="Create">Crear nuevo calendario</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>            
+            <th>
+                @Html.DisplayNameFor(model => model.Descripcion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LunesActivo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LunesDesde)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LunesHasta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MartesActivo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MartesDesde)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MartesHasta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MiercolesActivo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MiercolesDesde)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MiercolesHasta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JuevesActivo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JuevesDesde)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JuevesHasta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ViernesActivo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ViernesDesde)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ViernesHasta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SabadoActivo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SabadoDesde)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SabadoHasta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DomingoActivo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DomingoDesde)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DomingoHasta)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>            
+            <td>
+                @Html.DisplayFor(modelItem => item.Descripcion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LunesActivo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LunesDesde)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LunesHasta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MartesActivo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MartesDesde)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MartesHasta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MiercolesActivo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MiercolesDesde)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MiercolesHasta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.JuevesActivo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.JuevesDesde)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.JuevesHasta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ViernesActivo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ViernesDesde)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ViernesHasta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SabadoActivo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SabadoDesde)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SabadoHasta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DomingoActivo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DomingoDesde)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DomingoHasta)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdCalendarioPlanta">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.IdCalendarioPlanta">Detalles</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdCalendarioPlanta">Borrar</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

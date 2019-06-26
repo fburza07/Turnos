@@ -7,13 +7,7 @@
 <div>
     <h1>Boca de entrega</h1>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Empid)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Empid)
-        </dd>
+    <dl class="row">        
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.BocaEntrega)
         </dt>
@@ -83,6 +77,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.IdPlanta">Edit</a> |
-    <a asp-action="Index">Volver al listado</a>
+    <a asp-action="Edit" asp-route-id="@Model.IdPlanta">Editar</a> |
+    <a asp-action="Index">Volver</a>
 </div>

@@ -10,13 +10,7 @@
 <div>
     <h1>Boca de entrega</h1>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Empid)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Empid)
-        </dd>
+    <dl class="row">       
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.BocaEntrega)
         </dt>
@@ -88,6 +82,6 @@
     <form asp-action="Delete">
         <input type="hidden" asp-for="IdPlanta" />
         <input type="submit" value="Eliminar" class="btn btn-danger" /> |
-        <a asp-action="Index">Volver al listado</a>
+        <a asp-action="Index">Volver</a>
     </form>
 </div>

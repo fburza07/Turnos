@@ -10,12 +10,7 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdPlanta" />
-            <div class="form-group">
-                <label asp-for="Empid" class="control-label"></label>
-                <input asp-for="Empid" class="form-control" />
-                <span asp-validation-for="Empid" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="IdPlanta" />            
             <div class="form-group">
                 <label asp-for="BocaEntrega" class="control-label"></label>
                 <input asp-for="BocaEntrega" class="form-control" />
@@ -79,7 +74,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Volver al listado</a>
+    <a asp-action="Index">Volver</a>
 </div>
 
 @section Scripts {

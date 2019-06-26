@@ -1,0 +1,236 @@
+﻿@model Turnos.Models.TrnCalendarioPlanta
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Calendario de Planta</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>            
+            <div class="form-group">
+                <label asp-for="Descripcion" class="control-label"></label>
+                <input asp-for="Descripcion" class="form-control" />
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input asp-for="LunesActivo" type="hidden" class="form-control" value="checked" />
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkLunesActivo" /> Lunes</label>
+                </div>
+            </div>
+            <div class="form-group" id="divHorasLunes" style="display:none">
+                <div class="form-group">
+                    <label asp-for="LunesDesde" class="control-label"></label>
+                    <input asp-for="LunesDesde" type="time" class="form-control" />
+                    <span asp-validation-for="LunesDesde" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LunesHasta" class="control-label"></label>
+                    <input asp-for="LunesHasta" type="time" class="form-control" />
+                    <span asp-validation-for="LunesHasta" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input asp-for="MartesActivo" type="hidden" class="form-control" value="checked" />
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkMartesActivo" /> Martes</label>
+                </div>
+            </div>
+            <div class="form-group" id="divHorasMartes" style="display:none">
+                <div class="form-group">
+                    <label asp-for="MartesDesde" class="control-label"></label>
+                    <input asp-for="MartesDesde" type="time" class="form-control" />
+                    <span asp-validation-for="MartesDesde" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="MartesHasta" class="control-label"></label>
+                    <input asp-for="MartesHasta" type="time" class="form-control" />
+                    <span asp-validation-for="MartesHasta" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input asp-for="MiercolesActivo" type="hidden" class="form-control" value="checked" />
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkMiercolesActivo" /> Miercoles</label>
+                </div>
+            </div>
+            <div class="form-group" id="divHorasMiercoles" style="display:none">
+                <div class="form-group">
+                    <label asp-for="MiercolesDesde" class="control-label"></label>
+                    <input asp-for="MiercolesDesde" type="time" class="form-control" />
+                    <span asp-validation-for="MiercolesDesde" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="MiercolesHasta" class="control-label"></label>
+                    <input asp-for="MiercolesHasta" type="time" class="form-control" />
+                    <span asp-validation-for="MiercolesHasta" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input asp-for="JuevesActivo" type="hidden" class="form-control" value="checked" />
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkJuevesActivo" /> Jueves</label>
+                </div>
+            </div>
+            <div class="form-group" id="divHorasJueves" style="display:none">
+                <div class="form-group">
+                    <label asp-for="JuevesDesde" class="control-label"></label>
+                    <input asp-for="JuevesDesde" type="time" class="form-control" />
+                    <span asp-validation-for="JuevesDesde" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="JuevesHasta" class="control-label"></label>
+                    <input asp-for="JuevesHasta" type="time" class="form-control" />
+                    <span asp-validation-for="JuevesHasta" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input asp-for="ViernesActivo" type="hidden" class="form-control" value="checked" />
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkViernesActivo" /> Viernes</label>
+                </div>
+            </div>
+            <div class="form-group" id="divHorasViernes" style="display:none">
+                <div class="form-group">
+                    <label asp-for="ViernesDesde" class="control-label"></label>
+                    <input asp-for="ViernesDesde" type="time" class="form-control" />
+                    <span asp-validation-for="ViernesDesde" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ViernesHasta" class="control-label"></label>
+                    <input asp-for="ViernesHasta" type="time" class="form-control" />
+                    <span asp-validation-for="ViernesHasta" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input asp-for="SabadoActivo" type="hidden" class="form-control" value="checked" />
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkSabadoActivo" /> Sabado</label>
+                </div>
+            </div>
+            <div class="form-group" id="divHorasSabado" style="display:none">
+                <div class="form-group">
+                    <label asp-for="SabadoDesde" class="control-label"></label>
+                    <input asp-for="SabadoDesde" type="time" class="form-control" />
+                    <span asp-validation-for="SabadoDesde" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SabadoHasta" class="control-label"></label>
+                    <input asp-for="SabadoHasta" type="time" class="form-control" />
+                    <span asp-validation-for="SabadoHasta" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input asp-for="DomingoActivo" type="hidden" class="form-control" value="checked" />
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkDomingoActivo" /> Domingo</label>
+                </div>
+            </div>
+            <div class="form-group" id="divHorasDomingo" style="display:none">
+                <div class="form-group">
+                    <label asp-for="DomingoDesde" class="control-label"></label>
+                    <input asp-for="DomingoDesde" type="time" class="form-control" />
+                    <span asp-validation-for="DomingoDesde" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DomingoHasta" class="control-label"></label>
+                    <input asp-for="DomingoHasta" type="time" class="form-control" />
+                    <span asp-validation-for="DomingoHasta" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Volver</a>
+</div>
+
+
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {
+            $('#chkLunesActivo').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#divHorasLunes').show();
+                    $('#DiaCompleto').val('checked');
+                }
+                else {
+                    $('#divHorasLunes').hide();
+                    $('#DiaCompleto').val("unchecked");
+                }
+            });
+            $('#chkMartesActivo').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#divHorasMartes').show();
+                    $('#DiaCompleto').val('checked');
+                }
+                else {
+                    $('#divHorasMartes').hide();
+                    $('#DiaCompleto').val("unchecked");
+                }
+            });
+            $('#chkMiercolesActivo').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#divHorasMiercoles').show();
+                    $('#DiaCompleto').val('checked');
+                }
+                else {
+                    $('#divHorasMiercoles').hide();
+                    $('#DiaCompleto').val("unchecked");
+                }
+            });
+            $('#chkJuevesActivo').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#divHorasJueves').show();
+                    $('#DiaCompleto').val('checked');
+                }
+                else {
+                    $('#divHorasJueves').hide();
+                    $('#DiaCompleto').val("unchecked");
+                }
+            });
+            $('#chkViernesActivo').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#divHorasViernes').show();
+                    $('#DiaCompleto').val('checked');
+                }
+                else {
+                    $('#divHorasViernes').hide();
+                    $('#DiaCompleto').val("unchecked");
+                }
+            });
+            $('#chkSabadoActivo').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#divHorasSabado').show();
+                    $('#DiaCompleto').val('checked');
+                }
+                else {
+                    $('#divHorasSabado').hide();
+                    $('#DiaCompleto').val("unchecked");
+                }
+            });
+            $('#chkDomingoActivo').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#divHorasDomingo').show();
+                    $('#DiaCompleto').val('checked');
+                }
+                else {
+                    $('#divHorasDomingo').hide();
+                    $('#DiaCompleto').val("unchecked");
+                }
+            });
+        });
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
