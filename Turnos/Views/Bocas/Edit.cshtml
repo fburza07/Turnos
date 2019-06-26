@@ -1,0 +1,87 @@
+﻿@model Turnos.Models.TrnBoca
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Boca de entrega</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdPlanta" />
+            <div class="form-group">
+                <label asp-for="Empid" class="control-label"></label>
+                <input asp-for="Empid" class="form-control" />
+                <span asp-validation-for="Empid" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BocaEntrega" class="control-label"></label>
+                <input asp-for="BocaEntrega" class="form-control" />
+                <span asp-validation-for="BocaEntrega" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Descripcion" class="control-label"></label>
+                <input asp-for="Descripcion" class="form-control" />
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Estado" class="control-label"></label>
+                <input asp-for="Estado" class="form-control" />
+                <span asp-validation-for="Estado" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SegmentoCantMin" class="control-label"></label>
+                <input asp-for="SegmentoCantMin" class="form-control" />
+                <span asp-validation-for="SegmentoCantMin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SegmentoCantPalletMax" class="control-label"></label>
+                <input asp-for="SegmentoCantPalletMax" class="form-control" />
+                <span asp-validation-for="SegmentoCantPalletMax" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdCalendarioPlanta" class="control-label"></label>
+                <input asp-for="IdCalendarioPlanta" class="form-control" />
+                <span asp-validation-for="IdCalendarioPlanta" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdCalendarioFeriado" class="control-label"></label>
+                <input asp-for="IdCalendarioFeriado" class="form-control" />
+                <span asp-validation-for="IdCalendarioFeriado" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="VerificaSobreposicionHoraria" /> @Html.DisplayNameFor(model => model.VerificaSobreposicionHoraria)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="CantidadCitasSimultaneas" class="control-label"></label>
+                <input asp-for="CantidadCitasSimultaneas" class="form-control" />
+                <span asp-validation-for="CantidadCitasSimultaneas" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdTipoBoca" class="control-label"></label>
+                <select asp-for="IdTipoBoca" class="form-control" asp-items="ViewBag.IdTipoBoca"></select>
+                <span asp-validation-for="IdTipoBoca" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UsuarioResponsableBoca" class="control-label"></label>
+                <input asp-for="UsuarioResponsableBoca" class="form-control" />
+                <span asp-validation-for="UsuarioResponsableBoca" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Grabar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Volver al listado</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

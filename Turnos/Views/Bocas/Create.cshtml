@@ -1,0 +1,80 @@
+﻿@model Turnos.Models.TrnBoca
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Boca de entrega</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="BocaEntrega" class="control-label">Boca de Entrega</label>
+                <input asp-for="BocaEntrega" class="form-control" />
+                <span asp-validation-for="BocaEntrega" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Descripcion" class="control-label">Descripción</label>
+                <input asp-for="Descripcion" class="form-control" />
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Estado" class="control-label">Estado</label>
+                <input asp-for="Estado" class="form-control" />
+                <span asp-validation-for="Estado" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SegmentoCantMin" class="control-label">Cantidad de minutos de segmento</label>
+                <input asp-for="SegmentoCantMin" class="form-control" />
+                <span asp-validation-for="SegmentoCantMin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SegmentoCantPalletMax" class="control-label">Cantidad de pallet máxima por segmento</label>
+                <input asp-for="SegmentoCantPalletMax" class="form-control" />
+                <span asp-validation-for="SegmentoCantPalletMax" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdCalendarioPlanta" class="control-label">Calendario de planta</label>
+                <input asp-for="IdCalendarioPlanta" class="form-control" />
+                <span asp-validation-for="IdCalendarioPlanta" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdCalendarioFeriado" class="control-label">Calendario de feriados</label>
+                <input asp-for="IdCalendarioFeriado" class="form-control" />
+                <span asp-validation-for="IdCalendarioFeriado" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="VerificaSobreposicionHoraria" /> Permitir agentamiento sin verificación de sobre posición horaria
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="CantidadCitasSimultaneas" class="control-label">Cantidad de citas simultaneas habilitadas</label>
+                <input asp-for="CantidadCitasSimultaneas" class="form-control" />
+                <span asp-validation-for="CantidadCitasSimultaneas" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdTipoBoca" class="control-label">Tipo Boca</label>
+                <select asp-for="IdTipoBoca" class ="form-control" asp-items="ViewBag.IdTipoBoca"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="UsuarioResponsableBoca" class="control-label">Usuario responsable de Planta / Boca</label>
+                <input asp-for="UsuarioResponsableBoca" class="form-control" />
+                <span asp-validation-for="UsuarioResponsableBoca" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Crear" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Volver al listado</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

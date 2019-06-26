@@ -1,0 +1,90 @@
+﻿@model Turnos.Models.TrnCalendarioFeriadoVista
+@{
+    ViewData["Title"] = "NuevoCalendarioFeriado";
+}
+
+<h1>Nuevo Calendario de Feriados</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="NuevoCalendarioFeriado" method="post">
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-dismissible @ViewBag.ResultMessageCss">
+                    <button type="button" class="close" data-dismiss="alert"><a class="h5">X</a></button>
+                    @ViewBag.Message
+                </div>
+            }
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="trnCalendarioFeriado.Descripcion" class="control-label"></label>
+                    <input asp-for="trnCalendarioFeriado.Descripcion" id="txtDescripcion" class="form-control" />
+                    <span asp-validation-for="trnCalendarioFeriado.Descripcion" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    @Html.ActionLink("Agregar Detalle", "AddDetail", "NuevoCalendarioFeriado", new { area = "" }, new { @class = "btn btn-default" }) |
+                    <input type="submit" id="btnCreate" value="Create" class="btn btn-primary" />
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.titulos.Fecha)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.titulos.Descripcion)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.titulos.DiaCompleto)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.titulos.HoraDesde)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.titulos.HoraHasta)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.detalle.Count; i++)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.detalle[i].Fecha)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.detalle[i].Descripcion)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.detalle[i].DiaCompleto)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.detalle[i].HoraDesde)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.detalle[i].HoraHasta)
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@Model.detalle[i].IdDetalle">Edit</a> |
+                                    <a asp-action="Delete" asp-route-id="@Model.detalle[i].IdDetalle">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Volver</a>
+</div>
+
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
