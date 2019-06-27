@@ -137,7 +137,11 @@ namespace Turnos.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
-        {
+        {            
+            var rnCalendarioFeriadoDetalle = _context.TrnCalendarioFeriadoDetalle
+    .Where(c => c.IdCalendarioFeriado == id);
+            _context.TrnCalendarioFeriadoDetalle.RemoveRange(rnCalendarioFeriadoDetalle);            
+
             var trnCalendarioFeriado = await _context.TrnCalendarioFeriado.FindAsync(id);
             _context.TrnCalendarioFeriado.Remove(trnCalendarioFeriado);
             await _context.SaveChangesAsync();

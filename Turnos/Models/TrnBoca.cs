@@ -19,6 +19,6 @@ namespace Turnos.Models
         public byte IdTipoBoca { get; set; }
         public string UsuarioResponsableBoca { get; set; }
 
-        public virtual TrnBocaTipo IdTipoBocaNavigation { get; set; }
+        public virtual TrnBocaTipo IdTipoBocaNavigation { get; set; }                
     }
 }

@@ -159,5 +159,25 @@ namespace Turnos.Controllers
         {
             return _context.TrnBoca.Any(e => e.IdPlanta == id);
         }
+
+        public JsonResult CalendarioFeriadosSelectList()
+        {
+            List<string> lista = new List<string>();
+            foreach (var item in _context.TrnCalendarioFeriado.ToList())
+            {
+                lista.Add(item.Descripcion);
+            }
+            return Json(lista);
+        }
+
+        public JsonResult CalendarioPlantaSelectList()
+        {
+            List<string> lista = new List<string>();
+            foreach (var item in _context.TrnCalendarioPlanta.ToList())
+            {
+                lista.Add(item.Descripcion);
+            }
+            return Json(lista);
+        }
     }
 }

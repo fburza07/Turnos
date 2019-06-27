@@ -36,15 +36,28 @@
                 <span asp-validation-for="SegmentoCantPalletMax" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <select id="cboCalendarioPlanta" style="width:200px">
+                    <option>-- Calendario de Planta --</option>
+                </select>
+            </div>
+            <!--
+            <div class="form-group">
                 <label asp-for="IdCalendarioPlanta" class="control-label">Calendario de planta</label>
                 <input asp-for="IdCalendarioPlanta" class="form-control" />
                 <span asp-validation-for="IdCalendarioPlanta" class="text-danger"></span>
             </div>
+                -->
+            <div class="form-group">
+                <select id="cboCalendarioFeriado" style="width:200px">
+                    <option>-- Calendario de feriados --</option>
+                </select>
+            </div>
+            <!--
             <div class="form-group">
                 <label asp-for="IdCalendarioFeriado" class="control-label">Calendario de feriados</label>
                 <input asp-for="IdCalendarioFeriado" class="form-control" />
                 <span asp-validation-for="IdCalendarioFeriado" class="text-danger"></span>
-            </div>
+            </div>-->
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="VerificaSobreposicionHoraria" /> Permitir agentamiento sin verificación de sobre posición horaria
@@ -57,7 +70,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="IdTipoBoca" class="control-label">Tipo Boca</label>
-                <select asp-for="IdTipoBoca" class ="form-control" asp-items="ViewBag.IdTipoBoca"></select>
+                <select asp-for="IdTipoBoca" class="form-control" asp-items="ViewBag.IdTipoBoca"></select>
             </div>
             <div class="form-group">
                 <label asp-for="UsuarioResponsableBoca" class="control-label">Usuario responsable de Planta / Boca</label>
@@ -76,5 +89,27 @@
 </div>
 
 @section Scripts {
+    <script>
+        $(document).ready(function () {
+            //LLeno DropDown Calendario de feriados
+            $.get('CalendarioFeriadosSelectList', function (data) {
+                console.log(data)
+                $.each(data, function (index, value) {
+                    console.log(index + value)
+                    $('<option>').val(value).text(value).appendTo("#cboCalendarioFeriado");
+                })
+            })
+
+            //LLeno DropDown Calendario de planta
+            $.get('CalendarioPlantaSelectList', function (data) {
+                console.log(data)
+                $.each(data, function (index, value) {
+                    console.log(index + value)
+                    $('<option>').val(value).text(value).appendTo("#cboCalendarioPlanta");
+                })
+            })
+
+        })
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

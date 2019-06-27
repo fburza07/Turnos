@@ -22,6 +22,6 @@ namespace Turnos.Models
         public string Empid { get; set; }   
         [Required (ErrorMessage ="Complete la descripcion!")]
         public string Descripcion { get; set; }
-        public ICollection<TrnCalendarioFeriadoDetalle> trnCalendarioFeriadoDetalles { get; set; }
-}
+        public ICollection<TrnCalendarioFeriadoDetalle> trnCalendarioFeriadoDetalles { get; set; }        
+    }
 }
