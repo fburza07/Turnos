@@ -10,7 +10,7 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdPlanta" />            
+            <input type="hidden" asp-for="IdPlanta" />
             <div class="form-group">
                 <label asp-for="BocaEntrega" class="control-label"></label>
                 <input asp-for="BocaEntrega" class="form-control" />
@@ -38,12 +38,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="IdCalendarioPlanta" class="control-label"></label>
-                <input asp-for="IdCalendarioPlanta" class="form-control" />
+                <select asp-for="IdCalendarioPlanta" class="form-control" asp-items="ViewBag.IdCalendarioPlanta"></select>
                 <span asp-validation-for="IdCalendarioPlanta" class="text-danger"></span>
-            </div>
+            </div>           
             <div class="form-group">
                 <label asp-for="IdCalendarioFeriado" class="control-label"></label>
-                <input asp-for="IdCalendarioFeriado" class="form-control" />
+                <select asp-for="IdCalendarioFeriado" class="form-control" asp-items="ViewBag.IdCalendarioFeriado"></select>
                 <span asp-validation-for="IdCalendarioFeriado" class="text-danger"></span>
             </div>
             <div class="form-group form-check">

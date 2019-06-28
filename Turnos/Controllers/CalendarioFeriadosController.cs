@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Turnos.Models;
 
 namespace Turnos.Controllers
@@ -31,15 +32,15 @@ namespace Turnos.Controllers
             {
                 return NotFound();
             }
-
-            var trnCalendarioFeriado = await _context.TrnCalendarioFeriado
-                .FirstOrDefaultAsync(m => m.IdCalendarioFeriado == id);
+            
+            var trnCalendarioFeriado = _context.TrnCalendarioFeriado.Include(t => t.detalle).Where(i => i.IdCalendarioFeriado == id).ToList();
+                        
             if (trnCalendarioFeriado == null)
             {
                 return NotFound();
             }
 
-            return View(trnCalendarioFeriado);
+            return View(trnCalendarioFeriado[0]);
         }
 
         // GET: CalendarioFeriados/Create
@@ -123,8 +124,7 @@ namespace Turnos.Controllers
                 return NotFound();
             }
 
-            var trnCalendarioFeriado = await _context.TrnCalendarioFeriado
-                .FirstOrDefaultAsync(m => m.IdCalendarioFeriado == id);
+            var trnCalendarioFeriado = await _context.TrnCalendarioFeriado.FirstOrDefaultAsync(m => m.IdCalendarioFeriado == id);
             if (trnCalendarioFeriado == null)
             {
                 return NotFound();
@@ -134,18 +134,35 @@ namespace Turnos.Controllers
         }
 
         // POST: CalendarioFeriados/Delete/5
+        // PRIMERO BORRA EL DETALLE Y LUEGO BORRA EL CALENDARIO (TABLAS RELACIONADAS)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
-        {            
-            var rnCalendarioFeriadoDetalle = _context.TrnCalendarioFeriadoDetalle
-    .Where(c => c.IdCalendarioFeriado == id);
-            _context.TrnCalendarioFeriadoDetalle.RemoveRange(rnCalendarioFeriadoDetalle);            
+        {
+            using (var context = new ePlaceDBContext())
+            {
+                using (IDbContextTransaction transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        //ver que funcione y borre todas las lineas del detalle
+                        var rnCalendarioFeriadoDetalle = _context.TrnCalendarioFeriadoDetalle.Where(c => c.IdCalendarioFeriado == id);
+                        _context.TrnCalendarioFeriadoDetalle.RemoveRange(rnCalendarioFeriadoDetalle);
 
-            var trnCalendarioFeriado = await _context.TrnCalendarioFeriado.FindAsync(id);
-            _context.TrnCalendarioFeriado.Remove(trnCalendarioFeriado);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+                        var trnCalendarioFeriado = await _context.TrnCalendarioFeriado.FindAsync(id);
+                        _context.TrnCalendarioFeriado.Remove(trnCalendarioFeriado);
+                        await _context.SaveChangesAsync();
+
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw ex;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         private bool TrnCalendarioFeriadoExists(int id)

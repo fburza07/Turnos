@@ -18,6 +18,56 @@
         </dd>
     </dl>
 </div>
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>
+                Fecha
+            </th>
+            <th>
+                Descripcion
+            </th>
+            <th>
+                Dia Completo
+            </th>
+            <th>
+                Desde
+            </th>
+            <th>
+                Hasta
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.detalle.Count; i++)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => Model.detalle[i].Fecha)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.detalle[i].Descripcion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.detalle[i].DiaCompleto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.detalle[i].HoraDesde)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.detalle[i].HoraHasta)
+                </td>
+                <td>
+                    @Html.ActionLink("Editar", "Edit", "TrnCalendarioFeriadoDetalles", new { id = Model.IdCalendarioFeriado }, new { @class = "" }) |
+                    @Html.ActionLink("Borrar", "Delete", "TrnCalendarioFeriadoDetalles", new { id = Model.IdCalendarioFeriado }, new { @class = "" }) |
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.IdCalendarioFeriado">Editar</a> |
     <a asp-action="Index">Volver</a>

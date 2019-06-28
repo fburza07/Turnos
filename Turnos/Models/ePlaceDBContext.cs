@@ -131,7 +131,7 @@ namespace Turnos.Models
 
             modelBuilder.Entity<TrnCalendarioFeriado>(entity =>
             {
-                entity.HasKey(e => e.IdCalendarioFeriado);
+                entity.HasKey(e => e.IdCalendarioFeriado).HasName("PK_CalendarioFeriados");;
 
                 entity.ToTable("TRN_CalendarioFeriados");
 
@@ -151,8 +151,10 @@ namespace Turnos.Models
 
                 entity.ToTable("TRN_CalendarioFeriadoDetalle");
 
+                entity.Property(e => e.IdCalendarioFeriado);
+
                 entity.HasOne(d => d.trnCalendarioFeriado)
-                    .WithMany(p => p.trnCalendarioFeriadoDetalles)
+                    .WithMany(p => p.detalle)
                     .HasForeignKey(d => d.IdCalendarioFeriado)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TRN_CalendarioFeriadoDetalle_TRN_CalendarioFeriados");                

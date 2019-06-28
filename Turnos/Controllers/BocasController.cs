@@ -51,6 +51,8 @@ namespace Turnos.Controllers
         public IActionResult Create()
         {
             ViewData["IdTipoBoca"] = new SelectList(_context.TrnBocaTipo, "IdTipoBoca", "Codigo");
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Descripcion");
+            ViewData["IdCalendarioPlanta"] = new SelectList(_context.TrnCalendarioPlanta, "IdCalendarioPlanta", "Descripcion");
             return View();
         }
 
@@ -69,6 +71,8 @@ namespace Turnos.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdTipoBoca"] = new SelectList(_context.TrnBocaTipo, "IdTipoBoca", "Codigo", trnBoca.IdTipoBoca);
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Descripcion", trnBoca.IdCalendarioFeriado);
+            ViewData["IdCalendarioPlanta"] = new SelectList(_context.TrnCalendarioPlanta, "IdCalendarioPlanta", "Descripcion", trnBoca.IdCalendarioPlanta);
             return View(trnBoca);
         }
 
@@ -86,6 +90,8 @@ namespace Turnos.Controllers
                 return NotFound();
             }
             ViewData["IdTipoBoca"] = new SelectList(_context.TrnBocaTipo, "IdTipoBoca", "Codigo", trnBoca.IdTipoBoca);
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Descripcion", trnBoca.IdCalendarioFeriado);
+            ViewData["IdCalendarioPlanta"] = new SelectList(_context.TrnCalendarioPlanta, "IdCalendarioPlanta", "Descripcion", trnBoca.IdCalendarioPlanta);
             return View(trnBoca);
         }
 
@@ -122,6 +128,8 @@ namespace Turnos.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdTipoBoca"] = new SelectList(_context.TrnBocaTipo, "IdTipoBoca", "Codigo", trnBoca.IdTipoBoca);
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Descripcion", trnBoca.IdCalendarioFeriado);
+            ViewData["IdCalendarioPlanta"] = new SelectList(_context.TrnCalendarioPlanta, "IdCalendarioPlanta", "Descripcion", trnBoca.IdCalendarioPlanta);
             return View(trnBoca);
         }
 
@@ -158,26 +166,6 @@ namespace Turnos.Controllers
         private bool TrnBocaExists(int id)
         {
             return _context.TrnBoca.Any(e => e.IdPlanta == id);
-        }
-
-        public JsonResult CalendarioFeriadosSelectList()
-        {
-            List<string> lista = new List<string>();
-            foreach (var item in _context.TrnCalendarioFeriado.ToList())
-            {
-                lista.Add(item.Descripcion);
-            }
-            return Json(lista);
-        }
-
-        public JsonResult CalendarioPlantaSelectList()
-        {
-            List<string> lista = new List<string>();
-            foreach (var item in _context.TrnCalendarioPlanta.ToList())
-            {
-                lista.Add(item.Descripcion);
-            }
-            return Json(lista);
-        }
+        }        
     }
 }

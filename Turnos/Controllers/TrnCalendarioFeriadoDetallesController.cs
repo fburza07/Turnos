@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Turnos.Models;
 
-
 namespace Turnos.Controllers
 {
     public class TrnCalendarioFeriadoDetallesController : Controller
@@ -48,7 +47,7 @@ namespace Turnos.Controllers
         // GET: TrnCalendarioFeriadoDetalles/Create
         public IActionResult Create()
         {
-            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Empid");
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Descripcion");
             return View();
         }
 
@@ -65,7 +64,7 @@ namespace Turnos.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Empid", trnCalendarioFeriadoDetalle.IdCalendarioFeriado);
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Descripcion", trnCalendarioFeriadoDetalle.IdCalendarioFeriado);
             return View(trnCalendarioFeriadoDetalle);
         }
 
@@ -82,7 +81,7 @@ namespace Turnos.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Empid", trnCalendarioFeriadoDetalle.IdCalendarioFeriado);
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Descripcion", trnCalendarioFeriadoDetalle.IdCalendarioFeriado);
             return View(trnCalendarioFeriadoDetalle);
         }
 
@@ -118,7 +117,7 @@ namespace Turnos.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Empid", trnCalendarioFeriadoDetalle.IdCalendarioFeriado);
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Descripcion", trnCalendarioFeriadoDetalle.IdCalendarioFeriado);
             return View(trnCalendarioFeriadoDetalle);
         }
 

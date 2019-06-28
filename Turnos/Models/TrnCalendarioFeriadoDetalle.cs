@@ -27,6 +27,6 @@ namespace Turnos.Models
         public string DiaCompleto { get; set; }        
         public DateTime? HoraDesde { get; set; }       
         public DateTime? HoraHasta { get; set; }
-        public virtual TrnCalendarioFeriado trnCalendarioFeriado { get; set; }
+        public TrnCalendarioFeriado trnCalendarioFeriado { get; set; }
     }
 }
