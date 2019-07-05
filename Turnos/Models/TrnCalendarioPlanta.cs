@@ -19,44 +19,60 @@ namespace Turnos.Models
     {
         [Key]
         public int IdCalendarioPlanta { get; set; }
+        [Required (ErrorMessage ="Complete la clave!")]
+        [MaxLength(2)]
         public string CalendarioPlanta { get; set; }
         public string Empid { get; set; }   
         [Required (ErrorMessage ="Complete la descripcion!")]
         public string Descripcion { get; set; }
         public string LunesActivo { get; set; }
-        [RequiredIf("LunesActivo", "checked")]
+        [RequiredIf("LunesActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? LunesDesde { get; set; }
-        [RequiredIf("LunesActivo", "checked")]
+        [RequiredIf("LunesActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? LunesHasta { get; set; }
         public string MartesActivo { get; set; }
-        [RequiredIf("MartesActivo", "checked")]
+        [RequiredIf("MartesActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? MartesDesde { get; set; }
-        [RequiredIf("MartesActivo", "checked")]
+        [RequiredIf("MartesActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? MartesHasta { get; set; }
         public string MiercolesActivo { get; set; }
-        [RequiredIf("MiercolesActivo", "checked")]
+        [RequiredIf("MiercolesActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? MiercolesDesde { get; set; }
-        [RequiredIf("MiercolesActivo", "checked")]
+        [RequiredIf("MiercolesActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? MiercolesHasta { get; set; }
         public string JuevesActivo { get; set; }
-        [RequiredIf("JuevesActivo", "checked")]
+        [RequiredIf("JuevesActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? JuevesDesde { get; set; }
-        [RequiredIf("JuevesActivo", "checked")]
+        [RequiredIf("JuevesActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? JuevesHasta { get; set; }
         public string ViernesActivo { get; set; }
-        [RequiredIf("ViernesActivo", "checked")]
+        [RequiredIf("ViernesActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? ViernesDesde { get; set; }
-        [RequiredIf("ViernesActivo", "checked")]
+        [RequiredIf("ViernesActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? ViernesHasta { get; set; }
         public string SabadoActivo { get; set; }
-        [RequiredIf("SabadoActivo", "checked")]
+        [RequiredIf("SabadoActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? SabadoDesde { get; set; }
-        [RequiredIf("SabadoActivo", "checked")]
+        [RequiredIf("SabadoActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? SabadoHasta { get; set; }
         public string DomingoActivo { get; set; }
-        [RequiredIf("DomingoActivo", "checked")]
+        [RequiredIf("DomingoActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? DomingoDesde { get; set; }
-        [RequiredIf("DomingoActivo", "checked")]
+        [RequiredIf("DomingoActivo", "S")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? DomingoHasta { get; set; }
     }
     

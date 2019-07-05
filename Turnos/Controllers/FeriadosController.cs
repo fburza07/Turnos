@@ -15,20 +15,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Turnos.Models;
 using Microsoft.Extensions.Configuration;
-using System.Data.SqlClient;
-using System.Data;
 
 namespace Turnos.Controllers
 {
     /// <summary>
     /// Clase encargada del handling de la lógica de negocio del Calendario de Turnos
     /// </summary>
-    public class HomeController : Controller
+    public class FeriadosController : Controller
     {
         private readonly TurnosContext _context;
         private IConfiguration configuration;
 
-        public HomeController(TurnosContext context, IConfiguration configuration)
+        public FeriadosController(TurnosContext context, IConfiguration configuration)
         {
             _context = context;
             this.configuration = configuration;
@@ -46,67 +44,55 @@ namespace Turnos.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public JsonResult ObtenerTurnos()
+        public JsonResult ObtenerFeriados()
         {
-            List<Object> eventos = new List<Object>();
             var feriados = _context.Feriado.ToList();
-            var turnos = _context.Turno.ToList();
-            eventos.AddRange(feriados);
-            eventos.AddRange(turnos);
 
-            return Json(eventos);
+            return Json(feriados);
         }
 
         [HttpPost]
-        public JsonResult GrabarTurno(TrnTurno e)
+        public JsonResult GrabarFeriado(TrnFeriado e)
         {
             var status = false;
             string empid = configuration.GetSection("empid").Value;
-            //VER DE PASAR ESTO AL MODELO
-            Conexion cn = new Conexion();
-            SqlCommand sqlcommand = cn.GetCommand("TRN_VerificarFeriado");           
-            sqlcommand.Parameters.AddWithValue("@FechaDesde", e.Start);
-            DataTable dt = cn.Execute(sqlcommand);
-            //SI NO ES FERIADO DEJO GRABAR
-            if (dt.Rows[0]["esFeriado"].ToString() == "0")
+            
+            if (e.EventID > 0)
             {
-                if (e.EventID > 0)
+                var v = _context.Feriado.Where(a => a.EventID == e.EventID).FirstOrDefault();
+                if (v != null)
                 {
-                    var v = _context.Turno.Where(a => a.EventID == e.EventID).FirstOrDefault();
-                    if (v != null)
-                    {
-                        v.Empid = empid;
-                        v.Subject = e.Subject;
-                        v.Start = e.Start;
-                        v.End = e.End;
-                        v.Description = e.Description;
-                        v.IsFullDay = e.IsFullDay;
-                        v.ThemeColor = e.ThemeColor;
-                    }
+                    v.Empid = empid;
+                    v.Subject = e.Subject;
+                    v.Start = e.Start;
+                    v.End = e.End;
+                    v.Description = e.Description;
+                    v.IsFullDay = e.IsFullDay;
+                    v.ThemeColor = e.ThemeColor;
                 }
-                else
-                {
-                    e.Empid = empid;
-                    _context.Turno.Add(e);
-                }
-
-                _context.SaveChanges();
-                status = true;
             }
-            else status = false;
+            else
+            {
+                e.Empid = empid;
+                _context.Feriado.Add(e);
+            }
+
+            _context.SaveChanges();
+            status = true;
+
             var jsonResult = new { status = status };
             return Json(jsonResult);
         }
 
         [HttpPost]
-        public JsonResult BorrarTurno(int eventID)
+        public JsonResult BorrarFeriado(int eventID)
         {
             var status = false;
 
-            var v = _context.Turno.Where(a => a.EventID == eventID).FirstOrDefault();
+            var v = _context.Feriado.Where(a => a.EventID == eventID).FirstOrDefault();
             if (v != null)
             {
-                _context.Turno.Remove(v);
+                _context.Feriado.Remove(v);
                 _context.SaveChanges();
                 status = true;
             }
@@ -117,11 +103,16 @@ namespace Turnos.Controllers
 
         public string Getdato(int eventID)
         {
-            var v = _context.Turno.Where(a => a.EventID == eventID).FirstOrDefault();
+            var v = _context.Feriado.Where(a => a.EventID == eventID).FirstOrDefault();
             if (v != null)
+            {
                 return v.Empid;
+            }
             else
+            {
                 return "";
-        }       
+            }
+
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Turnos.Models;
@@ -18,10 +19,13 @@ namespace Turnos.Models
 
         public virtual DbSet<TrnBoca> TrnBoca { get; set; }
         public virtual DbSet<TrnBocaTipo> TrnBocaTipo { get; set; }
+        
         public virtual DbSet<TrnTurno> TrnTurno { get; set; }
         public virtual DbSet<TrnCalendarioFeriado> TrnCalendarioFeriado { get; set; }
         public virtual DbSet<TrnCalendarioFeriadoDetalle> TrnCalendarioFeriadoDetalle { get; set; }
         public virtual DbSet<TrnCalendarioPlanta> TrnCalendarioPlanta { get; set; }
+
+        public virtual DbSet<TrnFeriado> TrnFeriado { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -32,7 +36,7 @@ namespace Turnos.Models
                 optionsBuilder.UseSqlServer("Data Source=10.20.20.50;Initial Catalog=ePlaceDB;Persist Security Info=False;User ID=executor;Password=executor;");
             }
         }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.3-servicing-35854");
@@ -101,15 +105,15 @@ namespace Turnos.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
             });
-
+            
             modelBuilder.Entity<TrnTurno>(entity =>
             {
-                entity.HasKey(e => e.EventId)
+                entity.HasKey(e => e.EventID)
                     .HasName("PK_Turno");
 
                 entity.ToTable("TRN_Turno");
 
-                entity.Property(e => e.EventId).HasColumnName("EventID");
+                entity.Property(e => e.EventID).HasColumnName("EventID");
 
                 entity.Property(e => e.Description).HasMaxLength(300);
 
@@ -255,7 +259,36 @@ namespace Turnos.Models
                 entity.Property(e => e.DomingoHasta).HasColumnType("datetime");
             });
 
+            modelBuilder.Entity<TrnFeriado>(entity =>
+            {
+                entity.HasKey(e => e.EventID)
+                    .HasName("PK_Feriado");
+
+                entity.ToTable("TRN_Feriado");
+
+                entity.Property(e => e.EventID).HasColumnName("EventID");
+
+                entity.Property(e => e.Description).HasMaxLength(300);
+
+                entity.Property(e => e.Empid)
+                            .IsRequired()
+                            .HasMaxLength(20)
+                            .IsUnicode(false);
+
+                entity.Property(e => e.End).HasColumnType("datetime");
+
+                entity.Property(e => e.Start).HasColumnType("datetime");
+
+                entity.Property(e => e.Subject)
+                            .IsRequired()
+                            .HasMaxLength(100);
+
+                entity.Property(e => e.ThemeColor).HasMaxLength(10);
+            });
+
+
         }
+
 
         public DbSet<Turnos.Models.TransporteTipo> TransporteTipo { get; set; }
 

@@ -28,7 +28,7 @@ namespace Turnos.Models
                     if (!_innerAttribute.IsValid(value))
                     {
                         string name = validationContext.DisplayName;
-                        return new ValidationResult(ErrorMessage = name + " Is required.");
+                        return new ValidationResult(ErrorMessage = "Dato requerido");
                     }
                 }
                 return ValidationResult.Success;

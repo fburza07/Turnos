@@ -10,7 +10,12 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>            
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>    
+            <div class="form-group">
+                <label asp-for="CalendarioPlanta" class="control-label"></label>
+                <input asp-for="CalendarioPlanta" class="form-control" />
+                <span asp-validation-for="CalendarioPlanta" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Descripcion" class="control-label"></label>
                 <input asp-for="Descripcion" class="form-control" />
@@ -35,7 +40,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <input asp-for="MartesActivo" type="hidden" class="form-control" value="checked" />
+                <input asp-for="MartesActivo" type="hidden" class="form-control" value="N" />
                 <div class="checkbox">
                     <label><input type="checkbox" id="chkMartesActivo" /> Martes</label>
                 </div>
@@ -53,7 +58,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <input asp-for="MiercolesActivo" type="hidden" class="form-control" value="checked" />
+                <input asp-for="MiercolesActivo" type="hidden" class="form-control" value="N" />
                 <div class="checkbox">
                     <label><input type="checkbox" id="chkMiercolesActivo" /> Miercoles</label>
                 </div>
@@ -71,7 +76,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <input asp-for="JuevesActivo" type="hidden" class="form-control" value="checked" />
+                <input asp-for="JuevesActivo" type="hidden" class="form-control" value="N" />
                 <div class="checkbox">
                     <label><input type="checkbox" id="chkJuevesActivo" /> Jueves</label>
                 </div>
@@ -89,7 +94,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <input asp-for="ViernesActivo" type="hidden" class="form-control" value="checked" />
+                <input asp-for="ViernesActivo" type="hidden" class="form-control" value="N" />
                 <div class="checkbox">
                     <label><input type="checkbox" id="chkViernesActivo" /> Viernes</label>
                 </div>
@@ -107,7 +112,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <input asp-for="SabadoActivo" type="hidden" class="form-control" value="checked" />
+                <input asp-for="SabadoActivo" type="hidden" class="form-control" value="N" />
                 <div class="checkbox">
                     <label><input type="checkbox" id="chkSabadoActivo" /> Sabado</label>
                 </div>
@@ -125,7 +130,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <input asp-for="DomingoActivo" type="hidden" class="form-control" value="checked" />
+                <input asp-for="DomingoActivo" type="hidden" class="form-control" value="N" />
                 <div class="checkbox">
                     <label><input type="checkbox" id="chkDomingoActivo" /> Domingo</label>
                 </div>
@@ -161,71 +166,85 @@
             $('#chkLunesActivo').change(function () {
                 if ($(this).is(':checked')) {
                     $('#divHorasLunes').show();
-                    $('#DiaCompleto').val('checked');
+                    $('#LunesActivo').val('S');
+                    $('#LunesDesde').val('');
+                    $('#LunesHasta').val('');
                 }
                 else {
                     $('#divHorasLunes').hide();
-                    $('#DiaCompleto').val("unchecked");
+                    $('#LunesActivo').val("N");
                 }
             });
             $('#chkMartesActivo').change(function () {
                 if ($(this).is(':checked')) {
                     $('#divHorasMartes').show();
-                    $('#DiaCompleto').val('checked');
+                    $('#MartesActivo').val('S');
+                    $('#MartesDesde').val('');
+                    $('#MartesHasta').val('');
                 }
                 else {
                     $('#divHorasMartes').hide();
-                    $('#DiaCompleto').val("unchecked");
+                    $('#MartesActivo').val("N");
                 }
             });
             $('#chkMiercolesActivo').change(function () {
                 if ($(this).is(':checked')) {
                     $('#divHorasMiercoles').show();
-                    $('#DiaCompleto').val('checked');
+                    $('#MiercolesActivo').val('S');
+                    $('#MiercolesDesde').val('');
+                    $('#MiercolesHasta').val('');
                 }
                 else {
                     $('#divHorasMiercoles').hide();
-                    $('#DiaCompleto').val("unchecked");
+                    $('#MiercolesActivo').val("N");
                 }
             });
             $('#chkJuevesActivo').change(function () {
                 if ($(this).is(':checked')) {
                     $('#divHorasJueves').show();
-                    $('#DiaCompleto').val('checked');
+                    $('#JuevesActivo').val('S');
+                    $('#JuevesDesde').val('');
+                    $('#JuevesHasta').val('');
                 }
                 else {
                     $('#divHorasJueves').hide();
-                    $('#DiaCompleto').val("unchecked");
+                    $('#JuevesActivo').val("N");
                 }
             });
             $('#chkViernesActivo').change(function () {
                 if ($(this).is(':checked')) {
                     $('#divHorasViernes').show();
-                    $('#DiaCompleto').val('checked');
+                    $('#ViernesActivo').val('S');
+                    $('#ViernesDesde').val('');
+                    $('#ViernesHasta').val('');
                 }
                 else {
                     $('#divHorasViernes').hide();
-                    $('#DiaCompleto').val("unchecked");
+                    $('#ViernesActivo').val("N");
                 }
             });
             $('#chkSabadoActivo').change(function () {
                 if ($(this).is(':checked')) {
                     $('#divHorasSabado').show();
-                    $('#DiaCompleto').val('checked');
+                    $('#SabadoActivo').val('S');
+                    $('#SabadoDesde').val('');
+                    $('#SabadoHasta').val('');
                 }
                 else {
                     $('#divHorasSabado').hide();
-                    $('#DiaCompleto').val("unchecked");
+                    $('#SabadoActivo').val("N");
                 }
             });
             $('#chkDomingoActivo').change(function () {
                 if ($(this).is(':checked')) {
                     $('#divHorasDomingo').show();
-                    $('#DiaCompleto').val('checked');
+                    $('#DomingoActivo').val('S');
+                    $('#DomingoDesde').val('');
+                    $('#DomingoHasta').val('');
                 }
                 else {
                     $('#divHorasDomingo').hide();
-                    $('#DiaCompleto').val("unchecked");
+                    $('#DomingoActivo').val("N");
                 }
             });
         });

@@ -4,9 +4,8 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Detalle del Calendario</h1>
 
-<h4>TrnCalendarioFeriadoDetalle</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,9 +13,10 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdDetalle" />
             <div class="form-group">
-                <label asp-for="IdCalendarioFeriado" class="control-label"></label>
+                @*<label asp-for="IdCalendarioFeriado" class="control-label"></label>
                 <select asp-for="IdCalendarioFeriado" class="form-control" asp-items="ViewBag.IdCalendarioFeriado"></select>
-                <span asp-validation-for="IdCalendarioFeriado" class="text-danger"></span>
+                <span asp-validation-for="IdCalendarioFeriado" class="text-danger"></span>*@
+                <input type="hidden" asp-for="IdCalendarioFeriado" />
             </div>
             <div class="form-group">
                 <label asp-for="Empid" class="control-label"></label>
@@ -25,7 +25,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Fecha" class="control-label"></label>
-                <input asp-for="Fecha" class="form-control" />
+                <input asp-for="Fecha" type="date" class="form-control" />
                 <span asp-validation-for="Fecha" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -34,28 +34,53 @@
                 <span asp-validation-for="Descripcion" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DiaCompleto" class="control-label"></label>
-                <input asp-for="DiaCompleto" class="form-control" />
-                <span asp-validation-for="DiaCompleto" class="text-danger"></span>
+                <input asp-for="DiaCompleto" type="hidden" class="form-control"/>
+                <div class="checkbox">
+                    <label><input id="chkDiaCompleto" @(Model.DiaCompleto == "S" ? "checked='checked'" : string.Empty) type="checkbox" />Dia Completo </label>                   
+                </div>
+            </div>
+            <div class="form-group" id="divHoras" style="@(Model.DiaCompleto == "S" ? "display:none" : "display:block")">
+                <div class="form-group">
+                    <label asp-for="HoraDesde" class="control-label"></label>
+                    <input asp-for="HoraDesde" type="time" class="form-control" />
+                    <span asp-validation-for="HoraDesde" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="HoraHasta" class="control-label"></label>
+                    <input asp-for="HoraHasta" type="time" class="form-control" />
+                    <span asp-validation-for="HoraHasta" class="text-danger"></span>
+                </div>
             </div>
             <div class="form-group">
-                <label asp-for="HoraDesde" class="control-label"></label>
-                <input asp-for="HoraDesde" class="form-control" />
-                <span asp-validation-for="HoraDesde" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="HoraHasta" class="control-label"></label>
-                <input asp-for="HoraHasta" class="form-control" />
-                <span asp-validation-for="HoraHasta" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Guardar" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    @Html.ActionLink("Volver", "Details", "CalendarioFeriados", new { id = Model.IdCalendarioFeriado }, new { @class = "" }) |    
 </div>
+
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {                                            
+            $('#chkDiaCompleto').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#divHoras').hide();
+                    $('#DiaCompleto').val('S');
+                    $('#HoraDesde').val('');
+                    $('#HoraHasta').val('');
+                }
+                else {
+                    $('#divHoras').show();
+                    $('#DiaCompleto').val("N");
+                }
+            });            
+        });
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
 

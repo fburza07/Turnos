@@ -5,8 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Turnos.Models
 {
-    [Table("TRN_Turno")]
-    public class TrnTurno 
+    [Table("TRN_Feriados")]
+    public partial class TrnFeriado
     {
         [Key]
         public int EventID { get; set; }

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Turnos";
+    ViewBag.Title = "Feriados";
 }
 
 <div id="calender"></div>
@@ -30,7 +30,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Guardar Turno</h4>
+                <h4 class="modal-title">Guardar Feriado</h4>
             </div>
             <div class="modal-body">
                 <form class="col-md-12 form-horizontal">
@@ -96,7 +96,6 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
     <script>
         var texto = ""
-        var color = ""
         $(document).ready(function () {
             var events = [];
             var selectedEvent = null;
@@ -105,7 +104,7 @@
                 events = [];
                 $.ajax({
                     type: "GET",
-                    url: "home/ObtenerTurnos",
+                    url: "Feriados/ObtenerFeriados",
                     success: function (data) {
                         $.each(data, function (i, v) {
                             events.push({
@@ -135,52 +134,33 @@
                     defaultDate: new Date(),
                     timeFormat: 'h(:mm)a',
                     defaultView: 'agendaWeek',
-                    allDayDefault: false,
+                    //allDayDefault: true,
                     header: {
                         left: 'prev,next today',
                         center: 'title',
                         right: 'month,agendaWeek,basicDay'
-                    },
-                    defaultTimedEventDuration: "01:00:00", //duracion maxima de un evento
-                    nowIndicator: true,
-                    businessHours: {
-                        start: '09:00', /* Current Hour/Minute 24H format */
-                        end: '18:00', // 5pm? set to whatever
-                        dow: [1, 2, 3, 4, 5, 6] // Day of week. If you don't set it, Sat/Sun are gray too,
-                    },
-                    eventConstraint: "businessHours",
+                    },                                                            
                     eventLimit: true,
                     eventDurationEditable: false,
-                    allDaySlot: false,                   
-                    eventRender: function (event, element, view) {
-                        element.on('click', function (e) {
-                            element.draggable = false;
-                        });
-                        if (event.color) {
-                            element.css('background-color', event.ThemeColor)                            
-                            if ((moment().diff(event.start, 'minutes') > 0)) 
-                                element.css('background-color', "grey")                            
-                        }
-                    },
-
                     events: events,
-                    slotDuration: GetTimeDuration(),//'00:05:00',
+                    slotDuration: '01:00:00',
+                    allDaySlot: false,
                     eventClick: function (calEvent, jsEvent, view) {
-                        if (PermiteEdicion(calEvent)) {
-                            selectedEvent = calEvent;
-                            $('#myModal #eventTitle').text(calEvent.title);
-                            var $description = $('<div/>');
-                            $description.append($('<p/>').html('<b>Inicia:</b>' + calEvent.start.format("DD-MMM-YYYY HH:mm")));
-                            if (calEvent.end != null) {
-                                $description.append($('<p/>').html('<b>Finaliza:</b>' + calEvent.end.format("DD-MMM-YYYY HH:mm")));
-                            }
-                            $description.append($('<p/>').html('<b>Descripción:</b>' + calEvent.description));
-                            $description.append($('<p/>').text(datonuevo(calEvent.eventID)));
-                            $('#myModal #pDetails').empty().html($description);
 
-                            $('#myModal').modal();
-                            MostrarDetalle(calEvent);
+                        selectedEvent = calEvent;
+                        $('#myModal #eventTitle').text(calEvent.title);
+                        var $description = $('<div/>');
+                        $description.append($('<p/>').html('<b>Inicia:</b>' + calEvent.start.format("DD-MMM-YYYY HH:mm")));
+                        if (calEvent.end != null) {
+                            $description.append($('<p/>').html('<b>Finaliza:</b>' + calEvent.end.format("DD-MMM-YYYY HH:mm")));
                         }
+                        $description.append($('<p/>').html('<b>Descripción:</b>' + calEvent.description));
+                        $description.append($('<p/>').text(datonuevo(calEvent.eventID)));
+                        $('#myModal #pDetails').empty().html($description);
+
+                        $('#myModal').modal();
+                        MostrarDetalle(calEvent);
+
                     },
                     selectable: true,
                     select: function (start, end) {
@@ -194,19 +174,11 @@
                             allDay: false,
                             color: ''
                         };
-                        if (moment().diff(start, 'minutes') > 0) {
-                            $('#calendar').fullCalendar('unselect');
-                            return false;
-                        };
                         openAddEditForm();
                         // $('#calendar').fullCalendar('unselect');
                     },
                     editable: true,
                     eventDrop: function (event, delta, revertFunc) {
-                        if (!PermiteDragDrop(event)) {
-                            revertFunc();
-                            return false;
-                        }
                         if (!confirm("Esta seguro de este cambio?")) {
                             revertFunc();
                         } else {
@@ -220,7 +192,7 @@
                                 ThemeColor: event.color,
                                 IsFullDay: event.allDay
                             };
-                            GrabarTurno(data);
+                            GrabarFeriado(data);
                         }
                     },
                     eventMouseover: function (data, event, view) {
@@ -260,14 +232,14 @@
             }
 
             $('#btnEdit').click(function () {
-                //abre popup para editar turno
+                //abre popup para editar Feriado
                 openAddEditForm();
             })
             $('#btnDelete').click(function () {
-                if (selectedEvent != null && confirm('¿Está seguro de eliminar el Turno?')) {
+                if (selectedEvent != null && confirm('¿Está seguro de eliminar el Feriado?')) {
                     $.ajax({
                         type: "POST",
-                        url: 'Turnos/home/BorrarTurno',
+                        url: 'Feriados/BorrarFeriado',
                         data: { 'eventID': selectedEvent.eventID },
                         success: function (data) {
                             if (data.status) {
@@ -284,13 +256,10 @@
             })
 
             $('#dtp1').datetimepicker({
-                format: 'DD/MM/YYYY HH:mm',
-                enabledHours: [14, 15, 16]
+                format: 'DD/MM/YYYY HH:mm'
             });
             $('#dtp2').datetimepicker({
-                format: 'DD/MM/YYYY HH:mm',
-                enabledHours: [14, 15, 16]
-
+                format: 'DD/MM/YYYY HH:mm'
             });
 
             $('#chkIsFullDay').change(function () {
@@ -350,14 +319,14 @@
                     ThemeColor: $('#ddThemeColor').val(),
                     IsFullDay: $('#chkIsFullDay').is(':checked')
                 }
-                GrabarTurno(data);
+                GrabarFeriado(data);
                 //llama a función para enviar datos al server
             })
 
-            function GrabarTurno(data) {
+            function GrabarFeriado(data) {
                 $.ajax({
                     type: "POST",
-                    url: 'home/GrabarTurno',
+                    url: 'Feriados/GrabarFeriado',
                     data: data,
                     success: function (data) {
                         if (data.status) {
@@ -372,41 +341,10 @@
                 })
             }
 
-            function GetTimeDuration() {
-                return "00:30:00";
-            }
-
-            function datonuevo(eventid) {
-                $.ajax({
-                    type: "POST",
-                    url: "Turnos/home/Getdato",
-                    data: { 'eventID': eventid },
-                    success: function (respuesta) {
-                        texto = respuesta;
-                    }
-                });
-                return texto;
-            }
-
             function MostrarDetalle(event) {
                 $('#Detalle').text(event.start);
             }
 
-            function PermiteDragDrop(event) {
-                //con el numero de evento ver si puede drag and drop
-                if (event.eventID == 14) {
-                    return true;
-                } else { return false; }
-            }
-
-            function PermiteEdicion(event) {
-                //con el numero de evento ver si puede editarse o no
-                if (event.eventID == 14) {
-                    return true;
-                } else { return false; }
-
-            }
-           
         })
     </script>
 }

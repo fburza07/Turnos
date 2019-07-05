@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Turnos.Models;
 
 namespace Turnos.Controllers
@@ -12,10 +13,12 @@ namespace Turnos.Controllers
     public class CalendarioPlantasController : Controller
     {
         private readonly ePlaceDBContext _context;
+        private IConfiguration configuration;
 
-        public CalendarioPlantasController(ePlaceDBContext context)
+        public CalendarioPlantasController(ePlaceDBContext context, IConfiguration configuration)
         {
             _context = context;
+            this.configuration = configuration;
         }
 
         // GET: CalendarioPlantas
@@ -57,6 +60,7 @@ namespace Turnos.Controllers
         {
             if (ModelState.IsValid)
             {
+                trnCalendarioPlanta.Empid = configuration.GetSection("empid").Value;
                 _context.Add(trnCalendarioPlanta);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -96,6 +100,7 @@ namespace Turnos.Controllers
             {
                 try
                 {
+                    trnCalendarioPlanta.Empid = configuration.GetSection("empid").Value;
                     _context.Update(trnCalendarioPlanta);
                     await _context.SaveChangesAsync();
                 }

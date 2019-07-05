@@ -22,10 +22,14 @@ namespace Turnos.Models
         public int IdCalendarioFeriado { get; set; }
         public string Empid { get; set; }
         [Required(ErrorMessage = "Debe completador este campo!")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime Fecha { get; set; }
         public string Descripcion { get; set; }
-        public string DiaCompleto { get; set; }        
-        public DateTime? HoraDesde { get; set; }       
+        public string DiaCompleto { get; set; }
+        [RequiredIf("DiaCompleto", "N")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
+        public DateTime? HoraDesde { get; set; }
+        [DisplayFormat(DataFormatString = "{0:hh:mm}")]
         public DateTime? HoraHasta { get; set; }
         public TrnCalendarioFeriado trnCalendarioFeriado { get; set; }
     }
