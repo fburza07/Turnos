@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -6,6 +8,16 @@ namespace Turnos.Models
 {
     public class Conexion
     {
+        private static IConfiguration Configuration { get; set; }
+        public Conexion()
+        {            
+        }
+
+        public Conexion(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+        
         //This returns the connection string  
         private static string _connectionString = string.Empty;
         public static string ConnectionString
@@ -14,7 +26,7 @@ namespace Turnos.Models
             {
                 if (_connectionString == string.Empty)
                 {
-                    _connectionString = "Data Source=10.20.20.50;Initial Catalog=ePlaceDB;Persist Security Info=False;User ID=executor;Password=executor;";
+                    _connectionString = Configuration.GetSection("ConnectionStrings").GetSection("TurnosContext").Value;
                 }
                 return _connectionString;
             }

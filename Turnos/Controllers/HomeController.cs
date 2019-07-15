@@ -15,8 +15,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Turnos.Models;
 using Microsoft.Extensions.Configuration;
-using System.Data.SqlClient;
-using System.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Turnos.Controllers
 {
@@ -36,6 +35,13 @@ namespace Turnos.Controllers
 
         public IActionResult Index(string empid)
         {
+            ePlaceDBContext context = new ePlaceDBContext();
+
+            ViewData["IdTipoBoca"] = new SelectList(context.TrnBocaTipo, "IdTipoBoca", "Codigo");
+            ViewData["IdTransporteTipo"] = new SelectList(context.TrnTransporteTipo, "IdTransporteTipo", "Nombre");
+
+            if (empid == null || empid == "")
+                empid = configuration.GetSection("empid").Value;
             configuration.GetSection("empid").Value = empid;
             return View();
         }
@@ -51,6 +57,7 @@ namespace Turnos.Controllers
             List<Object> eventos = new List<Object>();
             var feriados = _context.Feriado.ToList();
             var turnos = _context.Turno.ToList();
+
             eventos.AddRange(feriados);
             eventos.AddRange(turnos);
 
@@ -61,40 +68,55 @@ namespace Turnos.Controllers
         public JsonResult GrabarTurno(TrnTurno e)
         {
             var status = false;
+            var errorFeriado = false;
+            var errorEvento = false;
             string empid = configuration.GetSection("empid").Value;
-            //VER DE PASAR ESTO AL MODELO
-            Conexion cn = new Conexion();
-            SqlCommand sqlcommand = cn.GetCommand("TRN_VerificarFeriado");           
-            sqlcommand.Parameters.AddWithValue("@FechaDesde", e.Start);
-            DataTable dt = cn.Execute(sqlcommand);
+            TrnFeriado trnFeriado = new TrnFeriado(configuration);
+            TrnTurno trnTurno = new TrnTurno(configuration);
             //SI NO ES FERIADO DEJO GRABAR
-            if (dt.Rows[0]["esFeriado"].ToString() == "0")
+            if (!trnTurno.ExisteEvento(e.Start,e.End))
             {
-                if (e.EventID > 0)
+                if (!trnFeriado.EsFeriado(e.Start, e.End))
                 {
-                    var v = _context.Turno.Where(a => a.EventID == e.EventID).FirstOrDefault();
-                    if (v != null)
+                    if (e.EventID > 0)
                     {
-                        v.Empid = empid;
-                        v.Subject = e.Subject;
-                        v.Start = e.Start;
-                        v.End = e.End;
-                        v.Description = e.Description;
-                        v.IsFullDay = e.IsFullDay;
-                        v.ThemeColor = e.ThemeColor;
+                        var v = _context.Turno.Where(a => a.EventID == e.EventID).FirstOrDefault();
+                        if (v != null)
+                        {
+                            v.Empid = empid;
+                            v.Subject = e.Subject;
+                            v.Start = e.Start;
+                            v.End = e.End;
+                            v.Description = e.Description;
+                            v.IsFullDay = e.IsFullDay;
+                            v.ThemeColor = e.ThemeColor;
+                            v.IdTransporteTipo = e.IdTransporteTipo;
+                            v.TransporteTipo = e.TransporteTipo;
+                            v.KGPrevistos = e.KGPrevistos;
+                            v.PalletsPrevistos = e.PalletsPrevistos;
+                        }
                     }
+                    else
+                    {
+                        e.Empid = empid;
+                        _context.Turno.Add(e);
+                    }
+
+                    _context.SaveChanges();
+                    status = true;
+                    ViewBag.Message = "El turno se guardó correctamente!";
+                    ViewBag.ResultMessageCss = "alert-success";
                 }
                 else
                 {
-                    e.Empid = empid;
-                    _context.Turno.Add(e);
+                    errorFeriado = true;
                 }
-
-                _context.SaveChanges();
-                status = true;
             }
-            else status = false;
-            var jsonResult = new { status = status };
+            else
+            {
+                errorEvento = true;                
+            }
+            var jsonResult = new { status = status, errorFeriado = errorFeriado, errorEvento = errorEvento };
             return Json(jsonResult);
         }
 
@@ -115,6 +137,7 @@ namespace Turnos.Controllers
             return Json(jsonResult);
         }
 
+        [HttpPost]
         public string Getdato(int eventID)
         {
             var v = _context.Turno.Where(a => a.EventID == eventID).FirstOrDefault();
@@ -122,6 +145,47 @@ namespace Turnos.Controllers
                 return v.Empid;
             else
                 return "";
-        }       
+
+        }        
+
+        [HttpPost]
+        public string TraerDiasPrevision()
+        {
+            var v = _context.customizacion.Where(a => a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
+            if (v != null)
+                return v.HorarioMaximo.ToLongTimeString();
+            else
+                return "";
+        }
+
+        [HttpPost]
+        public string TraerHorarioMinimoPorBoca(short dia)
+        {
+            ePlaceDBContext context = new ePlaceDBContext();
+            TrnBoca trnBoca = new TrnBoca(configuration);
+            trnBoca.Empid = configuration.GetSection("empid").Value;
+            return trnBoca.TraerHorarioMinimoPorBoca(dia);
+        }
+
+        [HttpPost]
+        public string TraerHorarioMaximoPorBoca(short dia)
+        {
+            ePlaceDBContext context = new ePlaceDBContext();
+            TrnBoca trnBoca = new TrnBoca(configuration);
+            trnBoca.Empid = configuration.GetSection("empid").Value;
+            return trnBoca.TraerHorarioMaximoPorBoca(dia);
+        }
+
+        [HttpPost]
+        //SE TOMA EL VALOR MINIMO ENTRE TODAS LAS BOCAS DEPENDIENDO EL TIPO SELECCIONADO
+        public string TraerCantidadMinutosSegmento(byte idTipoBoca)
+        {
+            ePlaceDBContext context = new ePlaceDBContext();
+            TrnBoca trnBoca = new TrnBoca(configuration);
+            trnBoca.Empid = configuration.GetSection("empid").Value;
+            trnBoca.IdTipoBoca = idTipoBoca;
+            return TimeSpan.FromMinutes(trnBoca.TraerSegmentoMinimo()).ToString();
+        }
+
     }
 }

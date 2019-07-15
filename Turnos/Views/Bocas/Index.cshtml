@@ -20,31 +20,7 @@
             </th>
             <th>
                 Estado
-            </th>
-            <th nowrap>
-                Cantidad minutos Segmento
-            </th>
-            <th nowrap>
-                Cantidad pallet máxima
-            </th>
-            <th nowrap>
-                Calendario Planta
-            </th>
-            <th nowrap>
-                Calendario Feriados
-            </th>
-            <th nowrap>
-                Verificación sobre posición horaria
-            </th>
-            <th nowrap>
-                Cantidad citas simultáneas
-            </th>
-            <th nowrap>
-                Dias previsión
-            </th>
-            <th nowrap>
-                Tipo Boca
-            </th>
+            </th>               
             <th></th>
         </tr>
     </thead>
@@ -59,31 +35,7 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Estado)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SegmentoCantMin)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SegmentoCantPalletMax)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdCalendarioPlanta)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdCalendarioFeriado)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VerificaSobreposicionHoraria)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CantidadCitasSimultaneas)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UsuarioResponsableBoca)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdTipoBocaNavigation.Codigo)
-            </td>
+            </td>            
             <td>
                 <a asp-action="Edit" asp-route-id="@item.IdPlanta">Editar</a> |
                 <a asp-action="Details" asp-route-id="@item.IdPlanta">Detalle</a> |

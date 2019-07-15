@@ -1,7 +1,18 @@
-﻿@{
+﻿@model Turnos.Models.Turno
+@{
     ViewBag.Title = "Turnos";
 }
-
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-dismissible @ViewBag.ResultMessageCss">
+        <button type="button" class="close" data-dismiss="alert"><a class="h5">X</a></button>
+        @ViewBag.Message
+    </div>
+}
+<div class="form-group">
+    <label asp-for="IdTipoBoca" class="control-label">Tipo Boca</label>
+    <select asp-for="IdTipoBoca" class="form-control" asp-items="ViewBag.IdTipoBoca"></select>
+</div>
 <div id="calender"></div>
 <div id="myModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -35,6 +46,7 @@
             <div class="modal-body">
                 <form class="col-md-12 form-horizontal">
                     <input type="hidden" id="hdEventID" value="0" />
+
                     <div class="form-group">
                         <label>Asunto</label>
                         <input type="text" id="txtSubject" class="form-control" />
@@ -67,6 +79,18 @@
                         <textarea id="txtDescription" rows="3" class="form-control"></textarea>
                     </div>
                     <div class="form-group">
+                        <label asp-for="IdTransporteTipo" class="control-label">Tipo Transporte</label>
+                        <select asp-for="IdTransporteTipo" class="form-control" asp-items="ViewBag.IdTransporteTipo"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>KG Previstos</label>
+                        <input type="text" id="txtKGPrevistos" maxlength="10" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Pallets prev</label>
+                        <input type="text" id="txtPalletsPrevistos" maxlength="3" class="form-control" />
+                    </div>
+                    <div class="form-group">
                         <label>Color del tema</label>
                         <select id="ddThemeColor" class="form-control">
                             <option value="">Default</option>
@@ -95,9 +119,35 @@
     <script src='~/fullcalendar/locale/es.js'></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
     <script>
-        var texto = ""
-        var color = ""
+
+        function validateNumber(event) {
+            var key = window.event ? event.keyCode : event.which;
+            if (event.keyCode === 8 || event.keyCode === 46) {
+                return true;
+            } else if (key < 48 || key > 57) {
+                return false;
+            } else {
+                return true;
+            }
+        };
+
         $(document).ready(function () {
+            var texto = ""            
+            var color = ""
+            var cantMinSegmento = ""
+            var diasPrevision = ""
+            var horarioMinimoPorBocaLunes = TraerHorarioMinimoPorBoca(1);
+            var horarioMaximoPorBocaLunes = TraerHorarioMaximoPorBoca(1);
+            var horarioMinimoPorBocaMartes = TraerHorarioMinimoPorBoca(2);
+            var horarioMaximoPorBocaMartes = TraerHorarioMaximoPorBoca(2);
+            var horarioMinimoPorBocaMiercoles = TraerHorarioMinimoPorBoca(3);
+            var horarioMaximoPorBocaMiercoles = TraerHorarioMaximoPorBoca(3);
+            var horarioMinimoPorBocaJueves = TraerHorarioMinimoPorBoca(4);
+            var horarioMaximoPorBocaJueves = TraerHorarioMaximoPorBoca(4);
+            var horarioMinimoPorBocaViernes = TraerHorarioMinimoPorBoca(5);
+            var horarioMaximoPorBocaViernes = TraerHorarioMaximoPorBoca(5);
+            var horarioMinimoPorBocaSabado = TraerHorarioMinimoPorBoca(6);
+            var horarioMaximoPorBocaSabado = TraerHorarioMaximoPorBoca(6);
             var events = [];
             var selectedEvent = null;
             FetchEventAndRenderCalendar();
@@ -105,7 +155,7 @@
                 events = [];
                 $.ajax({
                     type: "GET",
-                    url: "home/ObtenerTurnos",
+                    url: "Turnos/home/ObtenerTurnos",
                     success: function (data) {
                         $.each(data, function (i, v) {
                             events.push({
@@ -116,7 +166,11 @@
                                 start: moment(v.Start),
                                 end: v.End != null ? moment(v.End) : null,
                                 color: v.ThemeColor,
-                                allDay: v.IsFullDay
+                                allDay: v.IsFullDay,
+                                IdTransporteTipo: v.IdTransporteTipo,
+                                TransporteTipo: v.TransporteTipo,
+                                KGPrevistos: v.KGPrevistos,
+                                PalletsPrevistos: v.PalletsPrevistos
                             });
                         })
 
@@ -126,7 +180,121 @@
                         alert('Error');
                     }
                 })
+
+                $('#txtKGPrevistos').keypress(validateNumber);
+                $('#txtPalletsPrevistos').keypress(validateNumber);
+
+                $.ajax({
+                    type: "POST",
+                    url: "Turnos/home/TraerCantidadMinutosSegmento",
+                    data: { 'idTipoBoca': 1 },
+                    success: function (respuesta) {
+                        cantMinSegmento = respuesta;
+                    },
+                    error: function () {
+                        alert('Error occured');
+                    }
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "Turnos/home/TraerDiasPrevision",
+                    data: { 'idTipoBoca': 1 },
+                    success: function (respuesta) {
+                        diasPrevision = respuesta;
+                    },
+                    error: function () {
+                        alert('Error occured');
+                    }
+                });
+
             }
+
+            function TraerHorarioMinimoPorBoca(dia) {
+                $.ajax({
+                    type: "POST",
+                    url: "Turnos/home/TraerHorarioMinimoPorBoca",
+                    data: { 'dia': dia },
+                    success: function (respuesta) {
+                        switch (dia) {
+                            case 1:
+                                horarioMinimoPorBocaLunes = respuesta;
+                                break;
+                            case 2:
+                                horarioMinimoPorBocaMartes = respuesta;
+                                break;
+                            case 3:
+                                horarioMinimoPorBocaMiercoles = respuesta;
+                                break;
+                            case 4:
+                                horarioMinimoPorBocaJueves = respuesta;
+                                break;
+                            case 5:
+                                horarioMinimoPorBocaViernes = respuesta;
+                                break;
+                            case 6:
+                                horarioMinimoPorBocaSabado = respuesta;
+                                break;
+                            default:
+                                alert('error!');
+                        }
+
+                    },
+                    error: function () {
+                        alert('Error occured');
+                    }
+                })
+            }
+
+            function TraerHorarioMaximoPorBoca(dia) {
+                $.ajax({
+                    type: "POST",
+                    url: "Turnos/home/TraerHorarioMaximoPorBoca",
+                    data: { 'dia': dia },
+                    success: function (respuesta) {
+                        switch (dia) {
+                            case 1:
+                                horarioMaximoPorBocaLunes = respuesta;
+                                break;
+                            case 2:
+                                horarioMaximoPorBocaMartes = respuesta;
+                                break;
+                            case 3:
+                                horarioMaximoPorBocaMiercoles = respuesta;
+                                break;
+                            case 4:
+                                horarioMaximoPorBocaJueves = respuesta;
+                                break;
+                            case 5:
+                                horarioMaximoPorBocaViernes = respuesta;
+                                break;
+                            case 6:
+                                horarioMaximoPorBocaSabado = respuesta;
+                                break;
+                            default:
+                                alert('error!');
+                        }
+                    },
+                    error: function () {
+                        alert('Error occured');
+                    }
+                })
+            }
+
+            $("#IdTipoBoca").change(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "Turnos/home/TraerCantidadMinutosSegmento",
+                    data: { 'idTipoBoca': $("#IdTipoBoca").val() },
+                    success: function (respuesta) {
+                        cantMinSegmento = respuesta;
+                        $('#calender').fullCalendar('refetchEvents');
+                    },
+                    error: function () {
+                        alert('Error occured');
+                    }
+                });
+            });
 
             function GenerateCalendar(events) {
                 $('#calender').fullCalendar('destroy');
@@ -141,30 +309,62 @@
                         center: 'title',
                         right: 'month,agendaWeek,basicDay'
                     },
-                    defaultTimedEventDuration: "01:00:00", //duracion maxima de un evento
+                    //defaultTimedEventDuration: cantMinSegmento, //duracion maxima de un evento
                     nowIndicator: true,
-                    businessHours: {
-                        start: '09:00', /* Current Hour/Minute 24H format */
-                        end: '18:00', // 5pm? set to whatever
-                        dow: [1, 2, 3, 4, 5, 6] // Day of week. If you don't set it, Sat/Sun are gray too,
+                    selectConstraint: 'businessHours',
+                    eventConstraint: {
+                        start: moment().format('YYYY-MM-DD'),
+                        end: '2100-01-01' // hard coded goodness unfortunately
                     },
-                    eventConstraint: "businessHours",
+                    //TOMO LOS HORARIOS DIRECTAMENTE DEL CALENDARIO DE PLANTA PORQUE NO SE DEJA INGRESAR HORARIO FUERA DE LA CONFIGURACION DE LA EMPRESA
+                    businessHours: [
+                        {
+                            start: horarioMinimoPorBocaLunes,
+                            end: horarioMaximoPorBocaLunes,
+                            dow: [1]
+                        },
+                        {
+                            start: horarioMinimoPorBocaMartes,
+                            end: horarioMaximoPorBocaMartes,
+                            dow: [2]
+                        },
+                        {
+                            start: horarioMinimoPorBocaMiercoles,
+                            end: horarioMaximoPorBocaMiercoles,
+                            dow: [3]
+                        },
+                        {
+                            start: horarioMinimoPorBocaJueves,
+                            end: horarioMaximoPorBocaJueves,
+                            dow: [4]
+                        },
+                        {
+                            start: horarioMinimoPorBocaViernes,
+                            end: horarioMaximoPorBocaViernes,
+                            dow: [5]
+                        },
+                        {
+                            start: horarioMinimoPorBocaSabado,
+                            end: horarioMaximoPorBocaSabado,
+                            dow: [6]
+                        }
+                    ],
                     eventLimit: true,
                     eventDurationEditable: false,
-                    allDaySlot: false,                   
+                    allDaySlot: false,
                     eventRender: function (event, element, view) {
                         element.on('click', function (e) {
                             element.draggable = false;
                         });
                         if (event.color) {
-                            element.css('background-color', event.ThemeColor)                            
-                            if ((moment().diff(event.start, 'minutes') > 0)) 
-                                element.css('background-color', "grey")                            
+                            element.css('background-color', event.ThemeColor)
+                            if ((moment().diff(event.start, 'minutes') > 0))
+                                element.css('background-color', "grey")
                         }
                     },
 
                     events: events,
-                    slotDuration: GetTimeDuration(),//'00:05:00',
+                    slotDuration: cantMinSegmento,
                     eventClick: function (calEvent, jsEvent, view) {
                         if (PermiteEdicion(calEvent)) {
                             selectedEvent = calEvent;
@@ -175,7 +375,9 @@
                                 $description.append($('<p/>').html('<b>Finaliza:</b>' + calEvent.end.format("DD-MMM-YYYY HH:mm")));
                             }
                             $description.append($('<p/>').html('<b>Descripción:</b>' + calEvent.description));
-                            $description.append($('<p/>').text(datonuevo(calEvent.eventID)));
+                            $description.append($('<p/>').html('<b>Tipo Transporte:</b>' + calEvent.TransporteTipo));
+                            $description.append($('<p/>').html('<b>KG previstos:</b>' + calEvent.KGPrevistos));
+                            $description.append($('<p/>').html('<b>Pallets prev:</b>' + calEvent.PalletsPrevistos));
                             $('#myModal #pDetails').empty().html($description);
 
                             $('#myModal').modal();
@@ -192,10 +394,18 @@
                             start: start,
                             end: end,
                             allDay: false,
-                            color: ''
+                            color: '',
+                            IdTransporteTipo: 0,
+                            TransporteTipo: '',
+                            KGPrevistos: 0,
+                            PalletsPrevistos: 0
                         };
                         if (moment().diff(start, 'minutes') > 0) {
-                            $('#calendar').fullCalendar('unselect');
+                            $('#calender').fullCalendar('unselect');
+                            return false;
+                        };
+                        if (moment().diff(start, 'days') > diasPrevision) {
+                            $('#calender').fullCalendar('unselect');
                             return false;
                         };
                         openAddEditForm();
@@ -218,19 +428,25 @@
                                 End: event.end != null ? event.end.format('DD/MM/YYYY HH:mm') : null,
                                 Description: event.description,
                                 ThemeColor: event.color,
-                                IsFullDay: event.allDay
+                                IsFullDay: event.allDay,
+                                IdCalendarioPlanta: event.IdCalendarioPlanta,
+                                IdTransporteTipo: event.IdTransporteTipo,
+                                TransporteTipo: event.TransporteTipo,
+                                KGPrevistos: event.KGPrevistos,
+                                PalletsPrevistos: event.PalletsPrevistos
                             };
                             GrabarTurno(data);
                         }
                     },
+
                     eventMouseover: function (data, event, view) {
 
-                        tooltip = '<div class="tooltiptopicevent" style="width:auto;height:auto;background:#feb811;position:absolute;z-index:10001;padding:10px 10px 10px 10px ;  line-height: 200%;">' + 'Titulo: ' + data.title + '</br>' + 'Descripcion: ' + ': ' + datonuevo(data.eventID).toString() + '</div>';
-
-
+                        tooltip = '<div id="tooltip" class="tooltiptopicevent" style="width:auto;height:auto;background:#feb811;position:absolute;z-index:10001;padding:10px 10px 10px 10px ;  line-height: 200%;">' + 'Titulo: ' + data.title + '</br>' + 'Descripcion: ' + data.description + '</br>' + 'Tipo Transp: ' + data.TransporteTipo + '</br>' + 'KG previstos: ' + data.KGPrevistos + '</br>' + 'Pallets prev: ' + data.PalletsPrevistos + '</div>';
+                        
                         $("body").append(tooltip);
                         $(this).mouseover(function (e) {
                             $(this).css('z-index', 10000);
+                            
                             $('.tooltiptopicevent').fadeIn('500');
                             $('.tooltiptopicevent').fadeTo('10', 1.9);
                         }).mousemove(function (e) {
@@ -248,13 +464,18 @@
                     },
 
                     eventResizeStart: function () {
-                        $('.tooltiptopicevent').hide()
+                        $('.tooltiptopicevent').hide();
                     },
                     eventDragStart: function () {
-                        $('.tooltiptopicevent').hide()
+                        $('.tooltiptopicevent').hide();
                     },
-                    viewDisplay: function () {
-                        $('.tooltiptopicevent').hide()
+                    viewDisplay: function (view) {
+                        $('.tooltiptopicevent').hide();
+                    },
+                    dayRender: function (date, cell) {
+                        if (!IsDateHasEvent(date)) {
+                            $(cell).addClass('fc-disabled-day disabled');
+                        }
                     },
                 })
             }
@@ -302,6 +523,10 @@
                 }
             });
 
+            $('#IdTipoBoca').change(function () {
+                FetchEventAndRenderCalendar();
+            });
+
             function openAddEditForm() {
                 if (selectedEvent != null) {
                     $('#hdEventID').val(selectedEvent.eventID);
@@ -312,6 +537,9 @@
                     $('#txtEnd').val(selectedEvent.end != null ? selectedEvent.end.format('DD/MM/YYYY HH:mm') : '');
                     $('#txtDescription').val(selectedEvent.description);
                     $('#ddThemeColor').val(selectedEvent.color);
+                    $('#IdTransporteTipo').val(selectedEvent.IdTransporteTipo);                    
+                    $('#txtKgPrevistos').val(selectedEvent.KGPrevistos);
+                    $('#txtPalletsPrevistos').val(selectedEvent.PalletsPrevistos);
                 }
                 $('#myModal').modal('hide');
                 $('#myModalSave').modal();
@@ -348,7 +576,11 @@
                     End: $('#chkIsFullDay').is(':checked') ? null : $('#txtEnd').val().trim(),
                     Description: $('#txtDescription').val(),
                     ThemeColor: $('#ddThemeColor').val(),
-                    IsFullDay: $('#chkIsFullDay').is(':checked')
+                    IsFullDay: $('#chkIsFullDay').is(':checked'),
+                    IdTransporteTipo: $('#IdTransporteTipo').val(),
+                    TransporteTipo: $('#IdTransporteTipo').text().trim(),
+                    KGPrevistos: $('#txtKGPrevistos').val(),
+                    PalletsPrevistos: $('#txtPalletsPrevistos').val()
                 }
                 GrabarTurno(data);
                 //llama a función para enviar datos al server
@@ -357,23 +589,25 @@
             function GrabarTurno(data) {
                 $.ajax({
                     type: "POST",
-                    url: 'home/GrabarTurno',
+                    url: 'Turnos/home/GrabarTurno',
                     data: data,
                     success: function (data) {
-                        if (data.status) {
-                            //actualiza calendario
-                            FetchEventAndRenderCalendar();
-                            $('#myModalSave').modal('hide');
+                        if (!data.errorEvento) {
+                            if (!data.errorFeriado) {
+                                if (data.status) {
+                                    //actualiza calendario
+                                    FetchEventAndRenderCalendar();
+                                    $('#myModalSave').modal('hide');
+                                }
+                            }
+                            else { alert('Esta intentando ingresar un turno un dia feriado!, intente otra fecha'); }
                         }
+                        else { alert('Ya fue ingresado otro turno para este horario!')}
                     },
                     error: function () {
                         alert('Error');
                     }
                 })
-            }
-
-            function GetTimeDuration() {
-                return "00:30:00";
             }
 
             function datonuevo(eventid) {
@@ -383,10 +617,13 @@
                     data: { 'eventID': eventid },
                     success: function (respuesta) {
                         texto = respuesta;
+                    },
+                    error: function () {
+                        alert('Error occured');
                     }
                 });
                 return texto;
-            }
+            }                   
 
             function MostrarDetalle(event) {
                 $('#Detalle').text(event.start);
@@ -394,19 +631,19 @@
 
             function PermiteDragDrop(event) {
                 //con el numero de evento ver si puede drag and drop
-                if (event.eventID == 14) {
-                    return true;
-                } else { return false; }
+                //if (event.eventID == 14) {
+                return true;
+                //} else { return false; }
             }
 
             function PermiteEdicion(event) {
                 //con el numero de evento ver si puede editarse o no
-                if (event.eventID == 14) {
+                //if (event.eventID == 14) {
                     return true;
-                } else { return false; }
+                //} else { return false; }
 
             }
-           
+
         })
     </script>
 }

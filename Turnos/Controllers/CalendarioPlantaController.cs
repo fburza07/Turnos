@@ -15,19 +15,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Turnos.Models;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Turnos.Controllers
 {
     /// <summary>
     /// Clase encargada del handling de la lógica de negocio del Calendario de Turnos
     /// </summary>
-    public class FeriadosController : Controller
+    public class CalendarioPlantaController : Controller
     {
         private readonly TurnosContext _context;
         private IConfiguration configuration;
 
-        public FeriadosController(TurnosContext context, IConfiguration configuration)
+        public CalendarioPlantaController(TurnosContext context, IConfiguration configuration)
         {
             _context = context;
             this.configuration = configuration;
@@ -35,8 +34,6 @@ namespace Turnos.Controllers
 
         public IActionResult Index(string empid)
         {
-            ViewData["IdCalendarioFeriado"] = new SelectList(_context.FeriadoCabecera, "IdCalendarioFeriado", "Descripcion");
-
             if (empid == null || empid == "")
                 empid = configuration.GetSection("empid").Value;
             configuration.GetSection("empid").Value = empid;
@@ -49,22 +46,22 @@ namespace Turnos.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public JsonResult ObtenerFeriados(int idCalendarioFeriado)
+        public JsonResult ObtenerCalendarioPlanta()
         {
-            var feriados = _context.Feriado.Where(a => a.IdCalendarioFeriado == idCalendarioFeriado).ToList();
+            var calendarioPlanta = _context.CalendarioPlanta.ToList();
 
-            return Json(feriados);
+            return Json(calendarioPlanta);
         }
 
         [HttpPost]
-        public JsonResult GrabarCalendario(TrnFeriadoCabecera e)
+        public JsonResult GrabarCalendario(TrnCalendarioPlantaCabecera e)
         {
             var status = false;
             string empid = configuration.GetSection("empid").Value;
 
-            if (e.IdCalendarioFeriado > 0)
+            if (e.IdCalendarioPlanta > 0)
             {
-                var v = _context.FeriadoCabecera.Where(a => a.IdCalendarioFeriado == e.IdCalendarioFeriado).FirstOrDefault();
+                var v = _context.CalendarioPlantaCabecera.Where(a => a.IdCalendarioPlanta == e.IdCalendarioPlanta).FirstOrDefault();
                 if (v != null)
                 {
                     v.Empid = empid;
@@ -74,29 +71,29 @@ namespace Turnos.Controllers
             else
             {
                 e.Empid = empid;
-                _context.FeriadoCabecera.Add(e);
+                _context.CalendarioPlantaCabecera.Add(e);
             }
 
             _context.SaveChanges();
             status = true;
 
-            var jsonResult = new { status = status, id= e.IdCalendarioFeriado, texto = e.Descripcion };
+            var jsonResult = new { status = status, id = e.IdCalendarioPlanta, texto = e.Descripcion };
             return Json(jsonResult);
         }
 
         [HttpPost]
-        public JsonResult BorrarCalendario(int idCalendarioFeriado)
+        public JsonResult BorrarCalendario(int idCalendarioPlanta)
         {
             var status = false;
 
             try
             {
-                foreach (var item in _context.Feriado.Where(a => a.IdCalendarioFeriado == idCalendarioFeriado).ToList())
+                foreach (var item in _context.CalendarioPlanta.Where(a => a.IdCalendarioPlanta == idCalendarioPlanta).ToList())
                 {
-                    _context.Feriado.Remove(item);                    
+                    _context.CalendarioPlanta.Remove(item);
                     status = true;
                 }
-                _context.FeriadoCabecera.Remove(_context.FeriadoCabecera.Where(a => a.IdCalendarioFeriado == idCalendarioFeriado).FirstOrDefault());
+                _context.CalendarioPlantaCabecera.Remove(_context.CalendarioPlantaCabecera.Where(a => a.IdCalendarioPlanta == idCalendarioPlanta).FirstOrDefault());
                 _context.SaveChanges();
                 status = true;
             }
@@ -108,73 +105,81 @@ namespace Turnos.Controllers
 
             var jsonResult = new { status = status };
             return Json(jsonResult);
-        }       
+        }
+       
 
         [HttpPost]
-        public JsonResult GrabarFeriado(TrnFeriado e)
-        {
+        public JsonResult GrabarCalendarioPlanta(TrnCalendarioPlanta e)
+        {            
             var status = false;
+            var codigovalido = false;
             string empid = configuration.GetSection("empid").Value;
-
             if (e.EventID > 0)
             {
-                var v = _context.Feriado.Where(a => a.EventID == e.EventID).FirstOrDefault();
-                if (v != null)
+                codigovalido = true;
+            
+                if (ValidarHorarioConfiguracionPlanta(e.Start, e.End))
                 {
-                    v.IdCalendarioFeriado = e.IdCalendarioFeriado;
-                    v.Empid = empid;
-                    v.Subject = e.Subject;
-                    v.Start = e.Start;
-                    v.End = e.End;
-                    v.Description = e.Description;
-                    v.IsFullDay = e.IsFullDay;
-                    v.ThemeColor = e.ThemeColor;
+                    if (e.EventID > 0)
+                    {
+                        var v = _context.CalendarioPlanta.Where(a => a.EventID == e.EventID).FirstOrDefault();
+                        if (v != null)
+                        {
+                            v.IdCalendarioPlanta = e.IdCalendarioPlanta;
+                            v.Empid = empid;
+                            v.Subject = e.Subject;
+                            v.Start = e.Start;
+                            v.End = e.IsFullDay == true ? Convert.ToDateTime(System.DateTime.Now.ToShortDateString() + " " + TraerHorarioMaximo()) : e.End;
+                            v.Description = e.Description;
+                            v.IsFullDay = e.IsFullDay;
+                            v.ThemeColor = e.ThemeColor;
+                            v.Dow = e.Dow;
+                        }
+                    }
+                    else
+                    {
+                        e.Empid = empid;
+                        e.End = e.IsFullDay == true ? Convert.ToDateTime(System.DateTime.Now.ToShortDateString() + " " + TraerHorarioMaximo()) : e.End;
+                        _context.CalendarioPlanta.Add(e);
+                    }
+
+                    _context.SaveChanges();
+                    status = true;
+                }
+                else
+                {
+                    status = false;
                 }
             }
-            else
-            {
-                e.Empid = empid;
-                _context.Feriado.Add(e);
-            }
-
-            _context.SaveChanges();
-            status = true;
-
-            var jsonResult = new { status = status };
+            var jsonResult = new { status = status, codigovalido= codigovalido };
             return Json(jsonResult);
         }
 
+        private bool ValidarHorarioConfiguracionPlanta(DateTime start, DateTime end)
+        {
+            var rtn = false;
+            if (start.TimeOfDay >= Convert.ToDateTime(TraerHorarioMinimo()).TimeOfDay && end.TimeOfDay <= Convert.ToDateTime(TraerHorarioMaximo()).TimeOfDay)
+            {
+                rtn = true;
+            }
+            return rtn;
+        }
+
         [HttpPost]
-        public JsonResult BorrarFeriado(int eventID)
+        public JsonResult BorrarCalendarioPlanta(int eventID)
         {
             var status = false;
 
-            ePlaceDBContext context = new ePlaceDBContext();
-            //context.TrnBoca()
-            var v = _context.Feriado.Where(a => a.EventID == eventID).FirstOrDefault();
+            var v = _context.CalendarioPlanta.Where(a => a.EventID == eventID).FirstOrDefault();
             if (v != null)
             {
-                _context.Feriado.Remove(v);
+                _context.CalendarioPlanta.Remove(v);
                 _context.SaveChanges();
                 status = true;
             }
 
             var jsonResult = new { status = status };
             return Json(jsonResult);
-        }
-
-        public string Getdato(int eventID)
-        {
-            var v = _context.Feriado.Where(a => a.EventID == eventID).FirstOrDefault();
-            if (v != null)
-            {
-                return v.Empid;
-            }
-            else
-            {
-                return "";
-            }
-
         }
 
         [HttpPost]

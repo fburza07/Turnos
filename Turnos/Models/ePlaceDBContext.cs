@@ -23,9 +23,10 @@ namespace Turnos.Models
         public virtual DbSet<TrnTurno> TrnTurno { get; set; }
         public virtual DbSet<TrnCalendarioFeriado> TrnCalendarioFeriado { get; set; }
         public virtual DbSet<TrnCalendarioFeriadoDetalle> TrnCalendarioFeriadoDetalle { get; set; }
-        public virtual DbSet<TrnCalendarioPlanta> TrnCalendarioPlanta { get; set; }
+        public virtual DbSet<TrnCalendarioPlantas> TrnCalendarioPlanta { get; set; }
 
         public virtual DbSet<TrnFeriado> TrnFeriado { get; set; }
+        public virtual DbSet<TransporteTipo> TrnTransporteTipo { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -43,7 +44,9 @@ namespace Turnos.Models
 
             modelBuilder.Entity<TrnBoca>(entity =>
             {
-                entity.HasKey(e => e.IdPlanta);
+                entity.HasKey(e => e.IdBoca);
+
+                entity.Property(e => e.IdPlanta);
 
                 entity.ToTable("TRN_Boca");
 
@@ -70,6 +73,18 @@ namespace Turnos.Models
                     .IsRequired()
                     .HasMaxLength(20)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.TrnCalendarioplantaCabeceraNavigation)
+                    .WithMany(p => p.TrnBoca)
+                    .HasForeignKey(d => d.IdCalendarioPlanta)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TRN_Boca_TRN_CalendarioPlantaCabecera");
+
+                entity.HasOne(d => d.TrnCalendarioFeriadoCabeceraNavigation)
+                   .WithMany(p => p.TrnBoca)
+                   .HasForeignKey(d => d.IdCalendarioFeriado)
+                   .OnDelete(DeleteBehavior.ClientSetNull)
+                   .HasConstraintName("FK_TRN_Boca_TRN_FeriadosCabecera");
 
                 entity.HasOne(d => d.IdTipoBocaNavigation)
                     .WithMany(p => p.TrnBoca)
@@ -105,7 +120,30 @@ namespace Turnos.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
             });
-            
+
+            modelBuilder.Entity<TransporteTipo>(entity =>
+            {
+                entity.HasKey(e => e.IdTransporteTipo);
+
+                entity.ToTable("TRN_TransporteTipo");
+
+                entity.Property(e => e.IdTransporteTipo);
+
+                entity.Property(e => e.Empid)
+                   .IsRequired()
+                   .HasMaxLength(20)
+                   .IsUnicode(false);
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Descripcion)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<TrnTurno>(entity =>
             {
                 entity.HasKey(e => e.EventID)
@@ -131,6 +169,13 @@ namespace Turnos.Models
                     .HasMaxLength(100);
 
                 entity.Property(e => e.ThemeColor).HasMaxLength(10);
+
+                entity.Property(e => e.IdTransporteTipo).HasColumnName("IdTransporteTipo");
+
+                entity.Property(e => e.KGPrevistos).HasColumnName("KGPrevistos");
+
+                entity.Property(e => e.PalletsPrevistos).HasColumnName("PalletsPrevistos");
+
             });
 
             modelBuilder.Entity<TrnCalendarioFeriado>(entity =>
@@ -183,11 +228,11 @@ namespace Turnos.Models
                 entity.Property(e => e.HoraDesde).HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<TrnCalendarioPlanta>(entity =>
+            modelBuilder.Entity<TrnCalendarioPlantas>(entity =>
             {
                 entity.HasKey(e => e.IdCalendarioPlanta);
 
-                entity.ToTable("TRN_CalendarioPlanta");
+                entity.ToTable("TRN_CalendarioPlantas");
 
                 entity.Property(e => e.CalendarioPlanta)
                     .HasMaxLength(1)
@@ -291,6 +336,9 @@ namespace Turnos.Models
 
 
         public DbSet<Turnos.Models.TransporteTipo> TransporteTipo { get; set; }
+
+
+        public DbSet<Turnos.Models.TrnCustomizacion> TrnCustomizacion { get; set; }
 
     }
 }

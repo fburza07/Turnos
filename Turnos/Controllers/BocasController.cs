@@ -12,19 +12,22 @@ namespace Turnos.Controllers
 {
     public class BocasController : Controller
     {
-        private readonly ePlaceDBContext _context;
+        private readonly TurnosContext _context;
         private IConfiguration configuration;
 
-        public BocasController(ePlaceDBContext context, IConfiguration configuration)
+        public BocasController(TurnosContext context, IConfiguration configuration)
         {
             _context = context;
             this.configuration = configuration;
         }
 
         // GET: Bocas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string empid)
         {
             var ePlaceDBContext = _context.TrnBoca.Include(t => t.IdTipoBocaNavigation);
+            if (empid == null || empid == "")
+                empid = configuration.GetSection("empid").Value;
+            configuration.GetSection("empid").Value = empid;
             return View(await ePlaceDBContext.ToListAsync());
         }
 
@@ -51,8 +54,8 @@ namespace Turnos.Controllers
         public IActionResult Create()
         {
             ViewData["IdTipoBoca"] = new SelectList(_context.TrnBocaTipo, "IdTipoBoca", "Codigo");
-            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Descripcion");
-            ViewData["IdCalendarioPlanta"] = new SelectList(_context.TrnCalendarioPlanta, "IdCalendarioPlanta", "Descripcion");
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.FeriadoCabecera, "IdCalendarioFeriado", "Descripcion");
+            ViewData["IdCalendarioPlanta"] = new SelectList(_context.CalendarioPlantaCabecera, "IdCalendarioPlanta", "Descripcion");
             return View();
         }
 
@@ -71,8 +74,8 @@ namespace Turnos.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdTipoBoca"] = new SelectList(_context.TrnBocaTipo, "IdTipoBoca", "Codigo", trnBoca.IdTipoBoca);
-            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Descripcion", trnBoca.IdCalendarioFeriado);
-            ViewData["IdCalendarioPlanta"] = new SelectList(_context.TrnCalendarioPlanta, "IdCalendarioPlanta", "Descripcion", trnBoca.IdCalendarioPlanta);
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.FeriadoCabecera, "IdCalendarioFeriado", "Descripcion", trnBoca.IdCalendarioFeriado);
+            ViewData["IdCalendarioPlanta"] = new SelectList(_context.CalendarioPlantaCabecera, "IdCalendarioPlanta", "Descripcion", trnBoca.IdCalendarioPlanta);
             return View(trnBoca);
         }
 
@@ -90,8 +93,8 @@ namespace Turnos.Controllers
                 return NotFound();
             }
             ViewData["IdTipoBoca"] = new SelectList(_context.TrnBocaTipo, "IdTipoBoca", "Codigo", trnBoca.IdTipoBoca);
-            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Descripcion", trnBoca.IdCalendarioFeriado);
-            ViewData["IdCalendarioPlanta"] = new SelectList(_context.TrnCalendarioPlanta, "IdCalendarioPlanta", "Descripcion", trnBoca.IdCalendarioPlanta);
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.FeriadoCabecera, "IdCalendarioFeriado", "Descripcion", trnBoca.IdCalendarioFeriado);
+            ViewData["IdCalendarioPlanta"] = new SelectList(_context.CalendarioPlantaCabecera, "IdCalendarioPlanta", "Descripcion", trnBoca.IdCalendarioPlanta);
             return View(trnBoca);
         }
 
@@ -128,8 +131,8 @@ namespace Turnos.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdTipoBoca"] = new SelectList(_context.TrnBocaTipo, "IdTipoBoca", "Codigo", trnBoca.IdTipoBoca);
-            ViewData["IdCalendarioFeriado"] = new SelectList(_context.TrnCalendarioFeriado, "IdCalendarioFeriado", "Descripcion", trnBoca.IdCalendarioFeriado);
-            ViewData["IdCalendarioPlanta"] = new SelectList(_context.TrnCalendarioPlanta, "IdCalendarioPlanta", "Descripcion", trnBoca.IdCalendarioPlanta);
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.FeriadoCabecera, "IdCalendarioFeriado", "Descripcion", trnBoca.IdCalendarioFeriado);
+            ViewData["IdCalendarioPlanta"] = new SelectList(_context.CalendarioPlantaCabecera, "IdCalendarioPlanta", "Descripcion", trnBoca.IdCalendarioPlanta);
             return View(trnBoca);
         }
 

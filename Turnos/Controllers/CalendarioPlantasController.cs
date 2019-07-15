@@ -56,7 +56,7 @@ namespace Turnos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdCalendarioPlanta,CalendarioPlanta,Empid,Descripcion,LunesActivo,LunesDesde,LunesHasta,MartesActivo,MartesDesde,MartesHasta,MiercolesActivo,MiercolesDesde,MiercolesHasta,JuevesActivo,JuevesDesde,JuevesHasta,ViernesActivo,ViernesDesde,ViernesHasta,SabadoActivo,SabadoDesde,SabadoHasta,DomingoActivo,DomingoDesde,DomingoHasta")] TrnCalendarioPlanta trnCalendarioPlanta)
+        public async Task<IActionResult> Create([Bind("IdCalendarioPlanta,CalendarioPlanta,Empid,Descripcion,LunesActivo,LunesDesde,LunesHasta,MartesActivo,MartesDesde,MartesHasta,MiercolesActivo,MiercolesDesde,MiercolesHasta,JuevesActivo,JuevesDesde,JuevesHasta,ViernesActivo,ViernesDesde,ViernesHasta,SabadoActivo,SabadoDesde,SabadoHasta,DomingoActivo,DomingoDesde,DomingoHasta")] TrnCalendarioPlantas trnCalendarioPlanta)
         {
             if (ModelState.IsValid)
             {
@@ -89,7 +89,7 @@ namespace Turnos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCalendarioPlanta,CalendarioPlanta,Empid,Descripcion,LunesActivo,LunesDesde,LunesHasta,MartesActivo,MartesDesde,MartesHasta,MiercolesActivo,MiercolesDesde,MiercolesHasta,JuevesActivo,JuevesDesde,JuevesHasta,ViernesActivo,ViernesDesde,ViernesHasta,SabadoActivo,SabadoDesde,SabadoHasta,DomingoActivo,DomingoDesde,DomingoHasta")] TrnCalendarioPlanta trnCalendarioPlanta)
+        public async Task<IActionResult> Edit(int id, [Bind("IdCalendarioPlanta,CalendarioPlanta,Empid,Descripcion,LunesActivo,LunesDesde,LunesHasta,MartesActivo,MartesDesde,MartesHasta,MiercolesActivo,MiercolesDesde,MiercolesHasta,JuevesActivo,JuevesDesde,JuevesHasta,ViernesActivo,ViernesDesde,ViernesHasta,SabadoActivo,SabadoDesde,SabadoHasta,DomingoActivo,DomingoDesde,DomingoHasta")] TrnCalendarioPlantas trnCalendarioPlanta)
         {
             if (id != trnCalendarioPlanta.IdCalendarioPlanta)
             {

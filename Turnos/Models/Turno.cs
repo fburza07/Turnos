@@ -30,6 +30,15 @@ namespace Turnos.Models
         public DateTime Start { get; set; }
         public DateTime? End { get; set; }
         public string ThemeColor { get; set; }
-        public bool IsFullDay { get; set; }
+        public bool IsFullDay { get; set; }        
+
+        public byte IdTipoBoca { get; set; }
+        public byte IdTransporteTipo { get; set; }
+
+        public int KGPrevistos { get; set; }
+        public int PalletsPrevistos { get; set; }
+
+        public virtual TrnBocaTipo IdTipoBocaNavigation { get; set; }
+        public virtual TransporteTipo IdTransporteTipoNavigation { get; set; }
     }
 }
