@@ -24,7 +24,7 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Calendario Turnos", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })</li>
                     <li>@Html.ActionLink("Admin Bocas", "Index", "Bocas", new { area = "" }, new { @class = "navbar-brand" })</li>
-                     <li>@Html.ActionLink("Admin Tipo Transporte", "Index", "TransporteTipo", new { area = "" }, new { @class = "navbar-brand" })</li>
+                    <li>@Html.ActionLink("Admin Tipo Transporte", "Index", "TransporteTipo", new { area = "" }, new { @class = "navbar-brand" })</li>
                     <li>@Html.ActionLink("Admin Calendario Planta", "Index", "CalendarioPlantas", new { area = "" }, new { @class = "navbar-brand" })</li>
                     <li>@Html.ActionLink("Admin Calendario detalle", "Index", "TrnCalendarioFeriadoDetalles", new { area = "" }, new { @class = "navbar-brand" })</li>
                     <li>@Html.ActionLink("Configuración", "Index", "TrnCustomizacion", new { area = "" }, new { @class = "navbar-brand" })</li>
@@ -42,17 +42,17 @@
                 </ul>
             </div>
         </div>
-    </div>*@
+    </div>
     <br />
     <br />
     <br />
-    <br />
+    <br />*@
     <div class="container body-content">
         @RenderBody()
-        <hr />
+        @*<hr />
         <footer>
             <p>&copy; @DateTime.Now.Year - Módulo de Turnos</p>
-        </footer>
+        </footer>*@
     </div>
 
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>

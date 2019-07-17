@@ -17,8 +17,7 @@ namespace Turnos.Models
         public string Descripcion { get; set; }
         public string Estado { get; set; }
         public short SegmentoCantMin { get; set; }
-        public short SegmentoCantPalletMax { get; set; } 
-        [Required]
+        public short SegmentoCantPalletMax { get; set; }         
         public int IdCalendarioPlanta { get; set; }        
         public int IdCalendarioFeriado { get; set; }
         public bool VerificaSobreposicionHoraria { get; set; }

@@ -15,6 +15,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Turnos.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace Turnos.Controllers
 {
@@ -34,6 +37,8 @@ namespace Turnos.Controllers
 
         public IActionResult Index(string empid)
         {
+            ViewData["IdCalendarioPlanta"] = new SelectList(_context.CalendarioPlantaCabecera, "IdCalendarioPlanta", "Descripcion");
+
             if (empid == null || empid == "")
                 empid = configuration.GetSection("empid").Value;
             configuration.GetSection("empid").Value = empid;
@@ -46,9 +51,9 @@ namespace Turnos.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public JsonResult ObtenerCalendarioPlanta()
+        public JsonResult ObtenerCalendarioPlanta(int idCalendarioPlanta)
         {
-            var calendarioPlanta = _context.CalendarioPlanta.ToList();
+            var calendarioPlanta = _context.CalendarioPlanta.Where(a => a.IdCalendarioPlanta == idCalendarioPlanta).ToList();            
 
             return Json(calendarioPlanta);
         }
@@ -85,6 +90,7 @@ namespace Turnos.Controllers
         public JsonResult BorrarCalendario(int idCalendarioPlanta)
         {
             var status = false;
+            var errorFK = false;
 
             try
             {
@@ -97,61 +103,77 @@ namespace Turnos.Controllers
                 _context.SaveChanges();
                 status = true;
             }
-            catch (Exception)
-            {
-                status = false;
-                throw;
-            }
 
-            var jsonResult = new { status = status };
-            return Json(jsonResult);
-        }
-       
-
-        [HttpPost]
-        public JsonResult GrabarCalendarioPlanta(TrnCalendarioPlanta e)
-        {            
-            var status = false;
-            var codigovalido = false;
-            string empid = configuration.GetSection("empid").Value;
-            if (e.EventID > 0)
+            catch (DbUpdateException ex)
             {
-                codigovalido = true;
-            
-                if (ValidarHorarioConfiguracionPlanta(e.Start, e.End))
+                var sqlException = ex.GetBaseException() as SqlException;
+                if (sqlException != null)
                 {
-                    if (e.EventID > 0)
+                    if (sqlException.Errors.Count > 0)
                     {
-                        var v = _context.CalendarioPlanta.Where(a => a.EventID == e.EventID).FirstOrDefault();
-                        if (v != null)
+                        switch (sqlException.Errors[0].Number)
                         {
-                            v.IdCalendarioPlanta = e.IdCalendarioPlanta;
-                            v.Empid = empid;
-                            v.Subject = e.Subject;
-                            v.Start = e.Start;
-                            v.End = e.IsFullDay == true ? Convert.ToDateTime(System.DateTime.Now.ToShortDateString() + " " + TraerHorarioMaximo()) : e.End;
-                            v.Description = e.Description;
-                            v.IsFullDay = e.IsFullDay;
-                            v.ThemeColor = e.ThemeColor;
-                            v.Dow = e.Dow;
+                            case 547: // Foreign Key violation
+                                errorFK = true;
+                                break;
+                            default:
+                                throw;
                         }
                     }
-                    else
-                    {
-                        e.Empid = empid;
-                        e.End = e.IsFullDay == true ? Convert.ToDateTime(System.DateTime.Now.ToShortDateString() + " " + TraerHorarioMaximo()) : e.End;
-                        _context.CalendarioPlanta.Add(e);
-                    }
-
-                    _context.SaveChanges();
-                    status = true;
                 }
                 else
                 {
-                    status = false;
+                    throw;
                 }
+                status = false;                
             }
-            var jsonResult = new { status = status, codigovalido= codigovalido };
+
+            var jsonResult = new { status = status, errorFK = errorFK };
+            return Json(jsonResult);
+        }
+
+
+        [HttpPost]
+        public JsonResult GrabarCalendarioPlanta(TrnCalendarioPlanta e)
+        {
+            var status = false;
+            var horarioValido = true;
+            string empid = configuration.GetSection("empid").Value;
+
+            if (ValidarHorarioConfiguracionPlanta(e.Start, e.End))
+            {
+                if (e.EventID > 0)
+                {
+                    var v = _context.CalendarioPlanta.Where(a => a.EventID == e.EventID).FirstOrDefault();
+                    if (v != null)
+                    {
+                        v.IdCalendarioPlanta = e.IdCalendarioPlanta;
+                        v.Empid = empid;
+                        v.Subject = e.Subject;
+                        v.Start = e.Start;
+                        v.End = e.IsFullDay == true ? Convert.ToDateTime(System.DateTime.Now.ToShortDateString() + " " + TraerHorarioMaximo()) : e.End;
+                        v.Description = e.Description;
+                        v.IsFullDay = e.IsFullDay;
+                        v.ThemeColor = e.ThemeColor;
+                        v.Dow = e.Dow;
+                    }
+                }
+                else
+                {
+                    e.Empid = empid;
+                    e.End = e.IsFullDay == true ? Convert.ToDateTime(System.DateTime.Now.ToShortDateString() + " " + TraerHorarioMaximo()) : e.End;
+                    _context.CalendarioPlanta.Add(e);
+                }
+
+                _context.SaveChanges();
+                status = true;
+            }
+            else
+            {
+                horarioValido = false;
+            }
+
+            var jsonResult = new { status = status, horarioValido = horarioValido };
             return Json(jsonResult);
         }
 

@@ -27,6 +27,9 @@ namespace Turnos.Models
         public string TransporteTipo { get; set; }
         public int KGPrevistos { get; set; }
         public int PalletsPrevistos { get; set; }
+        public byte IdTipoBoca { get; set; }
+        public int IdBoca { get; set; }
+
         private IConfiguration Configuration;
 
         public TrnTurno()
@@ -38,11 +41,15 @@ namespace Turnos.Models
             this.Configuration = configuracion;
         }
 
-        public bool ExisteEvento(DateTime fdesde, DateTime? fhasta)
+        public bool ExisteEvento(string empID,int eventID, int idBoca, int idTipoBoca, DateTime fdesde, DateTime? fhasta)
         {
             bool existeEvento = false;
             Conexion cn = new Conexion(Configuration);
             SqlCommand sqlcommand = cn.GetCommand("TRN_VerificarEvento");
+            sqlcommand.Parameters.AddWithValue("@EmpID", empID);
+            sqlcommand.Parameters.AddWithValue("@EventID", eventID);
+            sqlcommand.Parameters.AddWithValue("@IdBoca", idBoca);
+            sqlcommand.Parameters.AddWithValue("@IdTipoBoca", idTipoBoca);
             sqlcommand.Parameters.AddWithValue("@FechaDesde", fdesde);
             sqlcommand.Parameters.AddWithValue("@FechaHasta", fhasta);
             DataTable dt = cn.Execute(sqlcommand);
@@ -51,5 +58,6 @@ namespace Turnos.Models
 
             return existeEvento;
         }
+       
     }
 }

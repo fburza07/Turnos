@@ -32,11 +32,12 @@ namespace Turnos.Models
             this.Configuration = configuracion;
         }
 
-        public bool EsFeriado(DateTime fdesde, DateTime? fhasta)
+        public bool EsFeriado(string empID, DateTime fdesde, DateTime? fhasta)
         {
             bool esFeriado = false;
             Conexion cn = new Conexion(Configuration);
             SqlCommand sqlcommand = cn.GetCommand("TRN_VerificarFeriado");
+            sqlcommand.Parameters.AddWithValue("@EmpID", empID);
             sqlcommand.Parameters.AddWithValue("@FechaDesde", fdesde);
             sqlcommand.Parameters.AddWithValue("@FechaHasta", fhasta);
             DataTable dt = cn.Execute(sqlcommand);

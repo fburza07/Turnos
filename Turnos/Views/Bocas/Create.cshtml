@@ -9,7 +9,7 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>            
             <div class="form-group">
                 <label asp-for="BocaEntrega" class="control-label">Boca de Entrega</label>
                 <input asp-for="BocaEntrega" class="form-control" />
@@ -35,7 +35,6 @@
                 <input asp-for="SegmentoCantPalletMax" class="form-control" />
                 <span asp-validation-for="SegmentoCantPalletMax" class="text-danger"></span>
             </div>
-            @Html.ValidationMessage("Country is required.");
             <div class="form-group">
                 <label asp-for="IdCalendarioPlanta" class="control-label">Calendario planta</label>
                 <select asp-for="IdCalendarioPlanta" class="form-control" asp-items="ViewBag.IdCalendarioPlanta"></select>

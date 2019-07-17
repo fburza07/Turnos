@@ -133,6 +133,10 @@ namespace Turnos.Models
 
                 //entity.Property(e => e.EventID).HasColumnName("EventID");
 
+                entity.Property(e => e.IdTipoBoca).HasColumnName("IdTipoBoca");
+
+                entity.Property(e => e.IdBoca).HasColumnName("IdBoca");
+
                 entity.Property(e => e.Description).HasMaxLength(300);
 
                 entity.Property(e => e.Empid)

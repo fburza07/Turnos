@@ -52,16 +52,19 @@ namespace Turnos.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public JsonResult ObtenerTurnos()
+        public JsonResult ObtenerTurnos(int idTipoBoca)
         {
+
             List<Object> eventos = new List<Object>();
+
             var feriados = _context.Feriado.ToList();
-            var turnos = _context.Turno.ToList();
+            var turnos = _context.Turno.Where(a => a.IdTipoBoca == idTipoBoca).ToList();
 
             eventos.AddRange(feriados);
             eventos.AddRange(turnos);
 
             return Json(eventos);
+
         }
 
         [HttpPost]
@@ -69,14 +72,27 @@ namespace Turnos.Controllers
         {
             var status = false;
             var errorFeriado = false;
-            var errorEvento = false;
+            var errorEvento = false;            
+            int idBoca = 0;
             string empid = configuration.GetSection("empid").Value;
             TrnFeriado trnFeriado = new TrnFeriado(configuration);
             TrnTurno trnTurno = new TrnTurno(configuration);
-            //SI NO ES FERIADO DEJO GRABAR
-            if (!trnTurno.ExisteEvento(e.Start,e.End))
+            //REVISAR SI NO ES FERIADO EL DIA EN EL CUAL QUIERE INGRESAR EL TURNO
+            if (!trnFeriado.EsFeriado(empid, e.Start, e.End))
             {
-                if (!trnFeriado.EsFeriado(e.Start, e.End))
+                //VERIFICAR Y BUSCAR BOCA DISPONIBLE CON EL TIPO DE BOCA SELECCIONADO
+                //PRIMERO BUSCO TODAS LAS BOCAS DISPONIBLES PARA EL EMPID Y EL TIPO DE BOCA SELECCIONADO
+                List<TrnBoca> trnBocasPorTipo = _context.TrnBoca.Where(a => a.IdTipoBoca == e.IdTipoBoca && a.Empid == empid).ToList();                
+                foreach (TrnBoca item in trnBocasPorTipo)
+                {
+                    //DE TODAS LAS BOCAS ME FIJO EN CUALQUIERA QUE NO HAYA EVENTOS PARA LA FECHA Y HORA SELECCIONADA
+                    //ENTONCES SI NO EXISTE UN EVENTO PARA ESA BOCA Y FECHA/HORA SELECCIONADA TOMO EL ID
+                    if (!trnTurno.ExisteEvento(empid, e.EventID, item.IdBoca, e.IdTipoBoca, e.Start, e.End))
+                    {
+                        idBoca = item.IdBoca;
+                    }
+                }
+                if (idBoca != 0)
                 {
                     if (e.EventID > 0)
                     {
@@ -94,11 +110,14 @@ namespace Turnos.Controllers
                             v.TransporteTipo = e.TransporteTipo;
                             v.KGPrevistos = e.KGPrevistos;
                             v.PalletsPrevistos = e.PalletsPrevistos;
+                            v.IdTipoBoca = e.IdTipoBoca;
+                            v.IdBoca = idBoca;
                         }
                     }
                     else
                     {
                         e.Empid = empid;
+                        e.IdBoca = idBoca;
                         _context.Turno.Add(e);
                     }
 
@@ -109,12 +128,12 @@ namespace Turnos.Controllers
                 }
                 else
                 {
-                    errorFeriado = true;
+                    errorEvento = true;
                 }
             }
             else
             {
-                errorEvento = true;                
+                errorFeriado = true;
             }
             var jsonResult = new { status = status, errorFeriado = errorFeriado, errorEvento = errorEvento };
             return Json(jsonResult);
@@ -146,7 +165,7 @@ namespace Turnos.Controllers
             else
                 return "";
 
-        }        
+        }
 
         [HttpPost]
         public string TraerDiasPrevision()

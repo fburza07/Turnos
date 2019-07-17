@@ -41,7 +41,7 @@ namespace Turnos.Controllers
 
             var trnBoca = await _context.TrnBoca
                 .Include(t => t.IdTipoBocaNavigation)
-                .FirstOrDefaultAsync(m => m.IdPlanta == id);
+                .FirstOrDefaultAsync(m => m.IdBoca == id);
             if (trnBoca == null)
             {
                 return NotFound();
@@ -64,7 +64,7 @@ namespace Turnos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdPlanta,Empid,BocaEntrega,Descripcion,Estado,SegmentoCantMin,SegmentoCantPalletMax,IdCalendarioPlanta,IdCalendarioFeriado,VerificaSobreposicionHoraria,CantidadCitasSimultaneas,IdTipoBoca,UsuarioResponsableBoca")] TrnBoca trnBoca)
+        public async Task<IActionResult> Create([Bind("IdBoca,IdPlanta,Empid,BocaEntrega,Descripcion,Estado,SegmentoCantMin,SegmentoCantPalletMax,IdCalendarioPlanta,IdCalendarioFeriado,VerificaSobreposicionHoraria,CantidadCitasSimultaneas,IdTipoBoca,UsuarioResponsableBoca")] TrnBoca trnBoca)
         {
             if (ModelState.IsValid)
             {
@@ -87,6 +87,7 @@ namespace Turnos.Controllers
                 return NotFound();
             }
 
+            
             var trnBoca = await _context.TrnBoca.FindAsync(id);
             if (trnBoca == null)
             {
@@ -103,9 +104,9 @@ namespace Turnos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPlanta,Empid,BocaEntrega,Descripcion,Estado,SegmentoCantMin,SegmentoCantPalletMax,IdCalendarioPlanta,IdCalendarioFeriado,VerificaSobreposicionHoraria,CantidadCitasSimultaneas,IdTipoBoca,UsuarioResponsableBoca")] TrnBoca trnBoca)
+        public async Task<IActionResult> Edit(int id, [Bind("IdBoca,IdPlanta,Empid,BocaEntrega,Descripcion,Estado,SegmentoCantMin,SegmentoCantPalletMax,IdCalendarioPlanta,IdCalendarioFeriado,VerificaSobreposicionHoraria,CantidadCitasSimultaneas,IdTipoBoca,UsuarioResponsableBoca")] TrnBoca trnBoca)
         {
-            if (id != trnBoca.IdPlanta)
+            if (id != trnBoca.IdBoca)
             {
                 return NotFound();
             }
@@ -114,12 +115,13 @@ namespace Turnos.Controllers
             {
                 try
                 {
+                    trnBoca.Empid = configuration.GetSection("empid").Value;
                     _context.Update(trnBoca);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TrnBocaExists(trnBoca.IdPlanta))
+                    if (!TrnBocaExists(trnBoca.IdBoca))
                     {
                         return NotFound();
                     }
@@ -146,7 +148,7 @@ namespace Turnos.Controllers
 
             var trnBoca = await _context.TrnBoca
                 .Include(t => t.IdTipoBocaNavigation)
-                .FirstOrDefaultAsync(m => m.IdPlanta == id);
+                .FirstOrDefaultAsync(m => m.IdBoca == id);
             if (trnBoca == null)
             {
                 return NotFound();
@@ -168,7 +170,7 @@ namespace Turnos.Controllers
 
         private bool TrnBocaExists(int id)
         {
-            return _context.TrnBoca.Any(e => e.IdPlanta == id);
+            return _context.TrnBoca.Any(e => e.IdBoca == id);
         }        
     }
 }
