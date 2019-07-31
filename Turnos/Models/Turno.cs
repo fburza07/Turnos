@@ -38,7 +38,10 @@ namespace Turnos.Models
         public int KGPrevistos { get; set; }
         public int PalletsPrevistos { get; set; }
 
+        public string Codigo { get; set; }
+
         public virtual TrnBocaTipo IdTipoBocaNavigation { get; set; }
         public virtual TransporteTipo IdTransporteTipoNavigation { get; set; }
+        public virtual TrnUsuarioPlanta CodigoNavigation { get; set; }
     }
 }

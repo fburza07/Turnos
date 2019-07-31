@@ -11,20 +11,22 @@ namespace Turnos.Models
     {
         [Key]
         public int IdBoca { get; set; }
-        public int IdPlanta { get; set; }
+        public string IdPlanta { get; set; }
         public string Empid { get; set; }
         public string BocaEntrega { get; set; }
         public string Descripcion { get; set; }
-        public string Estado { get; set; }
+        public bool Estado { get; set; }
         public short SegmentoCantMin { get; set; }
-        public short SegmentoCantPalletMax { get; set; }         
-        public int IdCalendarioPlanta { get; set; }        
+        public short SegmentoCantPalletMax { get; set; }
+        public int IdCalendarioPlanta { get; set; }
         public int IdCalendarioFeriado { get; set; }
         public bool VerificaSobreposicionHoraria { get; set; }
         public short CantidadCitasSimultaneas { get; set; }
         public byte IdTipoBoca { get; set; }
-        public string UsuarioResponsableBoca { get; set; }
-
+        public int DiasPrevision { get; set; }
+        public string UsuarioResponsableBoca { get; set; }        
+        public string color { get; set; }
+        
         public virtual TrnBocaTipo IdTipoBocaNavigation { get; set; }
         public virtual TrnFeriadoCabecera TrnCalendarioFeriadoCabeceraNavigation { get; set; }
         public virtual TrnCalendarioPlantaCabecera TrnCalendarioplantaCabeceraNavigation { get; set; }
@@ -45,6 +47,7 @@ namespace Turnos.Models
             SqlCommand sqlcommand = cn.GetCommand("TRN_HorarioMinimoPorBoca");
             sqlcommand.Parameters.AddWithValue("@EmpID", this.Empid);
             sqlcommand.Parameters.AddWithValue("@Dia", dia);
+            sqlcommand.Parameters.AddWithValue("@IdPlanta", this.IdPlanta);
             DataTable dt = cn.Execute(sqlcommand);
             if (dt.Rows[0]["HorarioMinimoPorBoca"] != null && dt.Rows[0]["HorarioMinimoPorBoca"].ToString() != "")
                 ret = dt.Rows[0]["HorarioMinimoPorBoca"].ToString();
@@ -59,6 +62,7 @@ namespace Turnos.Models
             SqlCommand sqlcommand = cn.GetCommand("TRN_HorarioMaximoPorBoca");
             sqlcommand.Parameters.AddWithValue("@EmpID", this.Empid);
             sqlcommand.Parameters.AddWithValue("@Dia", dia);
+            sqlcommand.Parameters.AddWithValue("@IdPlanta", this.IdPlanta);
             DataTable dt = cn.Execute(sqlcommand);
             if (dt.Rows[0]["HorarioMaximoPorBoca"] != null && dt.Rows[0]["HorarioMaximoPorBoca"].ToString() != "")
                 ret = dt.Rows[0]["HorarioMaximoPorBoca"].ToString();
@@ -70,14 +74,30 @@ namespace Turnos.Models
         {
             short ret = 0;
             Conexion cn = new Conexion(Configuration);
-            SqlCommand sqlcommand = cn.GetCommand("TRN_SegmentoMinimoPorTipoBoca");
-            sqlcommand.Parameters.AddWithValue("@empid", this.Empid);
-            sqlcommand.Parameters.AddWithValue("@IdTipoBoca", this.IdTipoBoca);
-            DataTable dt = cn.Execute(sqlcommand);            
-            if (dt.Rows[0]["Segmento"] !=null && dt.Rows[0]["Segmento"].ToString() != "")
+            SqlCommand sqlcommand = cn.GetCommand("TRN_SegmentoMinimoPorPlanta");
+            sqlcommand.Parameters.AddWithValue("@EmpID", this.Empid);
+            sqlcommand.Parameters.AddWithValue("@IdPlanta", this.IdPlanta);
+            DataTable dt = cn.Execute(sqlcommand);
+            if (dt.Rows[0]["Segmento"] != null && dt.Rows[0]["Segmento"].ToString() != "")
                 ret = Convert.ToInt16(dt.Rows[0]["Segmento"]);
 
             return ret;
         }
+
+        internal double TraerSegmentoMinimoPorBoca()
+        {
+            short ret = 0;
+            Conexion cn = new Conexion(Configuration);
+            SqlCommand sqlcommand = cn.GetCommand("TRN_SegmentoMinimoPorTipoBoca");
+            sqlcommand.Parameters.AddWithValue("@Empid", this.Empid);
+            sqlcommand.Parameters.AddWithValue("@IdPlanta", this.IdPlanta);
+            sqlcommand.Parameters.AddWithValue("@IdTipoBoca", this.IdTipoBoca);
+            DataTable dt = cn.Execute(sqlcommand);
+            if (dt.Rows[0]["Segmento"] != null && dt.Rows[0]["Segmento"].ToString() != "")
+                ret = Convert.ToInt16(dt.Rows[0]["Segmento"]);
+
+            return ret;
+        }
+        
     }
 }

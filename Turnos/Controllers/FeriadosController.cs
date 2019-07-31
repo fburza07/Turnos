@@ -34,12 +34,12 @@ namespace Turnos.Controllers
         }
 
         public IActionResult Index(string empid)
-        {
-            ViewData["IdCalendarioFeriado"] = new SelectList(_context.FeriadoCabecera, "IdCalendarioFeriado", "Descripcion");
-
+        {            
             if (empid == null || empid == "")
                 empid = configuration.GetSection("empid").Value;
             configuration.GetSection("empid").Value = empid;
+
+            ViewData["IdCalendarioFeriado"] = new SelectList(_context.FeriadoCabecera.Where(a => a.Empid == empid).ToList(), "IdCalendarioFeriado", "Descripcion");
             return View();
         }
 
@@ -51,7 +51,7 @@ namespace Turnos.Controllers
 
         public JsonResult ObtenerFeriados(int idCalendarioFeriado)
         {
-            var feriados = _context.Feriado.Where(a => a.IdCalendarioFeriado == idCalendarioFeriado).ToList();
+            var feriados = _context.Feriado.Where(a => a.Empid == configuration.GetSection("empid").Value && a.IdCalendarioFeriado == idCalendarioFeriado).ToList();
 
             return Json(feriados);
         }
@@ -165,7 +165,7 @@ namespace Turnos.Controllers
 
         public string Getdato(int eventID)
         {
-            var v = _context.Feriado.Where(a => a.EventID == eventID).FirstOrDefault();
+            var v = _context.Feriado.Where(a => a.Empid == configuration.GetSection("empid").Value && a.EventID == eventID).FirstOrDefault();
             if (v != null)
             {
                 return v.Empid;
@@ -193,6 +193,16 @@ namespace Turnos.Controllers
             var v = _context.customizacion.Where(a => a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
             if (v != null)
                 return v.HorarioMaximo.ToLongTimeString();
+            else
+                return "";
+        }
+
+        [HttpPost]
+        public string TraerDiasLaborables()
+        {
+            var v = _context.customizacion.Where(a => a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
+            if (v != null)
+                return v.DiasLaborables;
             else
                 return "";
         }

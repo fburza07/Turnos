@@ -36,12 +36,12 @@ namespace Turnos.Controllers
         }
 
         public IActionResult Index(string empid)
-        {
-            ViewData["IdCalendarioPlanta"] = new SelectList(_context.CalendarioPlantaCabecera, "IdCalendarioPlanta", "Descripcion");
-
+        {            
             if (empid == null || empid == "")
                 empid = configuration.GetSection("empid").Value;
             configuration.GetSection("empid").Value = empid;
+
+            ViewData["IdCalendarioPlanta"] = new SelectList(_context.CalendarioPlantaCabecera.Where(a => a.Empid == empid).ToList(), "IdCalendarioPlanta", "Descripcion");
             return View();
         }
 
@@ -151,7 +151,7 @@ namespace Turnos.Controllers
                         v.Empid = empid;
                         v.Subject = e.Subject;
                         v.Start = e.Start;
-                        v.End = e.IsFullDay == true ? Convert.ToDateTime(System.DateTime.Now.ToShortDateString() + " " + TraerHorarioMaximo()) : e.End;
+                        v.End = e.End;
                         v.Description = e.Description;
                         v.IsFullDay = e.IsFullDay;
                         v.ThemeColor = e.ThemeColor;
@@ -160,8 +160,7 @@ namespace Turnos.Controllers
                 }
                 else
                 {
-                    e.Empid = empid;
-                    e.End = e.IsFullDay == true ? Convert.ToDateTime(System.DateTime.Now.ToShortDateString() + " " + TraerHorarioMaximo()) : e.End;
+                    e.Empid = empid;                    
                     _context.CalendarioPlanta.Add(e);
                 }
 
@@ -223,5 +222,16 @@ namespace Turnos.Controllers
             else
                 return "";
         }
+
+        [HttpPost]
+        public string TraerDiasLaborables()
+        {
+            var v = _context.customizacion.Where(a => a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
+            if (v != null)
+                return  v.DiasLaborables;
+            else
+                return "";
+        }
+
     }
 }

@@ -1,8 +1,11 @@
 ﻿
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Reflection;
 
 namespace Turnos.Models
 {
@@ -131,6 +134,57 @@ namespace Turnos.Models
             int result = command.ExecuteNonQuery();
             command.Connection.Close();
             return result;
+        }
+
+        public List<T> ConvertDataTable<T>(DataTable dt)
+        {
+            List<T> data = new List<T>();
+            foreach (DataRow row in dt.Rows)
+            {
+                T item = GetItem<T>(row);
+                data.Add(item);
+            }
+            return data;
+        }
+
+        private static T GetItem<T>(DataRow dr)
+        {
+            Type temp = typeof(T);
+            T obj = Activator.CreateInstance<T>();
+
+            foreach (DataColumn column in dr.Table.Columns)
+            {
+                foreach (PropertyInfo pro in temp.GetProperties())
+                {
+                    if (pro.Name == column.ColumnName)
+                    {
+                        Type type = obj.GetType();
+
+                        //get the property information based on the type                       
+
+                        //find the property type
+                        Type propertyType = pro.PropertyType;
+
+                        //Convert.ChangeType does not handle conversion to nullable types
+                        //if the property type is nullable, we need to get the underlying type of the property
+                        var targetType = IsNullableType(pro.PropertyType) ? Nullable.GetUnderlyingType(pro.PropertyType) : pro.PropertyType;
+
+                        if (dr[column.ColumnName] == System.DBNull.Value && Nullable.GetUnderlyingType(pro.PropertyType) == null)
+                            dr[column.ColumnName] = Convert.ChangeType(dr[column.ColumnName], targetType);
+                        //Set the value of the property                        
+                        pro.SetValue(obj, dr[column.ColumnName], null);
+
+                    }
+                    else
+                        continue;
+                }
+            }
+            return obj;
+        }
+
+        private static bool IsNullableType(Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition().Equals(typeof(Nullable<>));
         }
 
     }

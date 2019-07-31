@@ -9,7 +9,16 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>            
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="IdPlanta" class="control-label">Planta</label>
+                <select asp-for="IdPlanta" class="form-control" asp-items="ViewBag.IdPlanta"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="color" class="control-label">Color</label>
+                <input type="button" asp-for="color" class="form-control" id="color-picker-background" />
+            </div>
+            <input type="hidden" asp-for="color" />
             <div class="form-group">
                 <label asp-for="BocaEntrega" class="control-label">Boca de Entrega</label>
                 <input asp-for="BocaEntrega" class="form-control" />
@@ -20,10 +29,10 @@
                 <input asp-for="Descripcion" class="form-control" />
                 <span asp-validation-for="Descripcion" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label">Estado</label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Estado" checked="checked" /> Activa
+                </label>
             </div>
             <div class="form-group">
                 <label asp-for="SegmentoCantMin" class="control-label">Cantidad de minutos de segmento</label>
@@ -58,6 +67,11 @@
                 <select asp-for="IdTipoBoca" class="form-control" asp-items="ViewBag.IdTipoBoca"></select>
             </div>
             <div class="form-group">
+                <label asp-for="DiasPrevision" class="control-label">Cantidad de dìas de prevision</label>
+                <input asp-for="DiasPrevision" class="form-control" />
+                <span asp-validation-for="DiasPrevision" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="UsuarioResponsableBoca" class="control-label">Usuario responsable de Planta / Boca</label>
                 <input asp-for="UsuarioResponsableBoca" class="form-control" />
                 <span asp-validation-for="UsuarioResponsableBoca" class="text-danger"></span>
@@ -74,6 +88,25 @@
 </div>
 
 @section Scripts {
-    
+
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" rel="stylesheet">
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/js/bootstrap-colorpicker.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('#color-picker-background')[0].style.backgroundColor = $("#color").val();
+            $(function () {
+                $('#color-picker-background').colorpicker().on('changeColor', function (e) {
+                    $('#color-picker-background')[0].style.backgroundColor = e.color.toHex();
+                });
+            });
+
+        });
+
+    </script>
 }

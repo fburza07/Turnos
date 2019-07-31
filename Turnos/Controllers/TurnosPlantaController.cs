@@ -16,39 +16,41 @@ using Microsoft.AspNetCore.Mvc;
 using Turnos.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Turnos.Controllers
 {
     /// <summary>
     /// Clase encargada del handling de la lógica de negocio del Calendario de Turnos
     /// </summary>
-    public class HomeController : Controller
+    public class TurnosPlantaController : Controller
     {
         private readonly TurnosContext _context;
         private IConfiguration configuration;
 
-        public HomeController(TurnosContext context, IConfiguration configuration)
+        public TurnosPlantaController(TurnosContext context, IConfiguration configuration)
         {
             _context = context;
             this.configuration = configuration;
         }
 
-        public IActionResult Index(string provid)
+        public IActionResult Index(string empid)
         {
-            provid = "AR3071542751";
+            empid = "AR3050450732";
             ePlaceDBContext context = new ePlaceDBContext();
-            if (provid == null || provid == "")
-                provid = configuration.GetSection("provid").Value;
-            configuration.GetSection("provid").Value = provid;
+            if (empid == null || empid == "")
+                empid = configuration.GetSection("empid").Value;
+            configuration.GetSection("empid").Value = empid;
 
-            //Los turnos se ingresan por proveedor pero los datos de boca transporte y planta usan el adherente
-            //busco adherente para traer estos datos
-            TrnProvMapSocio adherente = _context.TrnProvMapSocio.Where(a => a.Prov_Id == provid).FirstOrDefault();
-            configuration.GetSection("empid").Value = adherente.Emp_Id;
-
-            ViewData["IdTipoBoca"] = new SelectList(context.TrnBocaTipo.Where(a => a.Empid == adherente.Emp_Id).ToList(), "IdTipoBoca", "Nombre");
-            ViewData["IdTransporteTipo"] = new SelectList(context.TrnTransporteTipo.Where(a => a.Empid == adherente.Emp_Id).ToList(), "IdTransporteTipo", "Nombre");
-            ViewData["Codigo"] = new SelectList(_context.TrnUsuarioPlanta.Where(a => a.User_Id == adherente.Emp_Id).ToList(), "Codigo", "Descripcion");
+            TrnProveedores proveedor = new TrnProveedores(configuration);
+            proveedor.emp_id = empid;
+            List<TrnProveedores> proveedores = proveedor.TraerProveedoresPorEmpID();
+            //List<TrnProvMapSocio> a = new _context.TrnProvMapSocio.Where(a => a.Emp_Id == empid).ToList();
+            ViewData["Proveedores"] = new SelectList(proveedores, "prov_id", "nombre");
+            ViewData["IdTipoBoca"] = new SelectList(context.TrnBocaTipo.Where(a => a.Empid == empid).ToList(), "IdTipoBoca", "Nombre");
+            ViewData["IdTransporteTipo"] = new SelectList(context.TrnTransporteTipo.Where(a => a.Empid == empid).ToList(), "IdTransporteTipo", "Nombre");
+            ViewData["Codigo"] = new SelectList(_context.TrnUsuarioPlanta.Where(a => a.User_Id == empid).ToList(), "Codigo", "Descripcion");
 
             return View();
         }
@@ -58,9 +60,8 @@ namespace Turnos.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        
-            
-        public JsonResult ObtenerTurnos(byte idTipoBoca, string idPlanta)
+
+        public JsonResult ObtenerTurnosPlanta(string idPlanta)
         {
             List<Object> eventos = new List<Object>();
 
@@ -73,14 +74,12 @@ namespace Turnos.Controllers
             feriados = trnFeriado.ObtenerFeriados(idPlanta);
 
             TrnTurno trnTurno = new TrnTurno(configuration);
+            //Toma los turnos asignados a todos los proveedores, por tipo de boca, y que pertenezcan a la planta elegida
             trnTurno.Empid = configuration.GetSection("empid").Value;
-            trnTurno.Provid = configuration.GetSection("provid").Value;
-            //Toma los turnos asignados a un proveedor, por tipo de boca, y que pertenezcan a la planta
-            turnos = trnTurno.ObtenerTurnos(idTipoBoca, idPlanta);
+            turnos = trnTurno.ObtenerTurnosPlanta(idPlanta);
 
             eventos.AddRange(feriados);
             eventos.AddRange(turnos);
-            //eventos.AddRange(HorariosOcupados(idTipoBoca, codigo));
 
             return Json(eventos);
 
@@ -95,15 +94,13 @@ namespace Turnos.Controllers
             var errorEvento = true;
             int idBoca = 0;
             string empid = configuration.GetSection("empid").Value;
-            string provid = configuration.GetSection("provid").Value;
             TrnFeriado trnFeriado = new TrnFeriado(configuration);
-            TrnTurno trnTurno = new TrnTurno(configuration);            
-
+            TrnTurno trnTurno = new TrnTurno(configuration);
             //REVISAR SI NO ES FERIADO EL DIA EN EL CUAL QUIERE INGRESAR EL TURNO
             if (!trnFeriado.EsFeriado(empid, e.Start, e.End))
             {
                 //VERIFICAR Y BUSCAR BOCA DISPONIBLE CON EL TIPO DE BOCA SELECCIONADO
-                //PRIMERO BUSCO TODAS LAS BOCAS DISPONIBLES PARA EL TIPO DE BOCA SELECCIONADO
+                //PRIMERO BUSCO TODAS LAS BOCAS DISPONIBLES PARA EL EMPID Y EL TIPO DE BOCA SELECCIONADO
                 List<TrnBoca> trnBocasPorTipo = _context.TrnBoca.Where(a => a.IdTipoBoca == e.IdTipoBoca && a.Empid == empid).ToList();
                 foreach (TrnBoca item in trnBocasPorTipo)
                 {
@@ -126,8 +123,8 @@ namespace Turnos.Controllers
                         var v = _context.Turno.Where(a => a.EventID == e.EventID).FirstOrDefault();
                         if (v != null)
                         {
-                            v.Provid = provid;
                             v.Empid = empid;
+                            v.Provid = e.Provid;
                             v.Subject = e.Subject;
                             v.Start = e.Start;
                             v.End = e.End;
@@ -135,21 +132,20 @@ namespace Turnos.Controllers
                             v.IsFullDay = e.IsFullDay;
                             v.ThemeColor = TraerColorPorEstados(e);
                             v.IdTransporteTipo = e.IdTransporteTipo;
-                            v.TransporteTipo = e.TransporteTipo == null ? "" : e.TransporteTipo;
+                            v.TransporteTipo = e.TransporteTipo;
                             v.KGPrevistos = e.KGPrevistos;
                             v.PalletsPrevistos = e.PalletsPrevistos;
                             v.IdTipoBoca = e.IdTipoBoca;
                             v.IdBoca = idBoca;
                             v.ConfirmadoProveedor = e.ConfirmadoProveedor;
+                            v.ConfirmadoAdherente = e.ConfirmadoAdherente;
                         }
                     }
                     else
                     {
-                        e.TransporteTipo = e.TransporteTipo == null ? "" : e.TransporteTipo;
-                        e.ThemeColor = TraerColorPorEstados(e);
                         e.Empid = empid;
-                        e.Provid = provid;
                         e.IdBoca = idBoca;
+                        e.ThemeColor = TraerColorPorEstados(e);
                         _context.Turno.Add(e);
                     }
 
@@ -165,19 +161,6 @@ namespace Turnos.Controllers
             }
             var jsonResult = new { status = status, errorFeriado = errorFeriado, errorEvento = errorEvento, errorBoca = errorBoca };
             return Json(jsonResult);
-        }
-
-        private string TraerColorPorEstados(TrnTurno e)
-        {
-            string color = "";
-            TrnBocaTipo trnTipoBoca = _context.TrnBocaTipo.Where(a => a.IdTipoBoca == e.IdTipoBoca && a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
-
-            if (trnTipoBoca.Codigo.Trim() == "D")
-                color = "lightGreen";
-            else if (trnTipoBoca.Codigo.Trim() == "R" && !e.ConfirmadoAdherente)
-                color = "#FA9C99";   //Rojo claro         
-            
-            return color;
         }
 
         [HttpPost]
@@ -205,10 +188,9 @@ namespace Turnos.Controllers
             var v = _context.Turno.Where(a => a.EventID == eventID).FirstOrDefault();
             if (v != null)
             {
-                v.ConfirmadoProveedor = true;
+                v.ConfirmadoAdherente = true;
                 if (v.ConfirmadoProveedor && v.ConfirmadoAdherente)
                     v.ThemeColor = "#6F8908"; //Verde oscuro
-
                 _context.SaveChanges();
                 status = true;
             }
@@ -218,14 +200,14 @@ namespace Turnos.Controllers
         }
 
         [HttpPost]
-        public int TraerDiasPrevision(int idTipoBoca)
+        public string Getdato(int eventID)
         {
-            var v = _context.TrnBoca.Where(a => a.Empid == configuration.GetSection("empid").Value && a.IdTipoBoca == idTipoBoca);
-            
+            var v = _context.Turno.Where(a => a.EventID == eventID).FirstOrDefault();
             if (v != null)
-                return (from x in v select x.DiasPrevision).Min();
+                return v.Empid;
             else
-                return 0;
+                return "";
+
         }
 
         [HttpPost]
@@ -244,48 +226,27 @@ namespace Turnos.Controllers
             ePlaceDBContext context = new ePlaceDBContext();
             TrnBoca trnBoca = new TrnBoca(configuration);
             trnBoca.Empid = configuration.GetSection("empid").Value;
-            trnBoca.IdPlanta = idPlanta;            
+            trnBoca.IdPlanta = idPlanta;
             return trnBoca.TraerHorarioMaximoPorBoca(dia);
         }
 
         [HttpPost]
         //SE TOMA EL VALOR MINIMO ENTRE TODAS LAS BOCAS DEPENDIENDO EL TIPO SELECCIONADO
-        public string TraerCantidadMinutosSegmento(byte idTipoBoca, string idPlanta)
+        public string TraerCantidadMinutosSegmento(string idPlanta)
         {
             ePlaceDBContext context = new ePlaceDBContext();
             TrnBoca trnBoca = new TrnBoca(configuration);
             trnBoca.IdPlanta = idPlanta;
-            trnBoca.IdTipoBoca = idTipoBoca;
             trnBoca.Empid = configuration.GetSection("empid").Value;
-            return TimeSpan.FromMinutes(trnBoca.TraerSegmentoMinimoPorBoca()).ToString();
+            return TimeSpan.FromMinutes(trnBoca.TraerSegmentoMinimo()).ToString();
         }
 
-        [HttpPost]
-        //SI ES TIPO T (CARGA Y DESCARGA) SOLO PUEDEN VERSE LOS DATOS DE LOS TURNOS PERO NO EDITARLOS
-        public JsonResult PermiteEdicion(byte idTipoBoca)
+        public string TraerNombreProveedor(string empid)
         {
-            bool permite = true;
-            TrnBocaTipo trnTipoBoca = _context.TrnBocaTipo.Where(a => a.IdTipoBoca == idTipoBoca && a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
-            if (trnTipoBoca.Codigo.Trim() == "T")
-                permite = false;
-
-            var jsonResult = new { permite = permite };
-            return Json(jsonResult);
+            TrnUsuarioMaestros trnUsuarioMaestros = _context.TrnUsuarioMaestros.Where(a => a.usr_Id == empid).FirstOrDefault();
+            return trnUsuarioMaestros.nombre.Trim() + ": ";
         }
 
-        [HttpPost]
-        //VERIFICA DISPONIBILIDAD DE BOCA SIEMPRE Y CUANDO EL TIPO DE BOCA NO SEA T (ESTA ULTIMA VALIDACION LA REALIZA ANTES DE VERIFICAR ESTO)           
-        public JsonResult VerificarBocaDisponibleporTipo(byte idTipoBoca)
-        {
-            bool bocaDisponible = false;
-
-            TrnBoca trnBoca = _context.TrnBoca.Where(a => a.IdTipoBoca == idTipoBoca && a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
-            if (trnBoca != null && trnBoca.IdBoca != 0)
-                bocaDisponible = true;
-
-            var jsonResult = new { bocaDisponible = bocaDisponible };
-            return Json(jsonResult);
-        }        
 
         [HttpPost]
         public DateTime TraerFechaDesdeEvento(int eventID)
@@ -296,7 +257,42 @@ namespace Turnos.Controllers
             else
                 return DateTime.Now;
 
-        }        
+        }
+
+        public JsonResult ObtenerReferenciaDeBocas(string idPlanta)
+        {
+            List<TrnBoca> bocas = new List<TrnBoca>();
+            bocas = _context.TrnBoca.Where(a => a.IdPlanta == idPlanta && a.Empid == configuration.GetSection("empid").Value).ToList();
+
+            return Json(bocas);
+        }
+
+        public string TraerColorPorIdBoca(int IdBoca)
+        {
+            
+            TrnBoca boca = _context.TrnBoca.Where(a => a.IdBoca == IdBoca && a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();            
+            return boca.color;
+        }
+
+        public string TraerCodigoPorTipoBoca(int IdTipoBoca)
+        {
+            TrnBocaTipo tipoBoca = new TrnBocaTipo();
+            tipoBoca = _context.TrnBocaTipo.Where(a => a.IdTipoBoca == IdTipoBoca && a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
+            return tipoBoca.Codigo.Trim();
+        }
+
+        private string TraerColorPorEstados(TrnTurno e)
+        {
+            string color = "";
+            TrnBocaTipo trnTipoBoca = _context.TrnBocaTipo.Where(a => a.IdTipoBoca == e.IdTipoBoca && a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
+
+            if (trnTipoBoca.Codigo.Trim() == "R")
+                color = "orange";
+            else
+                color = "yellow";
+
+            return color;
+        }
 
     }
 }

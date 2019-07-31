@@ -9,6 +9,7 @@
     <script src="~/Scripts/modernizr-2.6.2.js"></script>
 </head>
 <body>
+
     @*<div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -23,36 +24,28 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Calendario Turnos", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })</li>
-                    <li>@Html.ActionLink("Admin Bocas", "Index", "Bocas", new { area = "" }, new { @class = "navbar-brand" })</li>
-                    <li>@Html.ActionLink("Admin Tipo Transporte", "Index", "TransporteTipo", new { area = "" }, new { @class = "navbar-brand" })</li>
-                    <li>@Html.ActionLink("Admin Calendario Planta", "Index", "CalendarioPlantas", new { area = "" }, new { @class = "navbar-brand" })</li>
-                    <li>@Html.ActionLink("Admin Calendario detalle", "Index", "TrnCalendarioFeriadoDetalles", new { area = "" }, new { @class = "navbar-brand" })</li>
-                    <li>@Html.ActionLink("Configuración", "Index", "TrnCustomizacion", new { area = "" }, new { @class = "navbar-brand" })</li>
-                    <li>@Html.ActionLink("CalendarioPlanta", "Index", "CalendarioPlanta", new { area = "" }, new { @class = "navbar-brand" })</li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            Calendario de Feriados
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>@Html.ActionLink("Nuevo Calendario", "Index", "Feriados", new { area = "" }, new { @class = "navbar-brand" })</li>
-                            <li>@Html.ActionLink("Administrar Calendarios", "Index", "CalendarioFeriados", new { area = "" }, new { @class = "navbar-brand" })</li>
-                        </ul>
-                    </li>
-                </ul>
+    <li>@Html.ActionLink("Admin Bocas", "Index", "Bocas", new { area = "" }, new { @class = "navbar-brand" })</li>
+        <li>@Html.ActionLink("Admin Tipo Transporte", "Index", "TransporteTipo", new { area = "" }, new { @class = "navbar-brand" })</li>
+        <li>@Html.ActionLink("Admin Calendario Planta", "Index", "CalendarioPlantas", new { area = "" }, new { @class = "navbar-brand" })</li>
+        <li>@Html.ActionLink("Admin Calendario detalle", "Index", "TrnCalendarioFeriadoDetalles", new { area = "" }, new { @class = "navbar-brand" })</li>
+    <li>@Html.ActionLink("Feriados", "Index", "TrnFeriado", new { area = "" }, new { @class = "navbar-brand" })</li>
+    <li>@Html.ActionLink("Configuración", "Index", "TrnCustomizacion", new { area = "" }, new { @class = "navbar-brand" })</li>
+    <li>@Html.ActionLink("CalendarioPlanta", "Index", "CalendarioPlanta", new { area = "" }, new { @class = "navbar-brand" })</li>
+    
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    <br />
-    <br />
-    <br />
-    <br />*@
+        <br />
+        <br />
+        <br />
+        <br />*@
     <div class="container body-content">
         @RenderBody()
         @*<hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Módulo de Turnos</p>
-        </footer>*@
+            <footer>
+                <p>&copy; @DateTime.Now.Year - Módulo de Turnos</p>
+            </footer>*@
     </div>
 
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>

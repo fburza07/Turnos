@@ -56,7 +56,7 @@ namespace Turnos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Empid,HorarioMinimo,HorarioMaximo")] TrnCustomizacion trnCustomizacion)
+        public async Task<IActionResult> Create([Bind("Empid,HorarioMinimo,HorarioMaximo,DiasLaborables")] TrnCustomizacion trnCustomizacion)
         {
             if (ModelState.IsValid)
             {
@@ -89,7 +89,7 @@ namespace Turnos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Empid,HorarioMinimo,HorarioMaximo")] TrnCustomizacion trnCustomizacion)
+        public async Task<IActionResult> Edit(string id, [Bind("Empid,HorarioMinimo,HorarioMaximo,DiasLaborables")] TrnCustomizacion trnCustomizacion)
         {
             if (id != trnCustomizacion.Empid)
             {

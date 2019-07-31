@@ -23,7 +23,7 @@ namespace Turnos.Models
         {
         }
 
-        public virtual DbSet<Turnos.Models.TrnBoca> TrnBoca { get; set; }
+        public virtual DbSet<Turnos.Models.TrnBoca> TrnBoca { get; set; }        
         public virtual DbSet<Turnos.Models.TrnBocaTipo> TrnBocaTipo { get; set; }
         public DbSet<Turnos.Models.TrnTurno> Turno { get; set; }
         public DbSet<Turnos.Models.TrnFeriadoCabecera> FeriadoCabecera { get; set; }
@@ -31,6 +31,9 @@ namespace Turnos.Models
         public DbSet<Turnos.Models.TrnCustomizacion> customizacion { get; set; }
         public DbSet<Turnos.Models.TrnCalendarioPlantaCabecera> CalendarioPlantaCabecera { get; set; }
         public DbSet<Turnos.Models.TrnCalendarioPlanta> CalendarioPlanta { get; set; }
+        public DbSet<Turnos.Models.TrnUsuarioPlanta> TrnUsuarioPlanta { get; set; }
+        public DbSet<Turnos.Models.TrnProvMapSocio> TrnProvMapSocio { get; set; }
+        public DbSet<Turnos.Models.TrnUsuarioMaestros> TrnUsuarioMaestros { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {            
@@ -67,15 +70,16 @@ namespace Turnos.Models
                     .HasMaxLength(20)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Estado)
-                    .IsRequired()
-                    .HasMaxLength(1)
-                    .IsUnicode(false);
+                entity.Property(e => e.Estado);
+
+                entity.Property(e => e.DiasPrevision);
 
                 entity.Property(e => e.UsuarioResponsableBoca)
                     .IsRequired()
                     .HasMaxLength(20)
-                    .IsUnicode(false);
+                    .IsUnicode(false);             
+
+                entity.Property(e => e.color);
 
                 entity.HasOne(d => d.TrnCalendarioplantaCabeceraNavigation)
                     .WithMany(p => p.TrnBoca)
@@ -94,7 +98,8 @@ namespace Turnos.Models
                     .HasForeignKey(d => d.IdTipoBoca)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TRN_Boca_TRN_BocaTipo");
-            });
+               
+            });           
 
             modelBuilder.Entity<TrnBocaTipo>(entity =>
             {
@@ -144,6 +149,11 @@ namespace Turnos.Models
                     .HasMaxLength(20)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Provid)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.End).HasColumnType("datetime");
 
                 entity.Property(e => e.Start).HasColumnType("datetime");
@@ -161,6 +171,7 @@ namespace Turnos.Models
                 entity.Property(e => e.KGPrevistos).HasColumnName("KGPrevistos");
 
                 entity.Property(e => e.PalletsPrevistos).HasColumnName("PalletsPrevistos");
+
             });
 
             modelBuilder.Entity<TrnFeriadoCabecera>(entity =>
@@ -218,6 +229,8 @@ namespace Turnos.Models
 
                 entity.Property(e => e.HorarioMaximo).HasColumnType("datetime");
                 
+                entity.Property(e => e.DiasLaborables).HasColumnName("DiasLaborables");
+
             });
 
             modelBuilder.Entity<TrnCalendarioPlantaCabecera>(entity =>
@@ -237,8 +250,7 @@ namespace Turnos.Models
             });
 
             modelBuilder.Entity<TrnCalendarioPlanta>(entity =>
-            {
-                //entity.Ignore(i => i.turnos);
+            {                
                 entity.HasKey(e => e.EventID)
                     .HasName("PK_CalendarioPlanta");
 
@@ -265,6 +277,45 @@ namespace Turnos.Models
 
                 entity.Property(e => e.ThemeColor).HasMaxLength(10);
                 entity.Property(e => e.Dow).HasMaxLength(1);
+            });
+
+            modelBuilder.Entity<TrnUsuarioPlanta>(entity =>
+            {
+                
+                entity.HasKey(e => e.User_Id);
+
+                entity.ToTable("UsuarioPlantas");
+
+                entity.Property(e => e.Codigo).HasColumnName("Codigo");
+
+                entity.Property(e => e.Descripcion).HasColumnName("Codigo");
+
+            });
+
+            modelBuilder.Entity<TrnProvMapSocio>(entity =>
+            {                                
+                entity.HasKey(e => e.Prov_Id);
+
+                entity.HasKey(e => e.Emp_Id);
+
+                entity.ToTable("ProvMapSocio");
+
+                entity.Property(e => e.Prov_Id).HasColumnName("prov_id");
+
+                entity.Property(e => e.Emp_Id).HasColumnName("emp_id");
+                
+
+            });
+
+            modelBuilder.Entity<TrnUsuarioMaestros>(entity =>
+            {
+
+                entity.HasKey(e => e.usr_Id);
+
+                entity.ToTable("UsuarioMaestros");
+
+                entity.Property(e => e.nombre).HasColumnName("nombre");
+
             });
         }
     }

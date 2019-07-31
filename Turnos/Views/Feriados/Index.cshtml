@@ -129,8 +129,9 @@
         $(document).ready(function () {
             var events = [];
             var selectedEvent = null;
-            var horarioMinimo = TraerHorarioMinimo();
-            var horarioMaximo = TraerHorarioMaximo();
+            var horarioMinimo = "";
+            var horarioMaximo = "";
+            var diasLaborables = "";
             FetchEventAndRenderCalendar($("#ddlCalendarioFeriado").val());
             function FetchEventAndRenderCalendar(idCalendarioFeriado) {
                 events = [];
@@ -159,25 +160,26 @@
                         alert('Error');
                     }
                 })
-            }
+            }            
 
-            function TraerHorarioMinimo() {
+            function GenerateCalendar(events) {
+                $('#calender').fullCalendar('destroy');
                 $.ajax({
                     type: "POST",
                     url: "Feriados/TraerHorarioMinimo",
+                    async: false,
                     success: function (respuesta) {
                         horarioMinimo = respuesta;
                     },
                     error: function () {
                         alert('Error occured');
                     }
-                })
-            }
+                });
 
-            function TraerHorarioMaximo() {
                 $.ajax({
                     type: "POST",
                     url: "Feriados/TraerHorarioMaximo",
+                    async: false,
                     success: function (respuesta) {
                         horarioMaximo = respuesta;
                     },
@@ -185,11 +187,19 @@
                         alert('Error occured');
                     }
                 });
-            }
 
+                $.ajax({
+                    type: "POST",                    
+                    url: "Feriados/TraerDiasLaborables",
+                    async: false,
+                    success: function (respuesta) {
+                        diasLaborables = respuesta;
+                    },
+                    error: function () {
+                        alert('Error occured');
+                    }
+                });
 
-            function GenerateCalendar(events) {
-                $('#calender').fullCalendar('destroy');
                 $('#calender').fullCalendar({
                     contentHeight: 550,
                     defaultDate: new Date(),
@@ -203,7 +213,7 @@
                     businessHours: {
                         start: horarioMinimo,
                         end: horarioMaximo,
-                        dow: [1, 2, 3, 4, 5, 6]
+                        dow: "" + diasLaborables + "" 
                     },
                     selectConstraint: 'businessHours',
                     eventLimit: true,
@@ -223,7 +233,7 @@
                         $description.append($('<p/>').html('<b>Descripción:</b>' + calEvent.description));
                         $('#myModal #pDetails').empty().html($description);
 
-                        $('#myModal').modal();
+                        $('#myModal').modal({ backdrop: 'static', keyboard: false }) 
                         //MostrarDetalle(calEvent);
 
                     },
@@ -337,7 +347,7 @@
             //SEGUIR ACA ABRIR EL POPUP DE DETALLE Y LUEGO EDICION
             function AbrirPopupNuevoFeriado() {
                 $('#txtDescripcion').val('');
-                $('#myModalCalendario').modal();
+                $('#myModalCalendario').modal({ backdrop: 'static', keyboard: false })                 
             }
 
             $('#btnGuardarCalendario').click(function () {
@@ -435,7 +445,7 @@
                         //$('#ddThemeColor').val(selectedEvent.color);
                     }
                     $('#myModal').modal('hide');
-                    $('#myModalSave').modal();
+                    $('#myModalSave').modal({ backdrop: 'static', keyboard: false })                    
                 }
             }
 

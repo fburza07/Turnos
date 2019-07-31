@@ -13,6 +13,9 @@
     <thead>
         <tr>
             <th nowrap>
+                Planta
+            </th>
+            <th nowrap>
                 Boca de Entrega
             </th>
             <th>
@@ -20,13 +23,16 @@
             </th>
             <th>
                 Estado
-            </th>               
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdPlanta)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.BocaEntrega)
             </td>
@@ -35,7 +41,7 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Estado)
-            </td>            
+            </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.IdBoca">Editar</a> |
                 <a asp-action="Details" asp-route-id="@item.IdBoca">Detalle</a> |

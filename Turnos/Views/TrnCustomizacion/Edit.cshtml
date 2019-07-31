@@ -4,9 +4,7 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>TrnCustomizacion</h4>
+<h4>Admin. Dias Laborables</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -24,13 +22,100 @@
                 <span asp-validation-for="HorarioMaximo" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkLunes" /> Lunes</label>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkMartes" /> Martes</label>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkMiercoles" /> Miercoles</label>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkJueves" /> Jueves</label>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkViernes" /> Viernes</label>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkSabado" /> Sabado</label>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" id="chkDomingo" /> Domingo</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input asp-for="DiasLaborables" type="hidden" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Grabar" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Volver</a>
 </div>
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#chkLunes').change(function () {
+                    ArmarDiasLaborables();
+            });
+            $('#chkMartes').change(function () {
+                ArmarDiasLaborables();
+            });
+            $('#chkMiercoles').change(function () {
+                ArmarDiasLaborables();
+            });
+            $('#chkJueves').change(function () {
+                ArmarDiasLaborables();
+            });
+            $('#chkViernes').change(function () {
+                ArmarDiasLaborables();
+            });
+            $('#chkSabado').change(function () {
+                ArmarDiasLaborables();
+            });
+            $('#chkDomingo').change(function () {
+                ArmarDiasLaborables();
+            });
+
+
+            function ArmarDiasLaborables() {
+                var cadena ="["
+                if ($("#chkLunes").is(':checked')) {
+                    cadena = cadena + "1,";
+                }
+                if ($("#chkMartes").is(':checked')) {
+                    cadena = cadena + "2,";
+                }
+                if ($("#chkMiercoles").is(':checked')) {
+                    cadena = cadena + "3,";
+                }
+                if ($("#chkJueves").is(':checked')) {
+                    cadena = cadena + "4,";
+                }
+                if ($("#chkViernes").is(':checked')) {
+                    cadena = cadena + "5,";
+                }
+                if ($("#chkSabado").is(':checked')) {
+                    cadena = cadena + "6,";
+                }
+                if ($("#chkDomingo").is(':checked')) {
+                    cadena = cadena + "7,";
+                }
+
+                if (cadena.charAt(cadena.length - 1) == ",") {
+                    cadena =  cadena.substring(0, cadena.length - 1);
+                }
+                cadena = cadena + "]"
+                $("#DiasLaborables").val(cadena);
+            }
+
+
+        });
+    </script>
+}
 

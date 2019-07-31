@@ -14,6 +14,7 @@ namespace Turnos.Models
         public string Empid { get; set; }        
         public DateTime HorarioMinimo { get; set; }
         public DateTime HorarioMaximo { get; set; }
-        
+        public string DiasLaborables { get; set; }
+
     }
 }

@@ -4,27 +4,25 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
-
 <div>
-    <h4>TrnCustomizacion</h4>
+    <h4>Admin. Dias Laborables</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.HorarioMinimo)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.HorarioMinimo)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.HorarioMaximo)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.HorarioMaximo)
-        </dd>
+        </dd>        
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Empid">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Empid">Editar</a> |
+    <a asp-action="Index">Volver</a>
 </div>

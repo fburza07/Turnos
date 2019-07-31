@@ -50,40 +50,45 @@
                     <div class="form-group">
                         <label>Inicio</label>
                         <div class="input-group date" id="dtp1">
-                            <input type="text" id="txtStart" class="form-control" />
+                            <input type="time" id="txtStart" class="form-control" />
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
-                        </div>
+                        </div>                        
                     </div>
+                    @*<div class="form-group">
+                            <div class="checkbox">
+                                <label><input type="checkbox" id="chkIsFullDay" checked="checked" />  Es evento de todo el día</label>
+                            </div>
+                        </div>*@
                     <div class="form-group">
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="chkIsFullDay" checked="checked" />  Es evento de todo el día</label>
-                        </div>
-                    </div>
-                    <div class="form-group" id="divEndDate" style="display:none">
                         <label>Fin</label>
                         <div class="input-group date" id="dtp2">
-                            <input type="text" id="txtEnd" class="form-control" />
+                            <input type="time" id="txtEnd" class="form-control" />
+
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
-                        </div>
+                        </div>                        
+                    </div>
+                    <div class="form-group" style="display:none">
+                        <input type="date" id="hdStart" class="form-control" />
+                        <input type="date" id="hdEnd" class="form-control" />
                     </div>
                     <div class="form-group">
                         <label>Descripción</label>
                         <textarea id="txtDescription" rows="3" class="form-control"></textarea>
                     </div>
                     @*<div class="form-group">
-                        <label>Color del tema</label>
-                        <select id="ddThemeColor" class="form-control">
-                            <option value="">Default</option>
-                            <option value="red">Rojo</option>
-                            <option value="blue">Azul</option>
-                            <option value="black">Negro</option>
-                            <option value="green">Verde</option>
-                        </select>
-                    </div>*@
+                            <label>Color del tema</label>
+                            <select id="ddThemeColor" class="form-control">
+                                <option value="">Default</option>
+                                <option value="red">Rojo</option>
+                                <option value="blue">Azul</option>
+                                <option value="black">Negro</option>
+                                <option value="green">Verde</option>
+                            </select>
+                        </div>*@
                     <button type="button" id="btnSave" class="btn btn-success">Guardar</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                 </form>
@@ -115,19 +120,20 @@
 <div id="Detalle">
 
 </div>
-<link href="~/fullcalendar/fullcalendar.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css" rel="stylesheet" />
 <link href="~/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
 @section Scripts{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-    <script src="~/fullcalendar/fullcalendar.min.js"></script>
-    <script src='~/fullcalendar/locale/es.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/locale/es.js'></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
     <script>
 
         $(document).ready(function () {
-            var horarioMinimo = TraerHorarioMinimo();
-            var horarioMaximo = TraerHorarioMaximo();
+            var horarioMinimo = "";
+            var horarioMaximo = "";
+            var diasLaborables = "";
             var events = [];
             var selectedEvent = null;
             FetchEventAndRenderCalendar($("#ddlCalendarioPlanta").val());
@@ -138,7 +144,7 @@
                     type: "GET",
                     url: "CalendarioPlanta/ObtenerCalendarioPlanta",
                     data: { 'idCalendarioPlanta': idCalendarioPlanta },
-                    success: function (data) {
+                    success: function (data) {                        
                         $.each(data, function (i, v) {
                             events.push({
                                 eventID: v.EventID,
@@ -146,8 +152,8 @@
                                 empid: v.Empid,
                                 title: v.Subject,
                                 description: v.Description,
-                                start: moment(v.Start),
-                                end: v.End != null ? moment(v.End) : null,
+                                start: moment(v.Start).format("HH:mm"),
+                                end: v.End != null ? moment(v.End).format("HH:mm") : null,
                                 color: v.ThemeColor,
                                 allDay: v.IsFullDay,
                                 dow: "[" + v.Dow + "]"
@@ -163,9 +169,11 @@
 
             }
 
-            function TraerHorarioMinimo() {
+            function GenerateCalendar(events) {
+                $('#calender').fullCalendar('destroy');
                 $.ajax({
                     type: "POST",
+                    async: false,
                     url: "CalendarioPlanta/TraerHorarioMinimo",
                     success: function (respuesta) {
                         horarioMinimo = respuesta;
@@ -173,12 +181,11 @@
                     error: function () {
                         alert('Error occured');
                     }
-                })
-            }
+                });
 
-            function TraerHorarioMaximo() {
                 $.ajax({
                     type: "POST",
+                    async: false,
                     url: "CalendarioPlanta/TraerHorarioMaximo",
                     success: function (respuesta) {
                         horarioMaximo = respuesta;
@@ -187,10 +194,19 @@
                         alert('Error occured');
                     }
                 });
-            }
 
-            function GenerateCalendar(events) {
-                $('#calender').fullCalendar('destroy');
+                $.ajax({
+                    type: "POST",
+                    async: false,
+                    url: "CalendarioPlanta/TraerDiasLaborables",
+                    success: function (respuesta) {
+                        diasLaborables = respuesta;
+                    },
+                    error: function () {
+                        alert('Error occured');
+                    }
+                });
+
                 $('#calender').fullCalendar({
                     editable: true,
                     contentHeight: 550,
@@ -200,14 +216,14 @@
                     events: events,
                     //allDayDefault: true,
                     header: {
-                        left: 'agendaWeek',
+                        left: '',
                         center: '',
                         right: ''
                     },
                     businessHours: {
                         start: horarioMinimo,
                         end: horarioMaximo,
-                        dow: [1, 2, 3, 4, 5, 6]
+                        dow: "" + diasLaborables + ""
                     },
                     allDayDefault: false,
                     selectable: true,
@@ -216,7 +232,7 @@
                     eventDurationEditable: false,
                     allDaySlot: false,
                     //selectConstraint: 'businessHours',
-                    columnHeaderFormat: 'ddd',
+                    columnFormat: 'dddd',
                     //eventLimit: true,
 
                     slotDuration: '01:00:00',
@@ -225,10 +241,8 @@
                         selectedEvent = calEvent;
                         $('#myModal #eventTitle').text(calEvent.title);
                         var $description = $('<div/>');
-                        $description.append($('<p/>').html('<b>Inicia:</b>' + calEvent.start.format("DD-MMM-YYYY HH:mm")));
-                        if (calEvent.end != null) {
-                            $description.append($('<p/>').html('<b>Finaliza:</b>' + calEvent.end.format("DD-MMM-YYYY HH:mm")));
-                        }
+                        $description.append($('<p/>').html('<b>Inicia:</b>' + moment(calEvent.start).format("HH:mm")));
+                        $description.append($('<p/>').html('<b>Finaliza:</b>' + moment(calEvent.end).format("HH:mm")));
                         $description.append($('<p/>').html('<b>Descripción:</b>' + calEvent.description));
                         $('#myModal #pDetails').empty().html($description);
 
@@ -266,8 +280,8 @@
                                     IdCalendarioPlanta: $("#ddlCalendarioPlanta").val(),
                                     empid: event.empid,
                                     Subject: event.title,
-                                    Start: event.start.format('DD/MM/YYYY HH:mm'),
-                                    End: event.allDay == true ? '1900-01-01 00:00:00' : event.end.format('DD/MM/YYYY HH:mm'),
+                                    Start: moment(event.start).format('DD/MM/YYYY HH:mm'),
+                                    End: moment(event.end).format('DD/MM/YYYY HH:mm'),
                                     Description: event.description,
                                     ThemeColor: event.color,
                                     IsFullDay: event.allDay,
@@ -383,36 +397,35 @@
             })
 
             $('#dtp1').datetimepicker({
-                format: 'DD/MM/YYYY HH:mm'
+                format: 'HH:mm'
             });
             $('#dtp2').datetimepicker({
-                format: 'DD/MM/YYYY HH:mm'
+                format: 'HH:mm'
             });
 
-            $('#chkIsFullDay').change(function () {
-                if ($(this).is(':checked')) {
-                    $('#divEndDate').hide();
-                }
-                else {
-                    $('#divEndDate').show();
-                }
-            });
+            //$('#chkIsFullDay').change(function () {
+            //    if ($(this).is(':checked')) {
+            //        $('#divEndDate').hide();
+            //    }
+            //    else {
+            //        $('#divEndDate').show();
+            //    }
+            //});
 
-            function openAddEditForm() {                
+            function openAddEditForm() {
                 if ($('#ddlCalendarioPlanta').val() == null) {
-                    alert('Ingrese un nuevo calendario de planta o seleccione uno!');                    
+                    alert('Ingrese un nuevo calendario de planta o seleccione uno!');
                 }
                 else {
                     if (selectedEvent != null) {
                         $('#hdEventID').val(selectedEvent.eventID);
                         $('#hdIdCalendario').val($("#ddlCalendarioPlanta").val());
                         $('#txtSubject').val(selectedEvent.title);
-                        $('#txtStart').val(selectedEvent.start.format('DD/MM/YYYY HH:mm'));
-                        $('#chkIsFullDay').prop("checked", selectedEvent.allDay || false);
-                        $('#chkIsFullDay').change();
-                        $('#txtEnd').val(selectedEvent.end != null ? selectedEvent.end.format('DD/MM/YYYY HH:mm') : '');
+                        $('#txtStart').val(moment(selectedEvent.start).format('HH:mm'));
+                        $('#hdStart').val(moment(selectedEvent.start).format('YYYY-MM-DD'));
+                        $('#txtEnd').val(moment(selectedEvent.end).format('HH:mm'));
+                        $('#hdEnd').val(moment(selectedEvent.end).format('YYYY-MM-DD'));
                         $('#txtDescription').val(selectedEvent.description);
-                        //$('#ddThemeColor').val(selectedEvent.color);
                     }
                     $('#myModal').modal('hide');
                     $('#myModalSave').modal();
@@ -420,8 +433,8 @@
             }
 
             $('#btnSave').click(function () {
-                var startDate = moment($('#txtStart').val(), "DD/MM/YYYY HH:mm A").toDate();
-                var endDate = moment($('#txtEnd').val(), "DD/MM/YYYY HH:mm A").toDate();
+                var startDate = moment($('#hdStart').val().trim() + ' ' + $('#txtStart').val().trim(), "YYYY-MM-DD HH:mm").toDate();
+                var endDate = moment($('#hdEnd').val().trim() + ' ' + $('#txtEnd').val().trim(), "YYYY-MM-DD HH:mm").toDate();
                 //validaciones
                 if ($('#txtSubject').val().trim() == "") {
                     alert('Asunto requerido');
@@ -431,7 +444,7 @@
                     alert('Fecha Inicio requerida');
                     return;
                 }
-                if ($('#chkIsFullDay').is(':checked') == false && $('#txtEnd').val().trim() == "") {
+                if ($('#txtEnd').val().trim() == "") {
                     alert('Fecha Fin requerida');
                     return;
                 }
@@ -446,13 +459,13 @@
                 var data = {
                     EventID: $('#hdEventID').val(),
                     IdCalendarioPlanta: $("#ddlCalendarioPlanta").val(),
-                    Subject: $('#txtSubject').val().trim(),
-                    Start: $('#txtStart').val().trim(),
-                    End: $('#chkIsFullDay').is(':checked') ? '1900-01-01 00:00:00.000' : $('#txtEnd').val().trim(),
+                    Subject: $('#txtSubject').val(),
+                    Start: $('#hdStart').val().trim() + ' ' + $('#txtStart').val().trim(),
+                    End: $('#hdEnd').val().trim() + ' ' + $('#txtEnd').val().trim(),
                     Description: $('#txtDescription').val(),
                     //ThemeColor: $('#ddThemeColor').val(),
-                    IsFullDay: $('#chkIsFullDay').is(':checked'),
-                    Dow: moment($('#txtStart').val(), "DD/MM/YYYY HH:mm A").toDate().getDay(),
+                    IsFullDay: false,
+                    Dow: startDate.getDay(),
                 }
 
                 if (GrabarCalendarioPlanta(data) == false)

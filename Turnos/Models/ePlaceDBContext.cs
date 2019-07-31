@@ -64,15 +64,16 @@ namespace Turnos.Models
                     .HasMaxLength(20)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Estado)
-                    .IsRequired()
-                    .HasMaxLength(1)
-                    .IsUnicode(false);
+                entity.Property(e => e.DiasPrevision);
+
+                entity.Property(e => e.Estado).HasColumnName("Estado");                    
 
                 entity.Property(e => e.UsuarioResponsableBoca)
                     .IsRequired()
                     .HasMaxLength(20)
                     .IsUnicode(false);
+
+                entity.Property(e => e.color);
 
                 entity.HasOne(d => d.TrnCalendarioplantaCabeceraNavigation)
                     .WithMany(p => p.TrnBoca)
