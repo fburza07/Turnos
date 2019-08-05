@@ -22,9 +22,13 @@ namespace Turnos.Controllers
         }
 
         // GET: TrnCustomizacions
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string empid)
         {
-            return View(await _context.TrnCustomizacion.ToListAsync());
+            if (empid == null || empid == "")
+                empid = configuration.GetSection("empid").Value;
+            configuration.GetSection("empid").Value = empid;
+
+            return View(await _context.TrnCustomizacion.Where(a => a.Empid == empid).ToListAsync());
         }
 
         // GET: TrnCustomizacions/Details/5

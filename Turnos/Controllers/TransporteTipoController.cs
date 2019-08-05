@@ -22,9 +22,14 @@ namespace Turnos.Controllers
         }
 
         // GET: TransporteTipo
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string empid)
         {
-            return View(await _context.TransporteTipo.ToListAsync());
+            var transporteTipo = _context.TransporteTipo.Where(a => a.Empid == empid);
+            if (empid == null || empid == "")
+                empid = configuration.GetSection("empid").Value;
+            configuration.GetSection("empid").Value = empid;
+
+            return View(await transporteTipo.ToListAsync());
         }
 
         // GET: TransporteTipo/Details/5

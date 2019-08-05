@@ -25,7 +25,7 @@ namespace Turnos.Controllers
         // GET: Bocas
         public async Task<IActionResult> Index(string empid)
         {            
-            var ePlaceDBContext = _context.TrnBoca.Include(t => t.IdTipoBocaNavigation);
+            var ePlaceDBContext = _context.TrnBoca.Include(t => t.IdTipoBocaNavigation).Where(a => a.Empid == empid);
             if (empid == null || empid == "")
                 empid = configuration.GetSection("empid").Value;
             configuration.GetSection("empid").Value = empid;

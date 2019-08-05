@@ -35,7 +35,7 @@ namespace Turnos.Controllers
 
         public IActionResult Index(string provid)
         {
-            provid = "AR3071542751";
+            //provid = "AR3071542751";
             ePlaceDBContext context = new ePlaceDBContext();
             if (provid == null || provid == "")
                 provid = configuration.GetSection("provid").Value;

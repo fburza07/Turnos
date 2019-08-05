@@ -154,7 +154,7 @@
                 events = [];
                 $.ajax({
                     type: "GET",
-                    url: "Home/ObtenerTurnos",
+                    url: "Turnos/Home/ObtenerTurnos",
                     data: { 'idTipoBoca': idTipoBoca, 'idPlanta': $("#Codigo").val() },
                     success: function (data) {
                         $.each(data, function (i, v) {
@@ -188,7 +188,7 @@
 
                 //$.ajax({
                 //    type: "POST",
-                //    url: "Home/TraerCantidadMinutosSegmento",
+                //    url: "Turnos/Home/TraerCantidadMinutosSegmento",
                 //    data: { 'idTipoBoca': $("#IdTipoBoca").val() },
                 //    success: function (respuesta) {
                 //        cantMinSegmento = respuesta;
@@ -203,7 +203,7 @@
             function TraerDiasPrevision() {
                 $.ajax({
                     type: "POST",
-                    url: "Home/TraerDiasPrevision",
+                    url: "Turnos/Home/TraerDiasPrevision",
                     data: { 'idTipoBoca': $("#IdTipoBoca").val() },
                     success: function (respuesta) {
                         minDiasPrevicionTipoBoca = respuesta;
@@ -218,7 +218,7 @@
                 $.ajax({
                     type: "POST",
                     async: false,
-                    url: "Home/TraerHorarioMinimoPorBoca",
+                    url: "Turnos/Home/TraerHorarioMinimoPorBoca",
                     data: { 'dia': dia, 'idPlanta': $("#Codigo").val() },
                     success: function (respuesta) {
                         switch (dia) {
@@ -254,7 +254,7 @@
             function TraerHorarioMaximoPorBoca(dia) {
                 $.ajax({
                     type: "POST",
-                    url: "Home/TraerHorarioMaximoPorBoca",
+                    url: "Turnos/Home/TraerHorarioMaximoPorBoca",
                     async: false,
                     data: { 'dia': dia, 'idPlanta': $("#Codigo").val() },
                     success: function (respuesta) {
@@ -295,7 +295,7 @@
             function TraerCantidadMinutosSegmento() {
                 $.ajax({
                     type: "POST",                    
-                    url: "Home/TraerCantidadMinutosSegmento",
+                    url: "Turnos/Home/TraerCantidadMinutosSegmento",
                     async: false,
                     data: { 'idTipoBoca': $("#IdTipoBoca").val(), 'idPlanta': $("#Codigo").val() },
                     success: function (respuesta) {
@@ -312,7 +312,7 @@
                 $.ajax({
                     type: "POST",
                     async: false,
-                    url: "Home/PermiteEdicion",
+                    url: "Turnos/Home/PermiteEdicion",
                     data: { 'idTipoBoca': $("#IdTipoBoca").val() },
                     success: function (respuesta) {
                         if (respuesta.permite) {
@@ -330,7 +330,7 @@
                 $.ajax({
                     type: "POST",
                     async: false,
-                    url: "Home/VerificarBocaDisponibleporTipo",
+                    url: "Turnos/Home/VerificarBocaDisponibleporTipo",
                     data: { 'idTipoBoca': $("#IdTipoBoca").val() },
                     success: function (respuesta) {
                         if (respuesta.bocaDisponible) {
@@ -351,7 +351,7 @@
                 $.ajax({
                     type: "POST",
                     async: false,
-                    url: "Home/TraerFechaDesdeEvento",
+                    url: "Turnos/Home/TraerFechaDesdeEvento",
                     data: { 'eventID': eventID },
                     success: function (respuesta) {
                         rtn = respuesta;
@@ -432,7 +432,7 @@
                     eventConstraint: 'businessHours',
                     selectConstraint: {
                         start: moment().format('YYYY-MM-DD HH:mm'),
-                        end: '2100-01-01' // hard coded goodness unfortunately
+                        end: '2100-01-01' 
                     },
                     eventLimit: true,
                     eventDurationEditable: false,
@@ -580,7 +580,7 @@
                 if (selectedEvent != null && confirm('¿Está seguro de eliminar el Turno?')) {
                     $.ajax({
                         type: "POST",
-                        url: 'Home/BorrarTurno',
+                        url: 'Turnos/Home/BorrarTurno',
                         data: { 'eventID': selectedEvent.eventID },
                         success: function (data) {
                             if (data.status) {
@@ -600,7 +600,7 @@
                 if (selectedEvent != null) {
                     $.ajax({
                         type: "POST",
-                        url: 'Home/ConfirmarTurno',
+                        url: 'Turnos/Home/ConfirmarTurno',
                         data: { 'eventID': selectedEvent.eventID },
                         success: function (data) {
                             if (data.status) {
@@ -704,7 +704,7 @@
             function GrabarTurno(data, revertFunc) {
                 $.ajax({
                     type: "POST",
-                    url: 'Home/GrabarTurno',
+                    url: 'Turnos/Home/GrabarTurno',
                     data: { 'e': data, 'idPlanta': $("#Codigo").val().trim() },
                     success: function (data) {
                         if (!data.errorFeriado) {

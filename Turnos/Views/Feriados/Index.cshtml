@@ -75,15 +75,15 @@
                         <textarea id="txtDescription" rows="3" class="form-control"></textarea>
                     </div>
                     @*<div class="form-group">
-                        <label>Color del tema</label>
-                        <select id="ddThemeColor" class="form-control">
-                            <option value="">Default</option>
-                            <option value="red">Rojo</option>
-                            <option value="blue">Azul</option>
-                            <option value="black">Negro</option>
-                            <option value="green">Verde</option>
-                        </select>
-                    </div>*@
+                            <label>Color del tema</label>
+                            <select id="ddThemeColor" class="form-control">
+                                <option value="">Default</option>
+                                <option value="red">Rojo</option>
+                                <option value="blue">Azul</option>
+                                <option value="black">Negro</option>
+                                <option value="green">Verde</option>
+                            </select>
+                        </div>*@
                     <button type="button" id="btnSave" class="btn btn-success">Guardar</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                 </form>
@@ -160,7 +160,7 @@
                         alert('Error');
                     }
                 })
-            }            
+            }
 
             function GenerateCalendar(events) {
                 $('#calender').fullCalendar('destroy');
@@ -189,7 +189,7 @@
                 });
 
                 $.ajax({
-                    type: "POST",                    
+                    type: "POST",
                     url: "Feriados/TraerDiasLaborables",
                     async: false,
                     success: function (respuesta) {
@@ -213,7 +213,7 @@
                     businessHours: {
                         start: horarioMinimo,
                         end: horarioMaximo,
-                        dow: "" + diasLaborables + "" 
+                        dow: "" + diasLaborables + ""
                     },
                     selectConstraint: 'businessHours',
                     eventLimit: true,
@@ -233,7 +233,7 @@
                         $description.append($('<p/>').html('<b>Descripción:</b>' + calEvent.description));
                         $('#myModal #pDetails').empty().html($description);
 
-                        $('#myModal').modal({ backdrop: 'static', keyboard: false }) 
+                        $('#myModal').modal({ backdrop: 'static', keyboard: false })
                         //MostrarDetalle(calEvent);
 
                     },
@@ -331,10 +331,14 @@
                         url: 'Feriados/BorrarCalendario',
                         data: data,
                         success: function (data) {
-                            if (data.status) {
-                                //actualizar el calendario con el primero de la lista
-                                $('#ddlCalendarioFeriado option[value=' + $('#hdId').val() + ']').remove();
-                                FetchEventAndRenderCalendar($("#ddlCalendarioFeriado option:first").val());
+                            if (!data.errorFK) {
+                                if (data.status) {
+                                    //actualizar el calendario con el primero de la lista
+                                    $('#ddlCalendarioFeriado option[value=' + $('#hdId').val() + ']').remove();
+                                    FetchEventAndRenderCalendar($("#ddlCalendarioFeriado option:first").val());
+                                }
+                            } else {
+                                alert('No puede borrar el calendario ya que esta asociado a una boca');
                             }
                         },
                         error: function () {
@@ -347,7 +351,7 @@
             //SEGUIR ACA ABRIR EL POPUP DE DETALLE Y LUEGO EDICION
             function AbrirPopupNuevoFeriado() {
                 $('#txtDescripcion').val('');
-                $('#myModalCalendario').modal({ backdrop: 'static', keyboard: false })                 
+                $('#myModalCalendario').modal({ backdrop: 'static', keyboard: false })
             }
 
             $('#btnGuardarCalendario').click(function () {
@@ -427,7 +431,7 @@
                 }
             });
 
-            function openAddEditForm() {                
+            function openAddEditForm() {
                 if ($('#ddlCalendarioFeriado').val() == null) {
                     alert('Ingrese un nuevo calendario de planta o seleccione uno!');
                     revertFunc();
@@ -445,7 +449,7 @@
                         //$('#ddThemeColor').val(selectedEvent.color);
                     }
                     $('#myModal').modal('hide');
-                    $('#myModalSave').modal({ backdrop: 'static', keyboard: false })                    
+                    $('#myModalSave').modal({ backdrop: 'static', keyboard: false })
                 }
             }
 
@@ -493,7 +497,7 @@
                     url: 'Feriados/GrabarFeriado',
                     data: data,
                     success: function (data) {
-                        if (data.status) {                                                        
+                        if (data.status) {
                             FetchEventAndRenderCalendar($('#ddlCalendarioFeriado').val());
                             $('#myModalSave').modal('hide');
                         }

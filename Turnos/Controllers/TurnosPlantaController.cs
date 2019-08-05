@@ -37,7 +37,7 @@ namespace Turnos.Controllers
 
         public IActionResult Index(string empid)
         {
-            empid = "AR3050450732";
+            //empid = "AR3050450732";
             ePlaceDBContext context = new ePlaceDBContext();
             if (empid == null || empid == "")
                 empid = configuration.GetSection("empid").Value;

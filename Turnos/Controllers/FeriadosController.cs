@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Mvc;
 using Turnos.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
 
 namespace Turnos.Controllers
 {
@@ -88,6 +90,7 @@ namespace Turnos.Controllers
         public JsonResult BorrarCalendario(int idCalendarioFeriado)
         {
             var status = false;
+            var errorFK = false;
 
             try
             {
@@ -100,13 +103,31 @@ namespace Turnos.Controllers
                 _context.SaveChanges();
                 status = true;
             }
-            catch (Exception)
+            catch (DbUpdateException ex)
             {
+                var sqlException = ex.GetBaseException() as SqlException;
+                if (sqlException != null)
+                {
+                    if (sqlException.Errors.Count > 0)
+                    {
+                        switch (sqlException.Errors[0].Number)
+                        {
+                            case 547: // Foreign Key violation
+                                errorFK = true;
+                                break;
+                            default:
+                                throw;
+                        }
+                    }
+                }
+                else
+                {
+                    throw;
+                }
                 status = false;
-                throw;
             }
 
-            var jsonResult = new { status = status };
+            var jsonResult = new { status = status, errorFK = errorFK };
             return Json(jsonResult);
         }       
 
