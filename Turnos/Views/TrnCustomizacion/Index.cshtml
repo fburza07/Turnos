@@ -6,39 +6,67 @@
 
 <h2>Admin. Dias Laborables</h2>
 
-<p>
-    <a asp-action="Create">Nuevo</a>
-</p>
+<div id="mostrarBotonNuevo" style="display:block">
+    <p>
+        <a asp-action="Create">Nuevo</a>
+    </p>
+</div>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.HorarioMinimo)
+                Horario Mínimo
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HorarioMaximo)
+                Horario Máximo
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DiasLaborables)
+                Dias Laborables
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.HorarioMinimo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HorarioMaximo)
-            </td>            
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Empid">Editar</a> |
-                <a asp-action="Details" asp-route-id="@item.Empid">Detalles</a> |
-                <a asp-action="Delete" asp-route-id="@item.Empid">Borrar</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.HorarioMinimo.ToString("HH:mm")
+                </td>
+                <td>
+                    @item.HorarioMaximo.ToString("HH:mm")
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Empid">Editar</a> |
+                    <a asp-action="Details" asp-route-id="@item.Empid">Detalles</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Empid">Borrar</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+
+@section Scripts {    
+    <script>
+        $(document).ready(function () {
+            var RootUrl = '@Url.Content("~/")';
+            $.ajax({
+                type: "POST",   
+                async: false,    
+                url: RootUrl + "TrnCustomizacion/ExistenDiasCargados",                
+                success: function (data) {
+                    if (data.existe)
+                        $("#mostrarBotonNuevo").css("display", "none");
+                    else
+                        $("#mostrarBotonNuevo").css("display", "block");
+                },
+                error: function () {
+                    alert('Error al verificar dias cargados');
+                }
+            });
+
+        });
+
+    </script>
+}

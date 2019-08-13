@@ -50,21 +50,21 @@
                     <div class="form-group">
                         <label>Inicio</label>
                         <div class="input-group date" id="dtp1">
-                            <input type="text" id="txtStart" class="form-control" />
+                            <input type="text" id="txtStart" readonly="readonly" class="form-control" />
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="chkIsFullDay" checked="checked" />  Es evento de todo el día</label>
-                        </div>
-                    </div>
-                    <div class="form-group" id="divEndDate" style="display:none">
+                    @*<div class="form-group">
+                            <div class="checkbox">
+                                <label><input type="checkbox" id="chkIsFullDay" checked="checked" />  Es evento de todo el día</label>
+                            </div>
+                        </div>*@
+                    <div class="form-group" id="divEndDate">
                         <label>Fin</label>
                         <div class="input-group date" id="dtp2">
-                            <input type="text" id="txtEnd" class="form-control" />
+                            <input type="text" id="txtEnd" readonly="readonly" class="form-control" />
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
@@ -74,16 +74,6 @@
                         <label>Descripción</label>
                         <textarea id="txtDescription" rows="3" class="form-control"></textarea>
                     </div>
-                    @*<div class="form-group">
-                            <label>Color del tema</label>
-                            <select id="ddThemeColor" class="form-control">
-                                <option value="">Default</option>
-                                <option value="red">Rojo</option>
-                                <option value="blue">Azul</option>
-                                <option value="black">Negro</option>
-                                <option value="green">Verde</option>
-                            </select>
-                        </div>*@
                     <button type="button" id="btnSave" class="btn btn-success">Guardar</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                 </form>
@@ -116,7 +106,8 @@
 <div id="Detalle">
 
 </div>
-<link href="~/fullcalendar/fullcalendar.min.css" rel="stylesheet" />
+
+<link href="~/fullcalendar/fullcalendar.css" rel="stylesheet" />
 <link href="~/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
 @section Scripts{
@@ -132,8 +123,9 @@
             var horarioMinimo = "";
             var horarioMaximo = "";
             var diasLaborables = "";
+            $('#hdId').val($('#ddlCalendarioFeriado').val());
             FetchEventAndRenderCalendar($("#ddlCalendarioFeriado").val());
-            function FetchEventAndRenderCalendar(idCalendarioFeriado) {
+            function FetchEventAndRenderCalendar(idCalendarioFeriado, date) {
                 events = [];
                 $.ajax({
                     type: "GET",
@@ -148,13 +140,16 @@
                                 title: v.Subject,
                                 description: v.Description,
                                 start: moment(v.Start),
-                                end: v.End != null ? moment(v.End) : null,
+                                end: moment(v.End),
                                 color: v.ThemeColor,
                                 allDay: v.IsFullDay
                             });
                         })
 
                         GenerateCalendar(events);
+
+                        if (date != null)
+                            $('#calender').fullCalendar('changeView', 'agendaWeek', date);
                     },
                     error: function (error) {
                         alert('Error');
@@ -201,9 +196,9 @@
                 });
 
                 $('#calender').fullCalendar({
-                    contentHeight: 550,
+                    contentHeight: 'auto',
                     defaultDate: new Date(),
-                    timeFormat: 'h(:mm)a',
+                    slotLabelFormat: "HH:mm",
                     defaultView: 'agendaWeek',
                     header: {
                         left: 'prev,next today',
@@ -216,25 +211,27 @@
                         dow: "" + diasLaborables + ""
                     },
                     selectConstraint: 'businessHours',
+                    eventConstraint: 'businessHours',
                     eventLimit: true,
-                    eventDurationEditable: false,
+                    eventDurationEditable: true,
                     events: events,
                     slotDuration: '01:00:00',
+                    minTime: horarioMinimo,
+                    maxTime: horarioMaximo,
+                    allDayDefault: false,
                     allDaySlot: false,
+                    nowIndicator: true,
                     eventClick: function (calEvent, jsEvent, view) {
-
-                        selectedEvent = calEvent;
+                        selectedEvent = calEvent;                        
                         $('#myModal #eventTitle').text(calEvent.title);
                         var $description = $('<div/>');
                         $description.append($('<p/>').html('<b>Inicia:</b>' + calEvent.start.format("DD-MMM-YYYY HH:mm")));
-                        if (calEvent.end != null) {
-                            $description.append($('<p/>').html('<b>Finaliza:</b>' + calEvent.end.format("DD-MMM-YYYY HH:mm")));
-                        }
-                        $description.append($('<p/>').html('<b>Descripción:</b>' + calEvent.description));
+                        $description.append($('<p/>').html('<b>Finaliza:</b>' + calEvent.end.format("DD-MMM-YYYY HH:mm")));
+                        $description.append($('<p/>').html('<b>Descripción:</b>' + (calEvent.description == null ? 'Sin descripción' : calEvent.description)));
+                        
                         $('#myModal #pDetails').empty().html($description);
 
-                        $('#myModal').modal({ backdrop: 'static', keyboard: false })
-                        //MostrarDetalle(calEvent);
+                        $('#myModal').modal({ backdrop: 'static', keyboard: false })                        
 
                     },
                     selectable: true,
@@ -250,7 +247,10 @@
                             allDay: false,
                             color: ''
                         };
-                        openAddEditForm();
+
+                        if (moment.duration(moment().diff(start)).asDays() < - 0.5) {
+                            openAddEditForm();
+                        }
                         // $('#calendar').fullCalendar('unselect');
                     },
                     editable: true,
@@ -265,11 +265,11 @@
                             } else {
                                 var data = {
                                     EventID: event.eventID,
-                                    IdCalendarioFeriado: event.idCalendarioFeriado,
+                                    IdCalendarioFeriado: $('#hdId').val(),
                                     empid: event.empid,
                                     Subject: event.title,
                                     Start: event.start.format('DD/MM/YYYY HH:mm'),
-                                    End: event.end != null ? event.end.format('DD/MM/YYYY HH:mm') : null,
+                                    End: event.end.format('DD/MM/YYYY HH:mm'),
                                     Description: event.description,
                                     ThemeColor: event.color,
                                     IsFullDay: event.allDay
@@ -278,9 +278,28 @@
                             }
                         }
                     },
+                    eventResize: function (event, delta, revertFunc) {
+                        if (!confirm("Esta seguro de este cambio?")) {
+                            alert(event.idCalendarioFeriado);
+                            revertFunc();
+                        } else {
+                            var data = {
+                                EventID: event.eventID,
+                                IdCalendarioFeriado: $('#hdId').val(),
+                                empid: event.empid,
+                                Subject: event.title,
+                                Start: event.start.format('DD/MM/YYYY HH:mm'),
+                                End: event.end.format('DD/MM/YYYY HH:mm'),
+                                Description: event.description,
+                                ThemeColor: event.color,
+                                IsFullDay: event.allDay
+                            };
+                            GrabarFeriado(data);
+                        }
+                    },
                     eventMouseover: function (data, event, view) {
 
-                        tooltip = '<div class="tooltiptopicevent" style="width:auto;height:auto;background:#feb811;position:absolute;z-index:10001;padding:10px 10px 10px 10px ;  line-height: 200%;">' + 'Titulo: ' + data.title + '</br>' + 'Descripcion: ' + ': ' + datonuevo(data.eventID).toString() + '</div>';
+                        tooltip = '<div class="tooltiptopicevent" style="width:auto;height:auto;background:#feb811;position:fixed;left: 45%;top: 45%;z-index:10001;padding:10px 10px 10px 10px ;  line-height: 200%;">' + 'Titulo: ' + data.title + '</br>' + '</div>';
 
 
                         $("body").append(tooltip);
@@ -289,7 +308,7 @@
                             $('.tooltiptopicevent').fadeIn('500');
                             $('.tooltiptopicevent').fadeTo('10', 1.9);
                         }).mousemove(function (e) {
-                            $('.tooltiptopicevent').css('top', e.pageY + 10);
+                            $('.tooltiptopicevent').css('top', e.pageY - 100);
                             $('.tooltiptopicevent').css('left', e.pageX + 20);
                         });
 
@@ -404,7 +423,7 @@
                         success: function (data) {
                             if (data.status) {
                                 //actualizar el calendario
-                                FetchEventAndRenderCalendar($("#ddlCalendarioFeriado").val());
+                                FetchEventAndRenderCalendar($("#ddlCalendarioFeriado").val(), moment(data.start).format("YYYY-MM-DD"));
                                 $('#myModal').modal('hide');
                             }
                         },
@@ -414,22 +433,22 @@
                     })
                 }
             })
-
+            /*
             $('#dtp1').datetimepicker({
                 format: 'DD/MM/YYYY HH:mm'
             });
             $('#dtp2').datetimepicker({
                 format: 'DD/MM/YYYY HH:mm'
             });
-
-            $('#chkIsFullDay').change(function () {
-                if ($(this).is(':checked')) {
-                    $('#divEndDate').hide();
-                }
-                else {
-                    $('#divEndDate').show();
-                }
-            });
+            */
+            //$('#chkIsFullDay').change(function () {
+            //    if ($(this).is(':checked')) {
+            //        $('#divEndDate').hide();
+            //    }
+            //    else {
+            //        $('#divEndDate').show();
+            //    }
+            //});
 
             function openAddEditForm() {
                 if ($('#ddlCalendarioFeriado').val() == null) {
@@ -442,11 +461,13 @@
                         $('#hdIdCalendario').val($("#ddlCalendarioFeriado").val());
                         $('#txtSubject').val(selectedEvent.title);
                         $('#txtStart').val(selectedEvent.start.format('DD/MM/YYYY HH:mm'));
-                        $('#chkIsFullDay').prop("checked", selectedEvent.allDay || false);
-                        $('#chkIsFullDay').change();
-                        $('#txtEnd').val(selectedEvent.end != null ? selectedEvent.end.format('DD/MM/YYYY HH:mm') : '');
-                        $('#txtDescription').val(selectedEvent.description);
-                        //$('#ddThemeColor').val(selectedEvent.color);
+                        //$('#chkIsFullDay').prop("checked", selectedEvent.allDay || false);
+                        //$('#chkIsFullDay').change();
+                        $('#txtEnd').val(selectedEvent.end.format('DD/MM/YYYY HH:mm'));
+                        if (selectedEvent.description != null)
+                            $('#txtDescription').val(selectedEvent.description);
+                        else
+                            $('#txtDescription').val('');
                     }
                     $('#myModal').modal('hide');
                     $('#myModalSave').modal({ backdrop: 'static', keyboard: false })
@@ -465,7 +486,7 @@
                     alert('Fecha Inicio requerida');
                     return;
                 }
-                if ($('#chkIsFullDay').is(':checked') == false && $('#txtEnd').val().trim() == "") {
+                if ($('#txtEnd').val().trim() == "") {
                     alert('Fecha Fin requerida');
                     return;
                 }
@@ -482,10 +503,9 @@
                     IdCalendarioFeriado: $('#hdIdCalendario').val(),
                     Subject: $('#txtSubject').val().trim(),
                     Start: $('#txtStart').val().trim(),
-                    End: $('#chkIsFullDay').is(':checked') ? null : $('#txtEnd').val().trim(),
+                    End: $('#txtEnd').val().trim(),
                     Description: $('#txtDescription').val(),
-                    //ThemeColor: $('#ddThemeColor').val(),
-                    IsFullDay: $('#chkIsFullDay').is(':checked')
+                    IsFullDay: false
                 }
                 GrabarFeriado(data);
                 //llama a función para enviar datos al server
@@ -497,8 +517,8 @@
                     url: 'Feriados/GrabarFeriado',
                     data: data,
                     success: function (data) {
-                        if (data.status) {
-                            FetchEventAndRenderCalendar($('#ddlCalendarioFeriado').val());
+                        if (data.status) {                            
+                            FetchEventAndRenderCalendar($('#ddlCalendarioFeriado').val(), moment(data.start).format("YYYY-MM-DD"));
                             $('#myModalSave').modal('hide');
                         }
                     },
@@ -506,11 +526,7 @@
                         alert('Error');
                     }
                 })
-            }
-
-            function MostrarDetalle(event) {
-                $('#Detalle').text(event.start);
-            }
+            }            
 
         })
     </script>

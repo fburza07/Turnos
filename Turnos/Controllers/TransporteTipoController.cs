@@ -12,10 +12,10 @@ namespace Turnos.Controllers
 {
     public class TransporteTipoController : Controller
     {
-        private readonly ePlaceDBContext _context;
+        private readonly TurnosContext _context;
         private IConfiguration configuration;
 
-        public TransporteTipoController(ePlaceDBContext context, IConfiguration configuration)
+        public TransporteTipoController(TurnosContext context, IConfiguration configuration)
         {
             _context = context;
             this.configuration = configuration;
@@ -24,7 +24,7 @@ namespace Turnos.Controllers
         // GET: TransporteTipo
         public async Task<IActionResult> Index(string empid)
         {
-            var transporteTipo = _context.TransporteTipo.Where(a => a.Empid == empid);
+            var transporteTipo = _context.TransporteTipo.Where(a => a.Empid == empid && a.IdTransporteTipo != 1); //1 = ninguno
             if (empid == null || empid == "")
                 empid = configuration.GetSection("empid").Value;
             configuration.GetSection("empid").Value = empid;
@@ -145,14 +145,24 @@ namespace Turnos.Controllers
         }
 
         // POST: TransporteTipo/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost]
+        public JsonResult Delete(int idTransporteTipo)
         {
-            var transporteTipo = await _context.TransporteTipo.FindAsync(id);
-            _context.TransporteTipo.Remove(transporteTipo);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var status = false;
+
+            if (!_context.Turno.Any(a => a.IdTransporteTipo == idTransporteTipo))
+            {
+                var v = _context.TransporteTipo.Where(a => a.IdTransporteTipo == idTransporteTipo).FirstOrDefault();
+                if (v != null)
+                {
+                    _context.TransporteTipo.Remove(v);
+                    _context.SaveChanges();
+                    status = true;
+                }
+            }
+
+            var jsonResult = new { status };
+            return Json(jsonResult);
         }
 
         private bool TransporteTipoExists(int id)

@@ -19,7 +19,14 @@
     <label asp-for="IdTipoBoca" class="control-label">Tipo Boca</label>
     <select asp-for="IdTipoBoca" class="form-control" asp-items="ViewBag.IdTipoBoca"></select>
 </div>
-
+<div class="form-group">
+    <label class="control-label">Filtro de confirmados</label>
+    <select id="ddlEstado" class="form-control">
+        <option value="">--Todos--</option>
+        <option value="NoConfirmados">Aún no Confirmados</option>
+    </select>
+</div>
+<br />
 <div id="calender"></div>
 <div id="myModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -37,6 +44,9 @@
                 </button>
                 <button id="btnConfirmar" class="btn btn-default btn-sm pull-right" style="margin-right:5px;">
                     <span class="glyphicon glyphicon-ok"></span> Confirmar
+                </button>
+                <button id="btnCancelar" class="btn btn-default btn-sm pull-right" style="margin-right:5px;">
+                    <span class="glyphicon glyphicon-remove"></span> Cancelar
                 </button>
                 <p id="pDetails"></p>
             </div>
@@ -64,21 +74,21 @@
                     <div class="form-group">
                         <label>Inicio</label>
                         <div class="input-group date" id="dtp1">
-                            <input type="text" id="txtStart" class="form-control" />
+                            <input type="text" id="txtStart" readonly="readonly" class="form-control" />
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
                         </div>
                     </div>
+                    @*<div class="form-group">
+                            <div class="checkbox">
+                                <label><input type="checkbox" id="chkIsFullDay" checked="checked" />  Es evento de todo el día</label>
+                            </div>
+                        </div>*@
                     <div class="form-group">
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="chkIsFullDay" checked="checked" />  Es evento de todo el día</label>
-                        </div>
-                    </div>
-                    <div class="form-group" id="divEndDate" style="display:none">
                         <label>Fin</label>
                         <div class="input-group date" id="dtp2">
-                            <input type="text" id="txtEnd" class="form-control" />
+                            <input type="text" id="txtEnd" readonly="readonly" class="form-control" />
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
@@ -99,7 +109,7 @@
                     <div class="form-group">
                         <label>Pallets prev</label>
                         <input type="text" id="txtPalletsPrevistos" maxlength="3" class="form-control" />
-                    </div>                    
+                    </div>
                     <button type="button" id="btnSave" class="btn btn-success">Guardar</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                 </form>
@@ -131,9 +141,11 @@
             }
         };
 
-        $(document).ready(function () {            
+        $(document).ready(function () {
             var color = ""
-            var cantMinSegmento = "";            
+            var cantMinSegmento = "";
+            var horarioMinimo = "";
+            var horarioMaximo = "";
             var minDiasPrevicionTipoBoca = "";
             var horarioMinimoPorBocaLunes = "";
             var horarioMaximoPorBocaLunes = "";
@@ -150,33 +162,62 @@
             var events = [];
             var selectedEvent = null;
             FetchEventAndRenderCalendar($("#IdTipoBoca").val());
-            function FetchEventAndRenderCalendar(idTipoBoca) {
+            function FetchEventAndRenderCalendar(idTipoBoca, date, estado) {
                 events = [];
                 $.ajax({
                     type: "GET",
                     url: "Turnos/Home/ObtenerTurnos",
-                    data: { 'idTipoBoca': idTipoBoca, 'idPlanta': $("#Codigo").val() },
+                    data: { 'idTipoBoca': idTipoBoca, 'idPlanta': $("#Codigo").val(), 'estado': estado },
                     success: function (data) {
                         $.each(data, function (i, v) {
-                            events.push({
-                                eventID: v.EventID,
-                                IdCalendarioFeriado: v.IdCalendarioFeriado == null ? 0 : v.IdCalendarioFeriado,
-                                empid: v.Empid,
-                                title: v.Subject,
-                                description: v.Description,
-                                start: moment(v.Start),
-                                end: v.End != null ? moment(v.End) : null,
-                                color: v.ThemeColor,
-                                allDay: v.IsFullDay,
-                                IdTransporteTipo: v.IdTransporteTipo,
-                                TransporteTipo: v.TransporteTipo,
-                                KGPrevistos: v.KGPrevistos,
-                                PalletsPrevistos: v.PalletsPrevistos,
-                                ConfirmadoProveedor: v.ConfirmadoProveedor
-                            });
+                            if (!v.Rendering) {
+                                events.push({
+                                    eventID: v.EventID,
+                                    IdCalendarioFeriado: v.IdCalendarioFeriado == null ? 0 : v.IdCalendarioFeriado,
+                                    empid: v.Empid,
+                                    title: v.Subject,
+                                    description: v.Description,
+                                    start: moment(v.Start),
+                                    end: v.End != null ? moment(v.End) : null,
+                                    color: v.ThemeColor,
+                                    allDay: v.IsFullDay,
+                                    IdTransporteTipo: v.IdTransporteTipo,
+                                    TransporteTipo: v.TransporteTipo,
+                                    KGPrevistos: v.KGPrevistos,
+                                    PalletsPrevistos: v.PalletsPrevistos,
+                                    ConfirmadoProveedor: v.ConfirmadoProveedor,
+                                    //rendering: 'background',
+                                    //ver que se puede hacer para que el evento de 3 dias de prevision no queden fuera de rango
+                                    //puede ser con un classname:  o ver que otra propiedad se puede asignar
+                                });
+                            }
+                            else {
+                                events.push({
+                                    eventID: v.EventID,
+                                    IdCalendarioFeriado: v.IdCalendarioFeriado == null ? 0 : v.IdCalendarioFeriado,
+                                    empid: v.Empid,
+                                    title: v.Subject,
+                                    description: v.Description,
+                                    start: moment(v.Start),
+                                    end: v.End != null ? moment(v.End) : null,
+                                    color: v.ThemeColor,
+                                    allDay: v.IsFullDay,
+                                    IdTransporteTipo: v.IdTransporteTipo,
+                                    TransporteTipo: v.TransporteTipo,
+                                    KGPrevistos: v.KGPrevistos,
+                                    PalletsPrevistos: v.PalletsPrevistos,
+                                    ConfirmadoProveedor: v.ConfirmadoProveedor,
+                                    rendering: 'background',
+                                    resourceEditable: false,
+                                    className: 'fc-bgevent'
+                                });
+                            }
+
                         })
 
                         GenerateCalendar(events);
+                        if (date != null)
+                            $('#calender').fullCalendar('changeView', 'agendaWeek', date);
                     },
                     error: function (error) {
                         alert('1');
@@ -294,7 +335,7 @@
 
             function TraerCantidadMinutosSegmento() {
                 $.ajax({
-                    type: "POST",                    
+                    type: "POST",
                     url: "Turnos/Home/TraerCantidadMinutosSegmento",
                     async: false,
                     data: { 'idTipoBoca': $("#IdTipoBoca").val(), 'idPlanta': $("#Codigo").val() },
@@ -379,10 +420,35 @@
                 TraerHorarioMaximoPorBoca(5);
                 TraerHorarioMaximoPorBoca(6);
                 TraerCantidadMinutosSegmento();
+
+                $.ajax({
+                    type: "POST",
+                    url: "Turnos/Home/TraerHorarioMinimo",
+                    async: false,
+                    success: function (respuesta) {
+                        horarioMinimo = respuesta;
+                    },
+                    error: function () {
+                        alert('Error occured');
+                    }
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "Turnos/Home/TraerHorarioMaximo",
+                    async: false,
+                    success: function (respuesta) {
+                        horarioMaximo = respuesta;
+                    },
+                    error: function () {
+                        alert('Error occured');
+                    }
+                });
+
                 $('#calender').fullCalendar({
-                    contentHeight: 550,
+                    contentHeight: 'auto',
                     defaultDate: new Date(),
-                    timeFormat: 'h(:mm)a',
+                    slotLabelFormat: "HH:mm",
                     defaultView: 'agendaWeek',
                     allDayDefault: false,
                     header: {
@@ -391,10 +457,13 @@
                         right: 'month,agendaWeek,agendaDay'
                     },
                     events: events,
+                    minTime: horarioMinimo,
+                    maxTime: horarioMaximo,
                     //defaultTimedEventDuration: cantMinSegmento, //duracion maxima de un evento
                     nowIndicator: true,
 
-
+                    eventConstraint: 'businessHours',
+                    selectConstraint: 'businessHours',
                     //TOMO LOS HORARIOS DIRECTAMENTE DEL CALENDARIO DE PLANTA PORQUE NO SE DEJA INGRESAR HORARIO FUERA DE LA CONFIGURACION DE LA EMPRESA
                     businessHours: [
                         {
@@ -427,15 +496,10 @@
                             end: horarioMaximoPorBocaSabado,
                             dow: horarioMinimoPorBocaSabado == '' ? '' : [6]
                         }
-                        
+
                     ],
-                    eventConstraint: 'businessHours',
-                    selectConstraint: {
-                        start: moment().format('YYYY-MM-DD HH:mm'),
-                        end: '2100-01-01' 
-                    },
                     eventLimit: true,
-                    eventDurationEditable: false,
+                    eventDurationEditable: true,
                     allDaySlot: false,
                     eventRender: function (event, element, view) {
                         if (moment().diff(event.start, 'minutes') > 0)
@@ -450,13 +514,24 @@
                             //if ((moment().diff(event.start, 'minutes') > 0))
                             //    element.css('background-color', "grey")
                         }
+
                     },
                     slotDuration: cantMinSegmento,
                     eventClick: function (calEvent, jsEvent, view) {
                         selectedEvent = calEvent;                        
-                        if (PermiteEdicion() && selectedEvent.eventID != 0 && moment().diff(selectedEvent.start, 'minutes') <= 0) {                            
-                            if (selectedEvent.ConfirmadoProveedor)
+                        if (jsEvent.target.classList.contains('fc-bgevent')) {
+                            alert('Click Background Event Area');
+                        }
+                        if (PermiteEdicion() && selectedEvent.eventID != 0 && moment().diff(selectedEvent.start, 'minutes') <= 0) {
+                            if (selectedEvent.ConfirmadoProveedor) {
                                 $('#myModal #btnConfirmar').prop("disabled", true).text('Aprobado').css("color", "green");
+                                $('#myModal #btnCancelar').prop("disabled", false);
+                            }
+                            else {
+                                $('#myModal #btnCancelar').prop("disabled", true);
+                                $('#myModal #btnConfirmar').prop("disabled", false).text('Confirmar').css("color", "black");
+                            }
+
                             $('#myModal #eventTitle').text(calEvent.title);
                             var $description = $('<div/>');
                             $description.append($('<p/>').html('<b>Inicia: </b>' + calEvent.start.format("DD-MMM-YYYY HH:mm")));
@@ -469,14 +544,13 @@
                                 $description.append($('<p/>').html('<b>KG previstos: </b>' + calEvent.KGPrevistos));
                                 $description.append($('<p/>').html('<b>Pallets prev: </b>' + calEvent.PalletsPrevistos));
                                 $('#myModal #pDetails').empty().html($description);
-                                $('#myModal').modal({ backdrop: 'static', keyboard: false })                                                                 
+                                $('#myModal').modal({ backdrop: 'static', keyboard: false })
                             }
 
                         }
                     },
                     selectable: true,
-                    select: function (start, end) {
-
+                    select: function (start, end, jsEvent) {                        
                         selectedEvent = {
                             eventID: 0,
                             title: '',
@@ -488,12 +562,15 @@
                             IdTransporteTipo: 0,
                             TransporteTipo: '',
                             KGPrevistos: 0,
-                            PalletsPrevistos: 0
+                            PalletsPrevistos: 0,
+                            rendering: 0,
                         };
-
-                        if (PermiteEdicion())
-                            VerificarBocaDisponibleporTipo()
-                    },
+                        
+                        if (moment.duration(moment().diff(start)).asDays() < -3) {  ///tres deberia ser dias de prevision
+                            if (PermiteEdicion())
+                                VerificarBocaDisponibleporTipo()
+                        }
+                    },                    
                     editable: true,
                     eventDrop: function (event, delta, revertFunc) {
                         evento = event;
@@ -501,7 +578,7 @@
                             revertFunc();
                             return false;
                         }
-                        if (!PermiteDragDrop(event)) {
+                        if (!PermiteDragDropyResize(event)) {
                             revertFunc();
                             return false;
                         }
@@ -516,7 +593,35 @@
                                 End: event.end != null ? event.end.format('DD/MM/YYYY HH:mm') : null,
                                 Description: event.description,
                                 ThemeColor: event.ThemeColor,
-                                IsFullDay: event.allDay,
+                                //IsFullDay: event.allDay,
+                                IdCalendarioPlanta: event.IdCalendarioPlanta,
+                                IdTransporteTipo: event.IdTransporteTipo,
+                                TransporteTipo: event.TransporteTipo,
+                                KGPrevistos: event.KGPrevistos,
+                                PalletsPrevistos: event.PalletsPrevistos,
+                                IdTipoBoca: $("#IdTipoBoca").val(),
+                                confirmadoProveedor: true,
+                            };
+                            GrabarTurno(data, revertFunc);
+                        }
+                    },
+                    eventResize: function (event, delta, revertFunc) {
+                        if (!PermiteDragDropyResize(event)) {
+                            revertFunc();
+                            return false;
+                        }
+                        if (!confirm("Esta seguro de este cambio?")) {
+                            revertFunc();
+                        } else {
+                            var data = {
+                                EventID: event.eventID,
+                                empid: event.empid,
+                                Subject: event.title,
+                                Start: event.start.format('DD/MM/YYYY HH:mm'),
+                                End: event.end != null ? event.end.format('DD/MM/YYYY HH:mm') : null,
+                                Description: event.description,
+                                ThemeColor: event.ThemeColor,
+                                //IsFullDay: event.allDay,
                                 IdCalendarioPlanta: event.IdCalendarioPlanta,
                                 IdTransporteTipo: event.IdTransporteTipo,
                                 TransporteTipo: event.TransporteTipo,
@@ -531,13 +636,11 @@
 
                     eventMouseover: function (data, event, view) {
                         if (data.eventID != 0) {
-
                             if (data.IdCalendarioFeriado != null && data.IdCalendarioFeriado != 0) {
-                                tooltip = '<div id="tooltip" class="tooltiptopicevent" style="width:auto;height:auto;background:#feb811;position:absolute;z-index:10001;padding:10px 10px 10px 10px ;  line-height: 200%;">' + data.title + '</br>' + 'Descripcion: ' + data.description + '</br>De: ' + moment(data.start).format("HH:mm") + ' a: ' + moment(data.end).format("HH:mm") + '</div>';
+                                tooltip = '<div id="tooltip" class="tooltiptopicevent" style="width:auto;height:auto;background:#feb811;position:fixed;left: 45%;top: 45%;z-index:10001;padding:10px 10px 10px 10px ;  line-height: 200%;">' + data.title + '</br>' + 'Descripcion: ' + data.description + '</br>De: ' + moment(data.start).format("HH:mm") + ' a: ' + moment(data.end).format("HH:mm") + '</div>';
                             } else {
-                                tooltip = '<div id="tooltip" class="tooltiptopicevent" style="width:auto;height:auto;background:#feb811;position:absolute;z-index:10001;padding:10px 10px 10px 10px ;  line-height: 200%;">' + data.title + '</br>' + 'Descripcion: ' + data.description + '</br>De: ' + moment(data.start).format("HH:mm") + ' a: ' + moment(data.end).format("HH:mm") + '</br>Tipo Transp: ' + (data.TransporteTipo == '' ? 'No asignado' : data.TransporteTipo) + '</br>' + 'KG previstos: ' + data.KGPrevistos + '</br>' + 'Pallets prev: ' + data.PalletsPrevistos + '</div>';
+                                tooltip = '<div id="tooltip" class="tooltiptopicevent" style="width:auto;height:auto;background:#feb811;position:fixed;left: 45%;top: 45%;z-index:10001;padding:10px 10px 10px 10px ;  line-height: 200%;">' + data.title + '</br>' + 'Descripcion: ' + data.description + '</br>De: ' + moment(data.start).format("HH:mm") + ' a: ' + moment(data.end).format("HH:mm") + '</br>Tipo Transp: ' + (data.TransporteTipo == '' ? 'No asignado' : data.TransporteTipo) + '</br>' + 'KG previstos: ' + data.KGPrevistos + '</br>' + 'Pallets prev: ' + data.PalletsPrevistos + '</div>';
                             }
-
 
                             $("body").append(tooltip);
                             $(this).mouseover(function (e) {
@@ -546,7 +649,7 @@
                                 $('.tooltiptopicevent').fadeIn('500');
                                 $('.tooltiptopicevent').fadeTo('10', 1.9);
                             }).mousemove(function (e) {
-                                $('.tooltiptopicevent').css('top', e.pageY + 10);
+                                $('.tooltiptopicevent').css('top', e.pageY - 140);
                                 $('.tooltiptopicevent').css('left', e.pageX + 20);
                             });
                         }
@@ -585,7 +688,7 @@
                         success: function (data) {
                             if (data.status) {
                                 //actualizar el calendario
-                                FetchEventAndRenderCalendar($('#IdTipoBoca').val());
+                                FetchEventAndRenderCalendar($('#IdTipoBoca').val(), moment(data.start).format("YYYY-MM-DD"));
                                 $('#myModal').modal('hide');
                             }
                         },
@@ -605,7 +708,7 @@
                         success: function (data) {
                             if (data.status) {
                                 //actualizar el calendario
-                                FetchEventAndRenderCalendar($("#IdTipoBoca").val());
+                                FetchEventAndRenderCalendar($("#IdTipoBoca").val(), data.start);
                                 $('#myModal').modal('hide');
                             }
                         },
@@ -616,16 +719,34 @@
                 }
             })
 
+            $('#btnCancelar').click(function () {
+                if (selectedEvent != null) {
+                    $.ajax({
+                        type: "POST",
+                        url: 'Turnos/Home/CancelarTurno',
+                        data: { 'eventID': selectedEvent.eventID },
+                        success: function (data) {
+                            if (data.status) {
+                                //actualizar el calendario
+                                FetchEventAndRenderCalendar($("#IdTipoBoca").val(), data.start);
+                                $('#myModal').modal('hide');
+                            }
+                        },
+                        error: function () {
+                            alert('10');
+                        }
+                    })
+                }
+            })
+            /*
             $('#dtp1').datetimepicker({
-                format: 'DD/MM/YYYY HH:mm',
-                enabledHours: [14, 15, 16]
+                format: 'DD/MM/YYYY HH:mm'
             });
             $('#dtp2').datetimepicker({
-                format: 'DD/MM/YYYY HH:mm',
-                enabledHours: [14, 15, 16]
-
+                format: 'DD/MM/YYYY HH:mm'
             });
-
+            */
+            /*
             $('#chkIsFullDay').change(function () {
                 if ($(this).is(':checked')) {
                     $('#divEndDate').hide();
@@ -633,10 +754,9 @@
                 else {
                     $('#divEndDate').show();
                 }
-            });
+            });*/
 
             function openAddEditForm() {
-
                 if ($('#IdTipoBoca').val() == null) {
                     alert('Selecciona un tipo de boca!');
                     revertFunc();
@@ -646,16 +766,20 @@
                         $('#hdEventID').val(selectedEvent.eventID);
                         $('#txtSubject').val(selectedEvent.title);
                         $('#txtStart').val(selectedEvent.start.format('DD/MM/YYYY HH:mm'));
-                        $('#chkIsFullDay').prop("checked", selectedEvent.allDay || false);
-                        $('#chkIsFullDay').change();
-                        $('#txtEnd').val(selectedEvent.end != null ? selectedEvent.end.format('DD/MM/YYYY HH:mm') : '');
-                        $('#txtDescription').val(selectedEvent.description);                        
+                        //$('#chkIsFullDay').prop("checked", selectedEvent.allDay || false);
+                        //$('#chkIsFullDay').change();
+                        $('#txtEnd').val(selectedEvent.end.format('DD/MM/YYYY HH:mm'));
+                        $('#txtDescription').val(selectedEvent.description);
                         $('#IdTransporteTipo').val(selectedEvent.IdTransporteTipo);
                         $('#txtKGPrevistos').val(selectedEvent.KGPrevistos);
-                        $('#txtPalletsPrevistos').val(selectedEvent.PalletsPrevistos);                       
+                        $('#txtPalletsPrevistos').val(selectedEvent.PalletsPrevistos);
+                    }
+                    else {
+
+                        $('#IdTransporteTipo').val(1);
                     }
                     $('#myModal').modal('hide');
-                    $('#myModalSave').modal({ backdrop: 'static', keyboard: false }) 
+                    $('#myModalSave').modal({ backdrop: 'static', keyboard: false })
 
                 }
 
@@ -673,7 +797,7 @@
                     alert('Fecha Inicio requerida');
                     return;
                 }
-                if ($('#chkIsFullDay').is(':checked') == false && $('#txtEnd').val().trim() == "") {
+                if ($('#txtEnd').val().trim() == "") {
                     alert('Fecha Fin requerida');
                     return;
                 }
@@ -688,17 +812,17 @@
                     EventID: $('#hdEventID').val(),
                     Subject: $('#txtSubject').val().trim(),
                     Start: $('#txtStart').val().trim(),
-                    End: $('#chkIsFullDay').is(':checked') ? null : $('#txtEnd').val().trim(),
-                    Description: $('#txtDescription').val(),                    
-                    IsFullDay: $('#chkIsFullDay').is(':checked'),
+                    End: $('#txtEnd').val().trim(),
+                    Description: $('#txtDescription').val(),
+                    //IsFullDay: $('#chkIsFullDay').is(':checked'),
                     IdTransporteTipo: $('#IdTransporteTipo').val(),
-                    TransporteTipo: $('#IdTransporteTipo option:selected').text() ? null : '',
                     KGPrevistos: $('#txtKGPrevistos').val(),
                     PalletsPrevistos: $('#txtPalletsPrevistos').val(),
-                    IdTipoBoca: $("#IdTipoBoca").val(),                    
+                    IdTipoBoca: $("#IdTipoBoca").val(),
+                    confirmadoProveedor: true
                 }
                 GrabarTurno(data);
-                //llama a función para enviar datos al server
+
             })
 
             function GrabarTurno(data, revertFunc) {
@@ -713,25 +837,25 @@
                                     if (data.status) {
                                         //actualiza calendario
                                         $('#myModalSave').modal('hide');
-                                        FetchEventAndRenderCalendar($('#IdTipoBoca').val());
+                                        FetchEventAndRenderCalendar($('#IdTipoBoca').val(), data.start);
                                     }
-                                } else { alert('No hay bocas disponibles!, existen otros turnos para este horario.'); revertFunc(); }
+                                } else { alert('No hay bocas disponibles!, existen otros turnos para este horario.'); revertFunc; }
                             }
-                            else { alert('No se encuentra boca disponible para este turno!'); revertFunc(); }
+                            else { alert('No se encuentra boca disponible para este turno!'); revertFunc; }
                         }
-                        else { alert('Esta intentando ingresar un turno un dia feriado!, intente otra fecha'); revertFunc(); }
+                        else { alert('Esta intentando ingresar un turno un dia feriado!, intente otra fecha'); revertFunc; }
                     },
                     error: function () {
                         alert('11');
                     }
                 })
-            }            
+            }
 
             function MostrarDetalle(event) {
                 $('#Detalle').text(event.start);
             }
 
-            function PermiteDragDrop(event) {
+            function PermiteDragDropyResize(event) {
                 var rtn = false;
                 //Si es feriado no permite dragdrop
                 if (event.IdCalendarioFeriado == 0 && event.eventID != 0) {
@@ -739,6 +863,10 @@
                 }
                 return rtn;
             }
+
+            $("#ddlEstado").change(function () {
+                FetchEventAndRenderCalendar($("#IdTipoBoca").val(), moment().format("YYYY-MM-DD"), $("#ddlEstado").val())
+            });
 
         })
     </script>

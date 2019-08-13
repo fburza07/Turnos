@@ -113,7 +113,7 @@ namespace Turnos.Controllers
                     {
                         switch (sqlException.Errors[0].Number)
                         {
-                            case 547: // Foreign Key violation
+                            case 547: // Error de Foreign Key 
                                 errorFK = true;
                                 break;
                             default:

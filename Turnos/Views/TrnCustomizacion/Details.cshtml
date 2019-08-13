@@ -9,20 +9,19 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.HorarioMinimo)
+            Horario Mínimo
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.HorarioMinimo)
+            @Model.HorarioMinimo.ToString("HH:mm")
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.HorarioMaximo)
+            Horario Máximo
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.HorarioMaximo)
-        </dd>        
+            @Model.HorarioMaximo.ToString("HH:mm")
+        </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Empid">Editar</a> |
-    <a asp-action="Index">Volver</a>
+    <a asp-action="Edit" asp-route-id="@Model.Empid">Editar</a> 
 </div>

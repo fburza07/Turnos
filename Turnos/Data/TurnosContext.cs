@@ -34,6 +34,8 @@ namespace Turnos.Models
         public DbSet<Turnos.Models.TrnUsuarioPlanta> TrnUsuarioPlanta { get; set; }
         public DbSet<Turnos.Models.TrnProvMapSocio> TrnProvMapSocio { get; set; }
         public DbSet<Turnos.Models.TrnUsuarioMaestros> TrnUsuarioMaestros { get; set; }
+        public DbSet<Turnos.Models.TrnUsuariosBoca> TrnUsuariosBoca { get; set; }
+        public virtual DbSet<TransporteTipo> TransporteTipo { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {            
@@ -74,7 +76,7 @@ namespace Turnos.Models
 
                 entity.Property(e => e.DiasPrevision);
 
-                entity.Property(e => e.UsuarioResponsableBoca)
+                entity.Property(e => e.user_name)
                     .IsRequired()
                     .HasMaxLength(20)
                     .IsUnicode(false);             
@@ -98,7 +100,13 @@ namespace Turnos.Models
                     .HasForeignKey(d => d.IdTipoBoca)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TRN_Boca_TRN_BocaTipo");
-               
+
+                entity.HasOne(d => d.TrnUsuariosBocaNavigation)
+                    .WithMany(p => p.TrnBoca)
+                    .HasForeignKey(d => d.user_name)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TRN_Boca_Usuarios");
+
             });           
 
             modelBuilder.Entity<TrnBocaTipo>(entity =>
@@ -127,6 +135,47 @@ namespace Turnos.Models
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<TransporteTipo>(entity =>
+            {
+                entity.HasKey(e => e.IdTransporteTipo);
+
+                entity.ToTable("TRN_TransporteTipo");
+
+                entity.Property(e => e.IdTransporteTipo);
+
+                entity.Property(e => e.Empid)
+                   .IsRequired()
+                   .HasMaxLength(20)
+                   .IsUnicode(false);
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Descripcion)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<TrnUsuariosBoca>(entity =>
+            {
+                entity.HasKey(e => e.user_name);
+
+                entity.ToTable("Usuarios");
+
+                entity.Property(e => e.user_id);
+
+                entity.Property(e => e.perfil);
+
+                entity.Property(e => e.nombre);
+
+                entity.Property(e => e.apellido);
+
+                entity.Property(e => e.eMail);
+
             });
 
             modelBuilder.Entity<TrnTurno>(entity =>
@@ -171,6 +220,8 @@ namespace Turnos.Models
                 entity.Property(e => e.KGPrevistos).HasColumnName("KGPrevistos");
 
                 entity.Property(e => e.PalletsPrevistos).HasColumnName("PalletsPrevistos");
+
+                entity.Property(e => e.Rendering).HasColumnName("Rendering");
 
             });
 

@@ -156,5 +156,62 @@ namespace Turnos.Controllers
         {
             return _context.TrnCustomizacion.Any(e => e.Empid == id);
         }
+
+        [HttpPost]
+        public JsonResult ExistenDiasCargados()
+        {
+            bool existe;
+            if (_context.TrnCustomizacion.Where(a => a.Empid == configuration.GetSection("empid").Value).FirstOrDefault() != null)
+                existe = true;
+            else
+                existe = false;
+            var jsonResult = new { existe = existe };
+            return Json(jsonResult);
+        }
+
+        [HttpPost]
+        public JsonResult TraerDiasSeleccionados()
+        {
+            bool lunesActivo = false, martesActivo = false, miercolesActivo = false, juevesActivo = false, viernesActivo = false, sabadoActivo = false, domingoActivo = false;
+
+            TrnCustomizacion trnCustomizacion = _context.TrnCustomizacion.Where(a => a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
+            if (trnCustomizacion != null)
+            {
+                String[] activos = trnCustomizacion.DiasLaborables.Split(",");
+                foreach (var item in activos)
+                {
+                    switch (item)
+                    {
+                        case "1":
+                            lunesActivo = true;
+                            break;
+                        case "2":
+                            martesActivo = true;
+                            break;
+                        case "3":
+                            miercolesActivo = true;
+                            break;
+                        case "4":
+                            juevesActivo = true;
+                            break;
+                        case "5":
+                            viernesActivo = true;
+                            break;
+                        case "6":
+                            sabadoActivo = true;
+                            break;
+                        case "7":
+                            domingoActivo = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            var jsonResult = new { lunesActivo, martesActivo, miercolesActivo, juevesActivo, viernesActivo, sabadoActivo, domingoActivo };
+
+            return Json(jsonResult);
+        }
     }
 }

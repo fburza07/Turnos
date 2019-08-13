@@ -10,6 +10,7 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" id="codigocolor" asp-for="color" />
             <div class="form-group">
                 <label asp-for="IdPlanta" class="control-label">Planta</label>
                 <select asp-for="IdPlanta" class="form-control" asp-items="ViewBag.IdPlanta"></select>
@@ -18,7 +19,7 @@
                 <label asp-for="color" class="control-label">Color</label>
                 <input type="button" asp-for="color" class="form-control" id="color-picker-background" />
             </div>
-            <input type="hidden" asp-for="color" />
+            <input type="hidden" id="codigocolor" asp-for="color" />
             <div class="form-group">
                 <label asp-for="BocaEntrega" class="control-label">Boca de Entrega</label>
                 <input asp-for="BocaEntrega" class="form-control" />
@@ -36,12 +37,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="SegmentoCantMin" class="control-label">Cantidad de minutos de segmento</label>
-                <input asp-for="SegmentoCantMin" class="form-control" />
+                <input asp-for="SegmentoCantMin" min="0" class="form-control" />
                 <span asp-validation-for="SegmentoCantMin" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="SegmentoCantPalletMax" class="control-label">Cantidad de pallet máxima por segmento</label>
-                <input asp-for="SegmentoCantPalletMax" class="form-control" />
+                <input asp-for="SegmentoCantPalletMax" min="0" class="form-control" />
                 <span asp-validation-for="SegmentoCantPalletMax" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -59,7 +60,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="CantidadCitasSimultaneas" class="control-label">Cantidad de citas simultaneas habilitadas</label>
-                <input asp-for="CantidadCitasSimultaneas" class="form-control" />
+                <input asp-for="CantidadCitasSimultaneas" min="0" class="form-control" />
                 <span asp-validation-for="CantidadCitasSimultaneas" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -68,23 +69,18 @@
             </div>
             <div class="form-group">
                 <label asp-for="DiasPrevision" class="control-label">Cantidad de dìas de prevision</label>
-                <input asp-for="DiasPrevision" class="form-control" />
+                <input asp-for="DiasPrevision" min="0" class="form-control" />
                 <span asp-validation-for="DiasPrevision" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UsuarioResponsableBoca" class="control-label">Usuario responsable de Planta / Boca</label>
-                <input asp-for="UsuarioResponsableBoca" class="form-control" />
-                <span asp-validation-for="UsuarioResponsableBoca" class="text-danger"></span>
+                <label asp-for="user_name" class="control-label">Usuario responsable de Planta / Boca</label>
+                <select asp-for="user_name" class="form-control" asp-items="ViewBag.user_name"></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Crear" class="btn btn-primary" />
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Volver</a>
 </div>
 
 @section Scripts {
@@ -99,12 +95,56 @@
     <script>
         $(document).ready(function () {
 
-            $('#color-picker-background')[0].style.backgroundColor = $("#color").val();
+            $('#color-picker-background')[0].style.backgroundColor = $("#codigocolor").val();
+            $('#color-picker-background')[0].style.color = $("#codigocolor").val();
+            $('#codigocolor').val($("#codigocolor").val());
             $(function () {
                 $('#color-picker-background').colorpicker().on('changeColor', function (e) {
-                    $('#color-picker-background')[0].style.backgroundColor = e.color.toHex();
+                   $('#color-picker-background')[0].style.backgroundColor = e.color.toHex();
+                    $('#color-picker-background')[0].style.color = e.color.toHex();
+                    $('#codigocolor').val(e.color.toHex());
                 });
             });
+
+            $('#SegmentoCantMin').blur(function (e) {
+                if ($('#SegmentoCantMin').val() < 0)
+                    $('#SegmentoCantMin').val(0);
+            });
+
+            $('#CantidadCitasSimultaneas').blur(function (e) {
+                if ($('#CantidadCitasSimultaneas').val() < 0)
+                    $('#CantidadCitasSimultaneas').val(0);
+            });
+
+            $('#SegmentoCantPalletMax').blur(function (e) {
+                if ($('#SegmentoCantPalletMax').val() < 0)
+                    $('#SegmentoCantPalletMax').val(0);
+            });
+
+            $('#DiasPrevision').blur(function (e) {
+                if ($('#DiasPrevision').val() < 0)
+                    $('#DiasPrevision').val(0);
+            });
+
+            $("#SegmentoCantMin").keypress(function (e) {
+                if (e.charCode == 45)
+                    e.preventDefault();
+            });
+
+            $("#CantidadCitasSimultaneas").keypress(function (e) {
+                if (e.charCode == 45)
+                    e.preventDefault();
+            });
+
+            $("#SegmentoCantPalletMax").keypress(function (e) {
+                if (e.charCode == 45)
+                    e.preventDefault();
+            });
+
+            $("#DiasPrevision").keypress(function (e) {
+                if (e.charCode == 45)
+                    e.preventDefault();
+            });  
 
         });
 

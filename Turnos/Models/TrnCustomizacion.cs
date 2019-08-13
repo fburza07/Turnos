@@ -10,7 +10,7 @@ namespace Turnos.Models
     [Table("TurnosCustomizacion")]
     public partial class TrnCustomizacion
     {
-        [Key]
+        [Key]        
         public string Empid { get; set; }        
         public DateTime HorarioMinimo { get; set; }
         public DateTime HorarioMaximo { get; set; }

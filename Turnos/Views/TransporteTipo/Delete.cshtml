@@ -4,42 +4,74 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Eliminar</h1>
+<h3>Eliminar</h3>
 
-<h3>¿Está seguro de eliminar el Tipo de Transporte?</h3>
 <div>
     <h1>Tipo de Transporte</h1>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Empid)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Empid)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descripcion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descripcion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Activo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Activo)
-        </dd>
-    </dl>
-    
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    Nombre
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Nombre)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Descripcion
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Descripcion)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Activo
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Activo)
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+
     <form asp-action="Delete">
-        <input type="hidden" asp-for="IdTransporteTipo" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Volver</a>
+        <input type="hidden" id="IdTransporteTipo" asp-for="IdTransporteTipo" />
+        <button type="button" id="btnDelete" class="btn btn-danger">Borrar</button>
     </form>
 </div>
+
+@section Scripts {
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/js/bootstrap-colorpicker.js"></script>
+
+    <script>
+        $('#btnDelete').click(function () {
+            if (confirm('¿Está seguro de eliminar el tipo de Transporte?')) {
+                $.ajax({
+                    type: "POST",
+                    url: "Delete",
+                    data: { 'idTransporteTipo': $('#IdTransporteTipo').val() },
+                    success: function (data) {
+                        if (!data.status) {
+                            alert("El tipo de transporte se encuentra asigando a turnos!");
+                            history.back(1);
+                        }
+                        else {
+                            window.location = document.referrer;
+                        }
+                    },
+                    error: function () {
+                        alert('Error');
+                    }
+                })
+            }
+        })
+
+    </script>
+}

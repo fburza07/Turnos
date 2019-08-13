@@ -13,23 +13,31 @@ namespace Turnos.Models
         public int IdBoca { get; set; }
         public string IdPlanta { get; set; }
         public string Empid { get; set; }
+        [Required(ErrorMessage = "Debe completar el nombre de la boca")]
         public string BocaEntrega { get; set; }
+        [Required(ErrorMessage = "Debe completar la descripción")]
         public string Descripcion { get; set; }
         public bool Estado { get; set; }
+        [Required(ErrorMessage = "Debe completar la cantidad de minutos")]
         public short SegmentoCantMin { get; set; }
+        [Required(ErrorMessage = "Debe completar la cantidad de pallets")]
         public short SegmentoCantPalletMax { get; set; }
         public int IdCalendarioPlanta { get; set; }
         public int IdCalendarioFeriado { get; set; }
         public bool VerificaSobreposicionHoraria { get; set; }
+        [Required(ErrorMessage = "Debe completar la cantidad de citas simultaneas")]
         public short CantidadCitasSimultaneas { get; set; }
         public byte IdTipoBoca { get; set; }
+        [Required(ErrorMessage = "Debe completar los dias de prevision")]
         public int DiasPrevision { get; set; }
-        public string UsuarioResponsableBoca { get; set; }        
+        public string user_name { get; set; }        
         public string color { get; set; }
         
         public virtual TrnBocaTipo IdTipoBocaNavigation { get; set; }
         public virtual TrnFeriadoCabecera TrnCalendarioFeriadoCabeceraNavigation { get; set; }
         public virtual TrnCalendarioPlantaCabecera TrnCalendarioplantaCabeceraNavigation { get; set; }
+        public virtual TrnUsuariosBoca TrnUsuariosBocaNavigation { get; set; }
+
         private IConfiguration Configuration;
         public TrnBoca()
         {
@@ -97,7 +105,7 @@ namespace Turnos.Models
                 ret = Convert.ToInt16(dt.Rows[0]["Segmento"]);
 
             return ret;
-        }
-        
+        }        
+
     }
 }

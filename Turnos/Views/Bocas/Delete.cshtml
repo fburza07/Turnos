@@ -4,96 +4,169 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Eliminar</h1>
+<h3>Eliminar</h3>
 
-<h3>¿Está seguro de eliminar la Boca de entrega?</h3>
+<input type="hidden" id="codigocolor" asp-for="color" />
 <div>
     <h1>Boca de entrega</h1>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.IdPlanta)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.IdPlanta)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BocaEntrega)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BocaEntrega)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Descripcion)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Descripcion)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Estado)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Estado)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SegmentoCantMin)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SegmentoCantMin)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SegmentoCantPalletMax)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SegmentoCantPalletMax)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.IdCalendarioPlanta)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.IdCalendarioPlanta)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.IdCalendarioFeriado)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.IdCalendarioFeriado)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.VerificaSobreposicionHoraria)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.VerificaSobreposicionHoraria)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.CantidadCitasSimultaneas)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.CantidadCitasSimultaneas)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DiasPrevision)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DiasPrevision)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.UsuarioResponsableBoca)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.UsuarioResponsableBoca)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.IdTipoBocaNavigation)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.IdTipoBocaNavigation.Codigo)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="IdBoca" />
-        <input type="submit" value="Eliminar" class="btn btn-danger" /> |
-        <a asp-action="Index">Volver</a>
-    </form>
+    <div class="table-responsive-sm">
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        Planta
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.IdPlanta)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Color
+                    </td>
+                    <td>
+                        <input style="width:100px" type="button" asp-for="color" class="form-control" id="colorboca" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Boca de Entrega
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.BocaEntrega)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Descripción
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Descripcion)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Estado
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Estado)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Minutos del segmento
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.SegmentoCantMin)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Pallets maximo
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.SegmentoCantPalletMax)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Calendario de Planta
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.TrnCalendarioplantaCabeceraNavigation.Descripcion)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Calendario de Feriados
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.TrnCalendarioFeriadoCabeceraNavigation.Descripcion)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Sobreposicion horaria
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.VerificaSobreposicionHoraria)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Citas simultaneas
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.CantidadCitasSimultaneas)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Días de prevision
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.DiasPrevision)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Usuario responsable
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.TrnUsuariosBocaNavigation.datosCompletos)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Tipo de boca
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.IdTipoBocaNavigation.Nombre)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        <input type="hidden" id="IdBoca" asp-for="IdBoca" />
+        <button type="button" id="btnDelete" class="btn btn-danger">Borrar</button>    
 </div>
+
+@section Scripts {
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/js/bootstrap-colorpicker.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#colorboca')[0].style.backgroundColor = $("#codigocolor").val();
+            $('#colorboca')[0].style.color = $("#codigocolor").val();
+            $('#codigocolor').val($("#codigocolor").val());
+
+
+            $('#btnDelete').click(function () {
+                if (confirm('¿Está seguro de eliminar la boca?')) {
+                    $.ajax({
+                        type: "POST",
+                        url: "Delete",
+                        data: { 'idBoca': $('#IdBoca').val() },
+                        success: function (data) {
+                            if (!data.status) {
+                                alert("La boca tiene turnos asignados, no se puede eliminar!");
+                                history.back(1);                                
+                            }
+                            else {
+                                window.location = document.referrer; 
+                            }
+                        },
+                        error: function () {
+                            alert('Error');
+                        }
+                    })
+                }
+            })
+
+        });
+
+    </script>
+}

@@ -170,7 +170,10 @@ namespace Turnos.Models
                         var targetType = IsNullableType(pro.PropertyType) ? Nullable.GetUnderlyingType(pro.PropertyType) : pro.PropertyType;
 
                         if (dr[column.ColumnName] == System.DBNull.Value && Nullable.GetUnderlyingType(pro.PropertyType) == null)
+                        {                            
+                            column.ReadOnly = false;
                             dr[column.ColumnName] = Convert.ChangeType(dr[column.ColumnName], targetType);
+                        }
                         //Set the value of the property                        
                         pro.SetValue(obj, dr[column.ColumnName], null);
 

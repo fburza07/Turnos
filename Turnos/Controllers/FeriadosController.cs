@@ -112,7 +112,7 @@ namespace Turnos.Controllers
                     {
                         switch (sqlException.Errors[0].Number)
                         {
-                            case 547: // Foreign Key violation
+                            case 547: // Error de Foreign Key
                                 errorFK = true;
                                 break;
                             default:
@@ -161,7 +161,7 @@ namespace Turnos.Controllers
             _context.SaveChanges();
             status = true;
 
-            var jsonResult = new { status = status };
+            var jsonResult = new { status = status, start = e.Start };
             return Json(jsonResult);
         }
 
@@ -171,7 +171,7 @@ namespace Turnos.Controllers
             var status = false;
 
             ePlaceDBContext context = new ePlaceDBContext();
-            //context.TrnBoca()
+            
             var v = _context.Feriado.Where(a => a.EventID == eventID).FirstOrDefault();
             if (v != null)
             {
@@ -180,7 +180,7 @@ namespace Turnos.Controllers
                 status = true;
             }
 
-            var jsonResult = new { status = status };
+            var jsonResult = new { status = status, start = v.Start };
             return Json(jsonResult);
         }
 

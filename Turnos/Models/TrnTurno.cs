@@ -33,6 +33,7 @@ namespace Turnos.Models
         public int IdBoca { get; set; }
         public bool ConfirmadoAdherente { get; set; }
         public bool ConfirmadoProveedor { get; set; }
+        public bool Rendering { get; set; }
 
         public virtual TrnBocaTipo IdTipoBocaNavigation { get; set; }
 
@@ -66,13 +67,17 @@ namespace Turnos.Models
             return existeEvento;
         }
 
-        internal List<TrnTurno> ObtenerTurnosPlanta(string codigo)
+        internal List<TrnTurno> ObtenerTurnosPlanta(string codigo, string estado)
         {
             List<TrnTurno> turnos = new List<TrnTurno>();
             Conexion cn = new Conexion(Configuration);
             SqlCommand sqlcommand = cn.GetCommand("TRN_ObtenerTurnosPlanta");
             sqlcommand.Parameters.AddWithValue("@EmpID", this.Empid);
-            sqlcommand.Parameters.AddWithValue("@IdPlanta", codigo);            
+            sqlcommand.Parameters.AddWithValue("@IdPlanta", codigo);
+            if (estado == null)
+                sqlcommand.Parameters.AddWithValue("@Estado", "");
+            else
+                sqlcommand.Parameters.AddWithValue("@Estado", "NoConfirmados");
             DataTable dt = cn.Execute(sqlcommand);
             turnos = cn.ConvertDataTable<TrnTurno>(dt);
             if (turnos.Count > 0)
@@ -81,7 +86,7 @@ namespace Turnos.Models
                 return new List<TrnTurno>();
         }
 
-        internal List<TrnTurno> ObtenerTurnos(byte idTipoBoca, string idPlanta)
+        internal List<TrnTurno> ObtenerTurnos(byte idTipoBoca, string idPlanta, string estado)
         {
             List<TrnTurno> turnos = new List<TrnTurno>();
             Conexion cn = new Conexion(Configuration);
@@ -90,6 +95,10 @@ namespace Turnos.Models
             sqlcommand.Parameters.AddWithValue("@ProvID", this.Provid);
             sqlcommand.Parameters.AddWithValue("@IdPlanta", idPlanta);
             sqlcommand.Parameters.AddWithValue("@IdTipoBoca", idTipoBoca);
+            if(estado == null)
+                sqlcommand.Parameters.AddWithValue("@Estado", "");
+            else
+                sqlcommand.Parameters.AddWithValue("@Estado", "NoConfirmados");
             DataTable dt = cn.Execute(sqlcommand);
             turnos = cn.ConvertDataTable<TrnTurno>(dt);
             if (turnos.Count > 0)

@@ -68,10 +68,8 @@ namespace Turnos.Models
 
                 entity.Property(e => e.Estado).HasColumnName("Estado");                    
 
-                entity.Property(e => e.UsuarioResponsableBoca)
-                    .IsRequired()
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
+                entity.Property(e => e.user_name)
+                    .IsRequired();
 
                 entity.Property(e => e.color);
 
