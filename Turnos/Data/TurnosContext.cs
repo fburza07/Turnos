@@ -36,6 +36,8 @@ namespace Turnos.Models
         public DbSet<Turnos.Models.TrnUsuarioMaestros> TrnUsuarioMaestros { get; set; }
         public DbSet<Turnos.Models.TrnUsuariosBoca> TrnUsuariosBoca { get; set; }
         public virtual DbSet<TransporteTipo> TransporteTipo { get; set; }
+        public virtual DbSet<ProvMails> ProvMails { get; set; }
+        public virtual DbSet<MailsEnvios> MailsEnvios { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {            
@@ -135,6 +137,58 @@ namespace Turnos.Models
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
+            });            
+
+            modelBuilder.Entity<ProvMails>(entity =>
+            {
+                entity.HasKey(e => e.prov_id);
+
+                entity.ToTable("ProvMails");
+
+                entity.Property(e => e.user_name);
+
+                entity.Property(e => e.tipo);
+
+                entity.Property(e => e.emp_id);
+                                  
+            });
+
+            modelBuilder.Entity<MailsEnvios>(entity =>
+            {
+                entity.HasKey(e => e.idMail);
+
+                entity.ToTable("MailsEnvios");
+
+                entity.Property(e => e.idFrom);
+
+                entity.Property(e => e.idFrom);
+
+                entity.Property(e => e.idTo);
+
+                entity.Property(e => e.idUsTo);
+
+                entity.Property(e => e.idTipo);
+
+                entity.Property(e => e.fhAlta);
+
+                entity.Property(e => e.param1);
+
+                entity.Property(e => e.param2);
+
+                entity.Property(e => e.param3);
+
+                entity.Property(e => e.estado);
+
+                entity.Property(e => e.fhProc);
+
+                entity.Property(e => e.fhModif);
+
+                entity.Property(e => e.URL);
+
+                entity.Property(e => e.CuerpoLibre);
+
+                entity.Property(e => e.AsuntoLibre);
+
             });
 
             modelBuilder.Entity<TransporteTipo>(entity =>
@@ -275,7 +329,9 @@ namespace Turnos.Models
             {                
                 entity.HasKey(e => e.Empid)
                     .HasName("PK_TurnosCustomizacion");
-              
+
+                entity.Property(e => e.IdPlanta);
+
                 entity.Property(e => e.HorarioMinimo).HasColumnType("datetime");
 
                 entity.Property(e => e.HorarioMaximo).HasColumnType("datetime");

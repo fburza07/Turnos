@@ -60,7 +60,7 @@
                     success: function (data) {
                         if (!data.status) {
                             alert("El tipo de transporte se encuentra asigando a turnos!");
-                            history.back(1);
+                            window.location = document.referrer;
                         }
                         else {
                             window.location = document.referrer;

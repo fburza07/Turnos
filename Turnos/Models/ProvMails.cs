@@ -10,9 +10,9 @@ namespace Turnos.Models
     public partial class ProvMails
     {
         [Key]
-        public int prov_id { get; set; }
+        public string prov_id { get; set; }
         public string user_name { get; set; }
-        public string tipo { get; set; }        
+        public int tipo { get; set; }        
         public string emp_id { get; set; }        
 
         private IConfiguration Configuration;

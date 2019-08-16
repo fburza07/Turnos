@@ -12,10 +12,10 @@ namespace Turnos.Controllers
 {
     public class TrnCustomizacionController : Controller
     {
-        private readonly ePlaceDBContext _context;
+        private readonly TurnosContext _context;
         private IConfiguration configuration;
 
-        public TrnCustomizacionController(ePlaceDBContext context, IConfiguration configuration)
+        public TrnCustomizacionController(TurnosContext context, IConfiguration configuration)
         {
             _context = context;
             this.configuration = configuration;
@@ -28,7 +28,7 @@ namespace Turnos.Controllers
                 empid = configuration.GetSection("empid").Value;
             configuration.GetSection("empid").Value = empid;
 
-            return View(await _context.TrnCustomizacion.Where(a => a.Empid == empid).ToListAsync());
+            return View(await _context.customizacion.Where(a => a.Empid == empid).ToListAsync());
         }
 
         // GET: TrnCustomizacions/Details/5
@@ -39,7 +39,7 @@ namespace Turnos.Controllers
                 return NotFound();
             }
 
-            var trnCustomizacion = await _context.TrnCustomizacion
+            var trnCustomizacion = await _context.customizacion
                 .FirstOrDefaultAsync(m => m.Empid == id);
             if (trnCustomizacion == null)
             {
@@ -52,6 +52,10 @@ namespace Turnos.Controllers
         // GET: TrnCustomizacions/Create
         public IActionResult Create()
         {
+            /////////////////////////////////////////SEGUIR ACA
+            //Traigo plantas que no tengan asignadas customizacion
+            _context.customizacion.Where(a => a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
+            ViewData["IdPlanta"] = new SelectList(_context.TrnUsuarioPlanta.Where(a => a.User_Id == configuration.GetSection("empid").Value).ToList(), "Codigo", "Descripcion");
             return View();
         }
 
@@ -69,6 +73,7 @@ namespace Turnos.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdPlanta"] = new SelectList(_context.TrnUsuarioPlanta.Where(a => a.User_Id == configuration.GetSection("empid").Value).ToList(), "Codigo", "Descripcion");
             return View(trnCustomizacion);
         }
 
@@ -80,11 +85,12 @@ namespace Turnos.Controllers
                 return NotFound();
             }
 
-            var trnCustomizacion = await _context.TrnCustomizacion.FindAsync(id);
+            var trnCustomizacion = await _context.customizacion.FindAsync(id);
             if (trnCustomizacion == null)
             {
                 return NotFound();
             }
+            ViewData["IdPlanta"] = new SelectList(_context.TrnUsuarioPlanta.Where(a => a.User_Id == configuration.GetSection("empid").Value).ToList(), "Codigo", "Descripcion");
             return View(trnCustomizacion);
         }
 
@@ -93,7 +99,7 @@ namespace Turnos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Empid,HorarioMinimo,HorarioMaximo,DiasLaborables")] TrnCustomizacion trnCustomizacion)
+        public async Task<IActionResult> Edit(string id, [Bind("Empid,IdPlanta,HorarioMinimo,HorarioMaximo,DiasLaborables")] TrnCustomizacion trnCustomizacion)
         {
             if (id != trnCustomizacion.Empid)
             {
@@ -120,6 +126,8 @@ namespace Turnos.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdPlanta"] = new SelectList(_context.TrnUsuarioPlanta.Where(a => a.User_Id == configuration.GetSection("empid").Value).ToList(), "Codigo", "Descripcion");
+
             return View(trnCustomizacion);
         }
 
@@ -131,7 +139,7 @@ namespace Turnos.Controllers
                 return NotFound();
             }
 
-            var trnCustomizacion = await _context.TrnCustomizacion
+            var trnCustomizacion = await _context.customizacion
                 .FirstOrDefaultAsync(m => m.Empid == id);
             if (trnCustomizacion == null)
             {
@@ -146,35 +154,23 @@ namespace Turnos.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var trnCustomizacion = await _context.TrnCustomizacion.FindAsync(id);
-            _context.TrnCustomizacion.Remove(trnCustomizacion);
+            var trnCustomizacion = await _context.customizacion.FindAsync(id);
+            _context.customizacion.Remove(trnCustomizacion);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool TrnCustomizacionExists(string id)
         {
-            return _context.TrnCustomizacion.Any(e => e.Empid == id);
-        }
+            return _context.customizacion.Any(e => e.Empid == id);
+        }              
 
         [HttpPost]
-        public JsonResult ExistenDiasCargados()
-        {
-            bool existe;
-            if (_context.TrnCustomizacion.Where(a => a.Empid == configuration.GetSection("empid").Value).FirstOrDefault() != null)
-                existe = true;
-            else
-                existe = false;
-            var jsonResult = new { existe = existe };
-            return Json(jsonResult);
-        }
-
-        [HttpPost]
-        public JsonResult TraerDiasSeleccionados()
+        public JsonResult TraerDiasSeleccionados(string idPlanta)
         {
             bool lunesActivo = false, martesActivo = false, miercolesActivo = false, juevesActivo = false, viernesActivo = false, sabadoActivo = false, domingoActivo = false;
 
-            TrnCustomizacion trnCustomizacion = _context.TrnCustomizacion.Where(a => a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
+            TrnCustomizacion trnCustomizacion = _context.customizacion.Where(a => a.Empid == configuration.GetSection("empid").Value && a.IdPlanta == idPlanta).FirstOrDefault();
             if (trnCustomizacion != null)
             {
                 String[] activos = trnCustomizacion.DiasLaborables.Split(",");

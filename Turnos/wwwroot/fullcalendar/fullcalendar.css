@@ -1262,9 +1262,10 @@ be a descendant of the grid when it is being dragged.
   padding-left: 0; }
 
 .fc-list-item-title a {
-  /* every event title cell has an <a> tag */
-  text-decoration: none;
-  color: inherit; }
+    /* every event title cell has an <a> tag */
+    text-decoration: none;
+    color: #214A98;
+}
 
 .fc-list-item-title a[href]:hover {
   /* hover effect only on titles with hrefs */

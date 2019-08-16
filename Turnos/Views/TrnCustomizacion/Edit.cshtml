@@ -12,6 +12,11 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Empid" />
             <div class="form-group">
+                <label asp-for="IdPlanta" class="control-label">Calendario de Plantas</label>
+                <select asp-for="IdPlanta" class="form-control" asp-items="ViewBag.IdPlanta"></select>
+                <span asp-validation-for="IdPlanta" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="HorarioMinimo" class="control-label">Horario Mínimo</label>
                 <input asp-for="HorarioMinimo" type="time" class="form-control" />
                 <span asp-validation-for="HorarioMinimo" class="text-danger"></span>
@@ -20,6 +25,11 @@
                 <label asp-for="HorarioMaximo" class="control-label">Horario Máximo</label>
                 <input asp-for="HorarioMaximo" type="time" class="form-control" />
                 <span asp-validation-for="HorarioMaximo" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="EsObligatorioCantidadPallets" /> Es obligatorio cantidad de pallets por segmento?
+                </label>
             </div>
             <div class="form-group">
                 <div class="checkbox">
@@ -63,6 +73,7 @@
                 type: "POST",
                 async: false,
                 url: RootUrl + "TrnCustomizacion/TraerDiasSeleccionados",
+                data: { 'idPlanta': $("#IdPlanta").val() },
                 success: function (data) {
                     if (data.lunesActivo)
                         $("#chkLunes").prop('checked', true);

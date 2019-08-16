@@ -183,7 +183,7 @@ namespace Turnos.Controllers
 
             return View(trnBoca);
         }
-        
+
         [HttpPost]
         public JsonResult Delete(int idBoca)
         {
@@ -201,8 +201,65 @@ namespace Turnos.Controllers
             }
 
             var jsonResult = new { status };
-            return Json(jsonResult);            
+            return Json(jsonResult);
         }
+
+        [HttpPost]
+        public JsonResult DeshabilitarBoca(TrnBoca boca, DateTime hasta)
+        {
+            var status = false;
+            var turnos = _context.Turno.Where(a => a.IdBoca == boca.IdBoca && a.Start <= hasta).ToList();
+            if (turnos != null)
+            {
+                foreach (var item in turnos)
+                {
+                    var proveedor = _context.TrnUsuarioMaestros.Where(a => a.usr_Id == item.Provid).FirstOrDefault();
+
+                    MailsEnvios mailsEnvios = new MailsEnvios();
+                    mailsEnvios.idFrom = item.Empid;
+                    mailsEnvios.idUsFrom = "ADMIN";
+                    mailsEnvios.idTo = item.Provid;
+                    mailsEnvios.idUsTo = "ADMIN";
+                    mailsEnvios.idTipo = 1500;
+                    mailsEnvios.fhAlta = DateTime.Now;
+                    mailsEnvios.param1 = proveedor.nombre;
+                    mailsEnvios.param2 = item.Start.ToString();
+                    mailsEnvios.param3 = "La boca donde se encontraba asignado el turno fue deshabilitada temporalmente";
+                    mailsEnvios.estado = "N";
+                    mailsEnvios.fhProc = DateTime.Now;
+                    mailsEnvios.fhModif = DateTime.Now;
+                    mailsEnvios.CuerpoLibre = "";
+                    mailsEnvios.AsuntoLibre = "";
+
+                    _context.MailsEnvios.Add(mailsEnvios);
+
+                    _context.Turno.Remove(item);
+                }
+                boca.Empid = configuration.GetSection("empid").Value;
+                _context.TrnBoca.Update(boca);
+
+                _context.SaveChanges();
+                status = true;
+            }
+
+            var jsonResult = new { status };
+            return Json(jsonResult);
+        }
+
+        [HttpPost]
+        public JsonResult Modificar(TrnBoca boca)
+        {
+            var status = false;
+
+            boca.Empid = configuration.GetSection("empid").Value;
+            _context.TrnBoca.Update(boca);
+            _context.SaveChanges();
+            status = true;
+
+            var jsonResult = new { status };
+            return Json(jsonResult);
+        }
+
 
         [HttpPost]
         public JsonResult DeshabilitarTipo(int idBoca)

@@ -191,7 +191,7 @@ namespace Turnos.Controllers
         {
             var status = false;
 
-            var v = _context.CalendarioPlanta.Where(a => a.EventID == eventID).FirstOrDefault();
+            var v = _context.CalendarioPlanta.Where(a => a.EventID == eventID).FirstOrDefault();            
             if (v != null)
             {
                 _context.CalendarioPlanta.Remove(v);

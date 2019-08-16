@@ -12,9 +12,10 @@ namespace Turnos.Models
     {
         [Key]        
         public string Empid { get; set; }        
+        public string IdPlanta { get; set; }
         public DateTime HorarioMinimo { get; set; }
         public DateTime HorarioMaximo { get; set; }
         public string DiasLaborables { get; set; }
-
+        public bool EsObligatorioCantidadPallets { get; set; }
     }
 }

@@ -121,6 +121,8 @@ namespace Turnos.Controllers
                         var v = _context.Turno.Where(a => a.EventID == e.EventID).FirstOrDefault();
                         if (v != null)
                         {
+                            TransporteTipo transporte = _context.TransporteTipo.Where(a => a.IdTransporteTipo == v.IdTransporteTipo && a.Empid == v.Empid).FirstOrDefault();
+
                             v.Empid = empid;
                             if (e.Provid != null)
                                 v.Provid = e.Provid;
@@ -131,7 +133,7 @@ namespace Turnos.Controllers
                             v.IsFullDay = e.IsFullDay;
                             v.ThemeColor = TraerColorPorEstados(e);
                             v.IdTransporteTipo = e.IdTransporteTipo;
-                            v.TransporteTipo = _context.TransporteTipo.Where(a => a.IdTransporteTipo == e.IdTransporteTipo).FirstOrDefault().Nombre;
+                            v.TransporteTipo = transporte == null ? "" : transporte.Nombre;
                             v.KGPrevistos = e.KGPrevistos;
                             v.PalletsPrevistos = e.PalletsPrevistos;
                             v.IdTipoBoca = e.IdTipoBoca;
@@ -190,7 +192,28 @@ namespace Turnos.Controllers
                 v.ConfirmadoAdherente = true;
                 if (v.ConfirmadoProveedor && v.ConfirmadoAdherente)
                     v.ThemeColor = "#6F8908"; //Verde oscuro
+
+                var proveedor = _context.TrnUsuarioMaestros.Where(a => a.usr_Id == v.Provid).FirstOrDefault();
+
+                MailsEnvios mailsEnvios = new MailsEnvios();
+                mailsEnvios.idFrom = v.Empid;
+                mailsEnvios.idUsFrom = "ADMIN";
+                mailsEnvios.idTo = v.Provid;
+                mailsEnvios.idUsTo = "ADMIN";
+                mailsEnvios.idTipo = 1501;
+                mailsEnvios.fhAlta = DateTime.Now;
+                mailsEnvios.param1 = proveedor.nombre;
+                mailsEnvios.param2 = v.Start.ToString();
+                mailsEnvios.param3 = "";
+                mailsEnvios.estado = "N";
+                mailsEnvios.fhProc = DateTime.Now;
+                mailsEnvios.fhModif = DateTime.Now;
+                mailsEnvios.CuerpoLibre = "";
+                mailsEnvios.AsuntoLibre = "";
+
+                _context.MailsEnvios.Add(mailsEnvios);
                 _context.SaveChanges();
+                
                 status = true;
             }
 
@@ -204,12 +227,31 @@ namespace Turnos.Controllers
             var status = false;
 
             var v = _context.Turno.Where(a => a.EventID == eventID).FirstOrDefault();
+            var proveedor =  _context.TrnUsuarioMaestros.Where(a => a.usr_Id == v.Provid).FirstOrDefault();            
 
             if (v != null)
             {
+                MailsEnvios mailsEnvios = new MailsEnvios();
+                mailsEnvios.idFrom = v.Empid;
+                mailsEnvios.idUsFrom = "ADMIN";
+                mailsEnvios.idTo = v.Provid;
+                mailsEnvios.idUsTo = "ADMIN";
+                mailsEnvios.idTipo = 1500;
+                mailsEnvios.fhAlta = DateTime.Now;
+                mailsEnvios.param1 = proveedor.nombre;
+                mailsEnvios.param2 = v.Start.ToString();
+                mailsEnvios.param3 = motivo;
+                mailsEnvios.estado = "N";
+                mailsEnvios.fhProc = DateTime.Now;
+                mailsEnvios.fhModif = DateTime.Now;
+                mailsEnvios.CuerpoLibre = "";
+                mailsEnvios.AsuntoLibre = "";
 
+                _context.MailsEnvios.Add(mailsEnvios);
+                
                 _context.Turno.Remove(v);
                 _context.SaveChanges();
+
                 status = true;
             }
 

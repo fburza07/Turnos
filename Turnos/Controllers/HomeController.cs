@@ -35,7 +35,7 @@ namespace Turnos.Controllers
 
         public IActionResult Index(string provid)
         {
-            //provid = "AR3071542751";
+            provid = "AR3071542751";
             ePlaceDBContext context = new ePlaceDBContext();
             if (provid == null || provid == "")
                 provid = configuration.GetSection("provid").Value;
@@ -126,6 +126,7 @@ namespace Turnos.Controllers
                         var v = _context.Turno.Where(a => a.EventID == e.EventID).FirstOrDefault();
                         if (v != null)
                         {
+                            TransporteTipo transporte = _context.TransporteTipo.Where(a => a.IdTransporteTipo == v.IdTransporteTipo && a.Empid == v.Empid).FirstOrDefault();
                             v.Provid = provid;
                             v.Empid = empid;
                             v.Subject = e.Subject;
@@ -135,7 +136,7 @@ namespace Turnos.Controllers
                             v.IsFullDay = e.IsFullDay;
                             v.ThemeColor = TraerColorPorEstados(e);
                             v.IdTransporteTipo = e.IdTransporteTipo;
-                            v.TransporteTipo = _context.TransporteTipo.Where(a => a.IdTransporteTipo == v.IdTransporteTipo && v.Empid == e.Empid).FirstOrDefault().Nombre;
+                            v.TransporteTipo = transporte == null? "":transporte.Nombre;
                             v.KGPrevistos = e.KGPrevistos;
                             v.PalletsPrevistos = e.PalletsPrevistos;
                             v.IdTipoBoca = e.IdTipoBoca;
@@ -205,11 +206,33 @@ namespace Turnos.Controllers
             var v = _context.Turno.Where(a => a.EventID == eventID).FirstOrDefault();
             if (v != null)
             {
+
+                var proveedor = _context.TrnUsuarioMaestros.Where(a => a.usr_Id == v.Provid).FirstOrDefault();
+
                 v.ConfirmadoProveedor = true;
                 if (v.ConfirmadoProveedor && v.ConfirmadoAdherente)
                     v.ThemeColor = "#6F8908"; //Verde oscuro
 
+                MailsEnvios mailsEnvios = new MailsEnvios();
+                mailsEnvios.idFrom = v.Provid;
+                mailsEnvios.idUsFrom = "ADMIN";
+                mailsEnvios.idTo = v.Empid;
+                mailsEnvios.idUsTo = "ADMIN";
+                mailsEnvios.idTipo = 1503;
+                mailsEnvios.fhAlta = DateTime.Now;
+                mailsEnvios.param1 = proveedor.nombre;
+                mailsEnvios.param2 = v.Start.ToString();
+                mailsEnvios.param3 = "";
+                mailsEnvios.estado = "N";
+                mailsEnvios.fhProc = DateTime.Now;
+                mailsEnvios.fhModif = DateTime.Now;
+                mailsEnvios.CuerpoLibre = "";
+                mailsEnvios.AsuntoLibre = "";
+
+                _context.MailsEnvios.Add(mailsEnvios);                
+
                 _context.SaveChanges();
+               
                 status = true;
             }
 
@@ -218,7 +241,7 @@ namespace Turnos.Controllers
         }
 
         [HttpPost]
-        public JsonResult CancelarTurno(int eventID)
+        public JsonResult CancelarTurno(int eventID, string motivo)
         {
             var status = false;
 
@@ -226,11 +249,33 @@ namespace Turnos.Controllers
 
             if (v != null)
             {
-             
+                var proveedor = _context.TrnUsuarioMaestros.Where(a => a.usr_Id == v.Provid).FirstOrDefault();
+
                 v.ConfirmadoProveedor = false;
                 v.ThemeColor = this.TraerColorPorEstados(v);
 
+                MailsEnvios mailsEnvios = new MailsEnvios();
+                mailsEnvios.idFrom = v.Provid;
+                mailsEnvios.idUsFrom = "ADMIN";
+                mailsEnvios.idTo = v.Empid;
+                mailsEnvios.idUsTo = "ADMIN";
+                mailsEnvios.idTipo = 1502;
+                mailsEnvios.fhAlta = DateTime.Now;
+                mailsEnvios.param1 = proveedor.nombre;
+                mailsEnvios.param2 = v.Start.ToString();
+                mailsEnvios.param3 = motivo;
+                mailsEnvios.estado = "N";
+                mailsEnvios.fhProc = DateTime.Now;
+                mailsEnvios.fhModif = DateTime.Now;
+                mailsEnvios.CuerpoLibre = "";
+                mailsEnvios.AsuntoLibre = "";
+
+                _context.MailsEnvios.Add(mailsEnvios);
+
+                _context.Turno.Remove(v);
+
                 _context.SaveChanges();
+                
                 status = true;
             }
 
@@ -239,9 +284,9 @@ namespace Turnos.Controllers
         }
 
         [HttpPost]
-        public string TraerHorarioMinimo()
+        public string TraerHorarioMinimo(string idPlanta)
         {
-            var v = _context.customizacion.Where(a => a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
+            var v = _context.customizacion.Where(a => a.Empid == configuration.GetSection("empid").Value && a.IdPlanta == idPlanta).FirstOrDefault();
             if (v != null)
                 return v.HorarioMinimo.ToLongTimeString();
             else
@@ -249,9 +294,9 @@ namespace Turnos.Controllers
         }
 
         [HttpPost]
-        public string TraerHorarioMaximo()
+        public string TraerHorarioMaximo(string idPlanta)
         {
-            var v = _context.customizacion.Where(a => a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
+            var v = _context.customizacion.Where(a => a.Empid == configuration.GetSection("empid").Value && a.IdPlanta == idPlanta).FirstOrDefault();
             if (v != null)
                 return v.HorarioMaximo.ToLongTimeString();
             else
@@ -337,7 +382,21 @@ namespace Turnos.Controllers
             else
                 return DateTime.Now;
 
-        }        
+        }
+
+        [HttpPost]
+        //Verifica que la cantidad de pallets sea obligatorio, o no, en la customizacion por adherente y planta       
+        public JsonResult VerificarObligatorioCantidadPallets(string idPlanta)
+        {
+            bool obligatorio = false;
+
+            TrnCustomizacion trnCustomizacion = _context.customizacion.Where(a => a.IdPlanta == idPlanta && a.Empid == configuration.GetSection("empid").Value).FirstOrDefault();
+            if (trnCustomizacion != null)
+                obligatorio = trnCustomizacion.EsObligatorioCantidadPallets;
+
+            var jsonResult = new { obligatorio };
+            return Json(jsonResult);
+        }
 
     }
 }

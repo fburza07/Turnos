@@ -9,6 +9,12 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
+            planta
+        </dt>
+        <dd class="col-sm-10">
+            @Model.IdPlanta
+        </dd>
+        <dt class="col-sm-2">
             Horario Mínimo
         </dt>
         <dd class="col-sm-10">
@@ -19,6 +25,12 @@
         </dt>
         <dd class="col-sm-10">
             @Model.HorarioMaximo.ToString("HH:mm")
+        </dd>
+        <dt class="col-sm-2">
+            Obligatorio Cantidad Pallets
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.EsObligatorioCantidadPallets)            
         </dd>
     </dl>
 </div>

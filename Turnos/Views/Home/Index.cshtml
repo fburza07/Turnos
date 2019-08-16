@@ -117,6 +117,27 @@
         </div>
     </div>
 </div>
+<div id="myModalCancelar" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Guardar Turno</h4>
+            </div>
+            <div class="modal-body">
+                <form class="col-md-12 form-horizontal">
+                    <input type="hidden" id="hdEventID" value="0" />
+                    <div class="form-group">
+                        <label>Motivo de Cancelacion</label>
+                        <textarea id="txtAsuntoCancelacion" rows="3" class="form-control"></textarea>
+                    </div>
+                    <button type="button" id="btnEnviarCancelacion" class="btn btn-success">Enviar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="Detalle">
 
 </div>
@@ -146,7 +167,6 @@
             var cantMinSegmento = "";
             var horarioMinimo = "";
             var horarioMaximo = "";
-            var minDiasPrevicionTipoBoca = "";
             var horarioMinimoPorBocaLunes = "";
             var horarioMaximoPorBocaLunes = "";
             var horarioMinimoPorBocaMartes = "";
@@ -159,14 +179,16 @@
             var horarioMaximoPorBocaViernes = "";
             var horarioMinimoPorBocaSabado = "";
             var horarioMaximoPorBocaSabado = "";
+            var diasPrevision = 0
             var events = [];
-            var selectedEvent = null;
+            var selectedEvent = null;           
+
             FetchEventAndRenderCalendar($("#IdTipoBoca").val());
             function FetchEventAndRenderCalendar(idTipoBoca, date, estado) {
                 events = [];
                 $.ajax({
                     type: "GET",
-                    url: "Turnos/Home/ObtenerTurnos",
+                    url: "Home/ObtenerTurnos",
                     data: { 'idTipoBoca': idTipoBoca, 'idPlanta': $("#Codigo").val(), 'estado': estado },
                     success: function (data) {
                         $.each(data, function (i, v) {
@@ -220,7 +242,7 @@
                             $('#calender').fullCalendar('changeView', 'agendaWeek', date);
                     },
                     error: function (error) {
-                        alert('1');
+                        alert('Error al obtener turnos');
                     }
                 })
 
@@ -229,7 +251,7 @@
 
                 //$.ajax({
                 //    type: "POST",
-                //    url: "Turnos/Home/TraerCantidadMinutosSegmento",
+                //    url: "Home/TraerCantidadMinutosSegmento",
                 //    data: { 'idTipoBoca': $("#IdTipoBoca").val() },
                 //    success: function (respuesta) {
                 //        cantMinSegmento = respuesta;
@@ -239,27 +261,13 @@
                 //    }
                 //});
 
-            }
-
-            function TraerDiasPrevision() {
-                $.ajax({
-                    type: "POST",
-                    url: "Turnos/Home/TraerDiasPrevision",
-                    data: { 'idTipoBoca': $("#IdTipoBoca").val() },
-                    success: function (respuesta) {
-                        minDiasPrevicionTipoBoca = respuesta;
-                    },
-                    error: function () {
-                        alert('2');
-                    }
-                })
-            }
+            }           
 
             function TraerHorarioMinimoPorBoca(dia) {
                 $.ajax({
                     type: "POST",
                     async: false,
-                    url: "Turnos/Home/TraerHorarioMinimoPorBoca",
+                    url: "Home/TraerHorarioMinimoPorBoca",
                     data: { 'dia': dia, 'idPlanta': $("#Codigo").val() },
                     success: function (respuesta) {
                         switch (dia) {
@@ -282,7 +290,7 @@
                                 horarioMinimoPorBocaSabado = respuesta;
                                 break;
                             default:
-                                alert('error!');
+                                alert('Error al traer horario mínimo por boca!');
                         }
 
                     },
@@ -295,7 +303,7 @@
             function TraerHorarioMaximoPorBoca(dia) {
                 $.ajax({
                     type: "POST",
-                    url: "Turnos/Home/TraerHorarioMaximoPorBoca",
+                    url: "Home/TraerHorarioMaximoPorBoca",
                     async: false,
                     data: { 'dia': dia, 'idPlanta': $("#Codigo").val() },
                     success: function (respuesta) {
@@ -323,7 +331,7 @@
                         }
                     },
                     error: function () {
-                        alert('4');
+                        alert('Error al traer horario máximo por boca');
                     }
                 })
             }
@@ -336,14 +344,14 @@
             function TraerCantidadMinutosSegmento() {
                 $.ajax({
                     type: "POST",
-                    url: "Turnos/Home/TraerCantidadMinutosSegmento",
+                    url: "Home/TraerCantidadMinutosSegmento",
                     async: false,
                     data: { 'idTipoBoca': $("#IdTipoBoca").val(), 'idPlanta': $("#Codigo").val() },
                     success: function (respuesta) {
                         cantMinSegmento = respuesta;
                     },
                     error: function () {
-                        alert('5');
+                        alert('Error al traer cantidad minutos del segmento');
                     }
                 })
             }
@@ -353,7 +361,7 @@
                 $.ajax({
                     type: "POST",
                     async: false,
-                    url: "Turnos/Home/PermiteEdicion",
+                    url: "Home/PermiteEdicion",
                     data: { 'idTipoBoca': $("#IdTipoBoca").val() },
                     success: function (respuesta) {
                         if (respuesta.permite) {
@@ -361,7 +369,7 @@
                         }
                     },
                     error: function () {
-                        alert('6');
+                        alert('Error al verificar si permite edicion');
                     }
                 })
                 return rtn;
@@ -371,7 +379,7 @@
                 $.ajax({
                     type: "POST",
                     async: false,
-                    url: "Turnos/Home/VerificarBocaDisponibleporTipo",
+                    url: "Home/VerificarBocaDisponibleporTipo",
                     data: { 'idTipoBoca': $("#IdTipoBoca").val() },
                     success: function (respuesta) {
                         if (respuesta.bocaDisponible) {
@@ -382,7 +390,7 @@
                         }
                     },
                     error: function () {
-                        alert('7');
+                        alert('Error al verificar bocas disponibles por tipo');
                     }
                 })
             }
@@ -392,21 +400,20 @@
                 $.ajax({
                     type: "POST",
                     async: false,
-                    url: "Turnos/Home/TraerFechaDesdeEvento",
+                    url: "Home/TraerFechaDesdeEvento",
                     data: { 'eventID': eventID },
                     success: function (respuesta) {
                         rtn = respuesta;
                     },
                     error: function () {
-                        alert('8');
+                        alert('Error al traer fecha inicial de evento');
                     }
                 })
                 return rtn;
             }
 
             function GenerateCalendar(events) {
-                $('#calender').fullCalendar('destroy');
-                TraerDiasPrevision();
+                $('#calender').fullCalendar('destroy');                
                 TraerHorarioMinimoPorBoca(1);
                 TraerHorarioMinimoPorBoca(2);
                 TraerHorarioMinimoPorBoca(3);
@@ -423,27 +430,41 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "Turnos/Home/TraerHorarioMinimo",
+                    url: "Home/TraerHorarioMinimo",
+                    data: { 'idPlanta': $("#Codigo").val() },
                     async: false,
                     success: function (respuesta) {
                         horarioMinimo = respuesta;
                     },
                     error: function () {
-                        alert('Error occured');
+                        alert('Error al traer horario mínimo configurado');
                     }
                 });
 
                 $.ajax({
                     type: "POST",
-                    url: "Turnos/Home/TraerHorarioMaximo",
+                    url: "Home/TraerHorarioMaximo",
+                    data: { 'idPlanta': $("#Codigo").val() },
                     async: false,
                     success: function (respuesta) {
                         horarioMaximo = respuesta;
                     },
                     error: function () {
-                        alert('Error occured');
+                        alert('Error al traer horario máximo configurado');
                     }
                 });
+
+                $.ajax({
+                    type: "POST",
+                    url: "Home/TraerDiasPrevision",
+                    data: { 'idTipoBoca': $("#IdTipoBoca").val() },
+                    success: function (respuesta) {
+                        diasPrevision = respuesta;
+                    },
+                    error: function () {
+                        alert('Error al traer días de previsión');
+                    }
+                })
 
                 $('#calender').fullCalendar({
                     contentHeight: 'auto',
@@ -514,7 +535,7 @@
                             //if ((moment().diff(event.start, 'minutes') > 0))
                             //    element.css('background-color', "grey")
                         }
-
+                        element.css('color', "#09307A")
                     },
                     slotDuration: cantMinSegmento,
                     eventClick: function (calEvent, jsEvent, view) {
@@ -564,9 +585,9 @@
                             KGPrevistos: 0,
                             PalletsPrevistos: 0,
                             rendering: 0,
-                        };
-                        
-                        if (moment.duration(moment().diff(start)).asDays() < -3) {  ///tres deberia ser dias de prevision
+                        };            
+                                                
+                        if (moment().add(diasPrevision, 'days').diff(moment(start)) < 1) {  
                             if (PermiteEdicion())
                                 VerificarBocaDisponibleporTipo()
                         }
@@ -683,7 +704,7 @@
                 if (selectedEvent != null && confirm('¿Está seguro de eliminar el Turno?')) {
                     $.ajax({
                         type: "POST",
-                        url: 'Turnos/Home/BorrarTurno',
+                        url: 'Home/BorrarTurno',
                         data: { 'eventID': selectedEvent.eventID },
                         success: function (data) {
                             if (data.status) {
@@ -693,7 +714,7 @@
                             }
                         },
                         error: function () {
-                            alert('9');
+                            alert('Error al eliminar Turno');
                         }
                     })
                 }
@@ -703,7 +724,7 @@
                 if (selectedEvent != null) {
                     $.ajax({
                         type: "POST",
-                        url: 'Turnos/Home/ConfirmarTurno',
+                        url: 'Home/ConfirmarTurno',
                         data: { 'eventID': selectedEvent.eventID },
                         success: function (data) {
                             if (data.status) {
@@ -713,31 +734,45 @@
                             }
                         },
                         error: function () {
-                            alert('10');
+                            alert('Error al confirmar turno');
                         }
                     })
                 }
             })
 
             $('#btnCancelar').click(function () {
+                AbrirVentanaCancelacion();
+            })
+
+            $('#btnEnviarCancelacion').click(function () {
                 if (selectedEvent != null) {
                     $.ajax({
                         type: "POST",
-                        url: 'Turnos/Home/CancelarTurno',
-                        data: { 'eventID': selectedEvent.eventID },
+                        url: 'Home/CancelarTurno',
+                        data: { 'eventID': selectedEvent.eventID, 'motivo': $('#txtAsuntoCancelacion').val(), },
                         success: function (data) {
                             if (data.status) {
                                 //actualizar el calendario
-                                FetchEventAndRenderCalendar($("#IdTipoBoca").val(), data.start);
-                                $('#myModal').modal('hide');
+                                FetchEventAndRenderCalendar($('#IdTipoBoca').val(), moment().format("YYYY-MM-DD"));
+                                $('#myModalCancelar').modal('hide');
                             }
                         },
                         error: function () {
-                            alert('10');
+                            alert('Error al cancelar turno');
                         }
                     })
                 }
             })
+
+            function AbrirVentanaCancelacion() {
+
+                if (selectedEvent != null) {
+                    $('#txtAsuntoCancelacion').val();
+                }
+                $('#myModal').modal('hide');
+                $('#myModalCancelar').modal({ backdrop: 'static', keyboard: false })
+
+            }
             /*
             $('#dtp1').datetimepicker({
                 format: 'DD/MM/YYYY HH:mm'
@@ -800,6 +835,10 @@
                 if ($('#txtEnd').val().trim() == "") {
                     alert('Fecha Fin requerida');
                     return;
+                }             
+                if (VerificarObligatorioCantidadPallets() && ($('#txtPalletsPrevistos').val() == "" || $('#txtPalletsPrevistos').val() == 0)) {
+                    alert('Cantidad de pallets previstos requeridos!');
+                    return;
                 }
                 else {
 
@@ -828,7 +867,7 @@
             function GrabarTurno(data, revertFunc) {
                 $.ajax({
                     type: "POST",
-                    url: 'Turnos/Home/GrabarTurno',
+                    url: 'Home/GrabarTurno',
                     data: { 'e': data, 'idPlanta': $("#Codigo").val().trim() },
                     success: function (data) {
                         if (!data.errorFeriado) {
@@ -846,7 +885,7 @@
                         else { alert('Esta intentando ingresar un turno un dia feriado!, intente otra fecha'); revertFunc; }
                     },
                     error: function () {
-                        alert('11');
+                        alert('Error al grabar turno');
                     }
                 })
             }
@@ -862,6 +901,25 @@
                     rtn = true;
                 }
                 return rtn;
+            }
+
+            function VerificarObligatorioCantidadPallets() {
+                var obligatorio = false;
+                $.ajax({
+                    type: "POST",
+                    url: 'Home/VerificarObligatorioCantidadPallets',
+                    data: { 'idPlanta': $("#Codigo").val().trim() },
+                    async: false,
+                    success: function (data) {
+                        if (data.obligatorio) {
+                            obligatorio = true;
+                        } else { obligatorio = false;}
+                    },
+                    error: function () {
+                        alert('Error al verificar obligatoriedad de pallets');
+                    }
+                })
+                return obligatorio;
             }
 
             $("#ddlEstado").change(function () {

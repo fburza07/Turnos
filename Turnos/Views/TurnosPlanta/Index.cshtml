@@ -133,7 +133,7 @@
                 <form class="col-md-12 form-horizontal">
                     <input type="hidden" id="hdEventID" value="0" />                    
                     <div class="form-group">
-                        <label>Asunto de Cancelacion</label>
+                        <label>Motivo de Cancelacion</label>
                         <textarea id="txtAsuntoCancelacion" rows="3" class="form-control"></textarea>
                     </div>                    
                     <button type="button" id="btnEnviarCancelacion" class="btn btn-success">Enviar</button>
@@ -255,7 +255,7 @@
                             } else {
                                 colorborde = "#fb7676";
                             }
-                            cadena.append($('<td><p/>').html('<div style="margin: auto;background-color:' + v.color + ';border:2px solid ' + colorborde + ';color:white; text-align:center; width:90%"> ' + v.BocaEntrega + '</div></td>'));
+                            cadena.append($('<td><p/>').html('<div style="margin: auto;background-color:' + v.color + ';border:2px solid ' + colorborde + ';color:#09307A; text-align:center; width:90%"> ' + v.BocaEntrega + '</div></td>'));
 
                         })
                         cadena.append($(agragar + '</tr></table>'))
@@ -543,6 +543,7 @@
                             //if ((moment().diff(event.start, 'minutes') > 0))
                             //    element.css('background-color', "grey")
                         }
+                        element.css('color', "#09307A")
                     },
                     slotDuration: cantMinSegmento,
                     eventClick: function (calEvent, jsEvent, view) {
