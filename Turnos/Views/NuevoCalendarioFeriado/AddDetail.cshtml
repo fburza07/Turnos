@@ -27,6 +27,7 @@
             </div>
             <div class="form-group" id="divHoras" style="display:none">
                 <div class="form-group">
+                    <input type="time" asp-for="HoraDesde" />
                     <label asp-for="HoraDesde" class="control-label"></label>
                     <input asp-for="HoraDesde" type="time" class="form-control" />
                     <span asp-validation-for="HoraDesde" class="text-danger"></span>

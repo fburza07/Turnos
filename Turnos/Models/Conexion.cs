@@ -53,6 +53,7 @@ namespace Turnos.Models
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
+        
         public DataTable Execute(string sql)
         {
             DataTable dt = new DataTable();

@@ -25,13 +25,13 @@ namespace Turnos.Controllers
         // GET: Bocas
         public async Task<IActionResult> Index(string empid)
         {
-            var trnBoca = _context.TrnBoca
-                .Include(t => t.IdTipoBocaNavigation)
+            var trnBoca = _context.TrnBoca.Include(t => t.IdTipoBocaNavigation)
                 .Include(t => t.TrnCalendarioplantaCabeceraNavigation)
                 .Include(t => t.TrnCalendarioFeriadoCabeceraNavigation)
                 .Where(a => a.Empid == empid);
             if (empid == null || empid == "")
                 empid = configuration.GetSection("empid").Value;
+                
             configuration.GetSection("empid").Value = empid;
 
             return View(await trnBoca.ToListAsync());

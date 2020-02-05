@@ -1,0 +1,119 @@
+﻿@model IEnumerable<Turnos.Models.TrnBoca>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdPlanta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Empid)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BocaEntrega)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descripcion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SegmentoCantMin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SegmentoCantPalletMax)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VerificaSobreposicionHoraria)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CantidadCitasSimultaneas)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DiasPrevision)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.color)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdTipoBocaNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TrnCalendarioFeriadoCabeceraNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TrnCalendarioplantaCabeceraNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TrnUsuariosBocaNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdPlanta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Empid)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BocaEntrega)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descripcion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Estado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SegmentoCantMin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SegmentoCantPalletMax)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VerificaSobreposicionHoraria)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CantidadCitasSimultaneas)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiasPrevision)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.color)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdTipoBocaNavigation.Codigo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TrnCalendarioFeriadoCabeceraNavigation.IdCalendarioFeriado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TrnCalendarioplantaCabeceraNavigation.IdCalendarioPlanta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TrnUsuariosBocaNavigation.user_name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdBoca">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdBoca">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdBoca">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

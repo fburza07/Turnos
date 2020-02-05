@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "jquery@1.10.2",
+      "destination": "wwwroot/jquery/"
+    },
+    {
+      "library": "modernizr@2.6.3",
+      "destination": "wwwroot/modernizr/"
+    },
+    {
+      "library": "twitter-bootstrap@3.0.0-rc2",
+      "destination": "wwwroot/twitter-bootstrap/"
+    }
+  ,
+{
+  "provider": "cdnjs",
+  "library": "fullcalendar@3.10.0",
+  "destination": "wwwroot/fullcalendar/"
+}
+]
+}
